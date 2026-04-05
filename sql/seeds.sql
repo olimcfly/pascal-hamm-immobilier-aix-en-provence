@@ -4,11 +4,11 @@
 INSERT INTO settings (user_id, `key`, `value`, `group`) VALUES
 
 -- Profil
-(1, 'profil_nom',            'Eduardo De Sul',                          'profil'),
-(1, 'profil_prenom',         'Eduardo',                                 'profil'),
-(1, 'profil_email',          'contact@eduardo-desul-immobilier.fr',     'profil'),
+(1, 'profil_nom',            'Pascal Hamm',                          'profil'),
+(1, 'profil_prenom',         'Pascal',                                 'profil'),
+(1, 'profil_email',          'contact@pascal-hamm-immobilier.fr',     'profil'),
 (1, 'profil_telephone',      '',                                        'profil'),
-(1, 'profil_ville',          'Bordeaux',                                'profil'),
+(1, 'profil_ville',          'Aix-en-Provence',                                'profil'),
 (1, 'profil_bio',            '',                                        'profil'),
 (1, 'profil_photo',          '',                                        'profil'),
 (1, 'profil_carte_pro',      '',                                        'profil'),
@@ -17,8 +17,8 @@ INSERT INTO settings (user_id, `key`, `value`, `group`) VALUES
 (1, 'profil_siret',          '',                                        'profil'),
 
 -- Site public
-(1, 'site_nom',              'Eduardo Desul Immobilier',                'site'),
-(1, 'site_url',              'https://eduardo-desul-immobilier.fr',     'site'),
+(1, 'site_nom',              'Pascal Hamm Immobilier',                'site'),
+(1, 'site_url',              'https://pascal-hamm-immobilier.fr',     'site'),
 (1, 'site_slogan',           '',                                        'site'),
 (1, 'site_description',      '',                                        'site'),
 (1, 'site_logo',             '',                                        'site'),
@@ -26,7 +26,7 @@ INSERT INTO settings (user_id, `key`, `value`, `group`) VALUES
 (1, 'site_favicon',          '',                                        'site'),
 
 -- Zone géographique
-(1, 'zone_ville',            'Bordeaux',                                'zone'),
+(1, 'zone_ville',            'Aix-en-Provence',                                'zone'),
 (1, 'zone_departement',      'Gironde',                                 'zone'),
 (1, 'zone_region',           'Nouvelle-Aquitaine',                      'zone'),
 (1, 'zone_communes',         '',                                        'zone'),

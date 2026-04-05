@@ -1,5 +1,5 @@
 /* ============================================================
-   MAIN JS — Eduardo Desul Immobilier
+   MAIN JS — Pascal Hamm Immobilier
    ============================================================ */
 
 'use strict';

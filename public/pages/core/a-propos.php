@@ -7,7 +7,7 @@ $metaDesc = 'Découvrez Pascal Hamm, expert immobilier clef en main à Aix-en-Pr
     <div class="container">
         <nav class="breadcrumb"><a href="/">Accueil</a><span>À propos</span></nav>
         <h1>Pascal Hamm - Votre partenaire immobilier 360°</h1>
-        <p>Immobilier clef en main, viager éthique et solutions de financement dans le Pays d'Aix</p>
+        <p>Immobilier clef en main, viager éthique et solutions de financement dans le Pays d\'Aix</p>
     </div>
 </div>
 
@@ -32,7 +32,7 @@ $metaDesc = 'Découvrez Pascal Hamm, expert immobilier clef en main à Aix-en-Pr
                     <li>✓ <strong>Financement</strong> et optimisation fiscale</li>
                     <li>✓ Gestion locative et investissement</li>
                 </ul>
-                <p>Mon expertise couvre Aix-en-Provence, le Pays d'Aix et les plus belles communes de Provence.</p>
+                <p>Mon expertise couvre Aix-en-Provence, le Pays d\'Aix et les plus belles communes de Provence.</p>
 
                 <div class="stats-grid">
                     <div class="stat-item">
@@ -175,8 +175,8 @@ $metaDesc = 'Découvrez Pascal Hamm, expert immobilier clef en main à Aix-en-Pr
             </div>
             <div data-animate>
                 <span class="section-label">Mon territoire</span>
-                <h2 class="section-title">Aix-en-Provence et le Pays d'Aix</h2>
-                <p>Mon expertise couvre l'ensemble du Pays d'Aix, avec une connaissance approfondie de chaque commune :</p>
+                <h2 class="section-title">Aix-en-Provence et le Pays d\'Aix</h2>
+                <p>Mon expertise couvre l'ensemble du Pays d\'Aix, avec une connaissance approfondie de chaque commune :</p>
                 <div class="location-grid">
                     <div class="location-item">Aix-en-Provence</div>
                     <div class="location-item">Le Tholonet</div>

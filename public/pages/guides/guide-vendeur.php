@@ -18,7 +18,7 @@ ob_start();
     "@context": "https://schema.org",
     "@type": "HowTo",
     "name": "Comment vendre un bien immobilier à Aix-en-Provence",
-    "description": "Guide complet pour réussir votre vente immobilière à Aix-en-Provence et dans le Pays d'Aix en <?= date('Y') ?>",
+    "description": "Guide complet pour réussir votre vente immobilière à Aix-en-Provence et dans le Pays d\'Aix en <?= date('Y') ?>",
     "totalTime": "PT25M",
     "step": [
         {"@type":"HowToStep","name":"Estimer votre bien au juste prix","position":1},
@@ -54,7 +54,7 @@ ob_start();
                 <p class="guide-hero__subtitle">
                     De l'estimation jusqu'à la remise des clés :
                     les 6 étapes pour vendre sereinement sur Aix-en-Provence
-                    et le Pays d'Aix, éviter les erreurs classiques
+                    et le Pays d\'Aix, éviter les erreurs classiques
                     et maximiser votre prix de vente.
                 </p>
 
@@ -133,7 +133,7 @@ ob_start();
                         <div class="guide-step__content">
 
                             <p>
-                                Sur le marché du Pays d'Aix, le prix au m² varie
+                                Sur le marché du Pays d\'Aix, le prix au m² varie
                                 fortement selon le secteur : de <strong>3 500 €/m²</strong>
                                 en périphérie rurale à plus de <strong>7 000 €/m²</strong>
                                 en hypercentre aixois (Mazarin, Cours Mirabeau).
@@ -153,7 +153,7 @@ ob_start();
                             ];
                             ?>
                             <div class="secteur-grid">
-                                <h3>Prix au m² par secteur du Pays d'Aix (2025)</h3>
+                                <h3>Prix au m² par secteur du Pays d\'Aix (2025)</h3>
                                 <?php foreach ($secteurs as $s): ?>
                                 <div class="secteur-card secteur-card--<?= $s['color'] ?>">
                                     <div class="secteur-card__name">
@@ -362,7 +362,7 @@ ob_start();
                                     </div>
                                     <ul class="compare-card__pros">
                                         <li><i class="fas fa-check"></i> Estimation précise au prix du marché</li>
-                                        <li><i class="fas fa-check"></i> Réseau acheteurs qualifiés Pays d'Aix</li>
+                                        <li><i class="fas fa-check"></i> Réseau acheteurs qualifiés Pays d\'Aix</li>
                                         <li><i class="fas fa-check"></i> Photos pro + diffusion multi-portails</li>
                                         <li><i class="fas fa-check"></i> Négociation sécurisée</li>
                                         <li><i class="fas fa-check"></i> Suivi jusqu'à la signature notaire</li>
@@ -749,7 +749,7 @@ ob_start();
                             <div class="guide-cta-final__icon">
                                 <i class="fas fa-sign"></i>
                             </div>
-                            <h2>Prêt à vendre sur le Pays d'Aix ?</h2>
+                            <h2>Prêt à vendre sur le Pays d\'Aix ?</h2>
                             <p>
                                 Pascal Hamm vous accompagne de A à Z dans votre
                                 projet de vente à Aix-en-Provence et ses environs.
@@ -860,7 +860,7 @@ ob_start();
                             <i class="fas fa-star"></i>
                         </div>
                         <blockquote class="sidebar-testimonial__text">
-                            "Pascal a vendu notre appartement en hypercentre d'Aix
+                            "Pascal a vendu notre appartement en hypercentre d\'Aix
                             en 18 jours, au prix demandé. Un accompagnement
                             professionnel du début à la fin."
                         </blockquote>

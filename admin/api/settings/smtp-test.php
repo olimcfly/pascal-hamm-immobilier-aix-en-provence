@@ -23,7 +23,7 @@ $host = (string) setting('smtp_host');
 $port = (int) setting('smtp_port', '587');
 $user = (string) setting('smtp_user');
 $pass = (string) setting('smtp_pass');
-$fromName = (string) setting('smtp_from_name', setting('profil_nom', 'Eduardo De Sul'));
+$fromName = (string) setting('smtp_from_name', setting('profil_nom', 'Pascal Hamm'));
 $secure = strtolower((string) setting('smtp_secure', 'tls'));
 
 if ($host === '' || $user === '') {

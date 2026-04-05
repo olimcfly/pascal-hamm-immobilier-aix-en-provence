@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Envoyer le code par email
                 $sent = MailService::send(
                     $email,
-                    'Votre code de connexion — Eduardo Desul Admin',
+                    'Votre code de connexion — Pascal Hamm Admin',
                     "Bonjour {$user['name']},\n\nVotre code de connexion est : {$code}\n\nIl est valable 10 minutes.\n\nSi vous n'avez pas demandé ce code, ignorez cet email.",
                     "<p>Bonjour <strong>{$user['name']}</strong>,</p>
                     <p>Votre code de connexion est : <strong style='font-size:24px;letter-spacing:4px'>{$code}</strong></p>

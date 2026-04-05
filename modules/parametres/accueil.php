@@ -9,9 +9,9 @@ $pageDescription = 'Compte et préférences';
 
 function renderContent(): void
 {
-    $profil_nom    = setting('profil_nom', 'Eduardo De Sul');
+    $profil_nom    = setting('profil_nom', 'Pascal Hamm');
     $profil_email  = setting('profil_email', '');
-    $profil_ville  = setting('profil_ville', 'Bordeaux');
+    $profil_ville  = setting('profil_ville', 'Aix-en-Provence');
     $profil_photo  = setting('profil_photo', '');
 
     // Vérification clés API configurées

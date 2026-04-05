@@ -1,5 +1,5 @@
 -- ============================================================
--- Eduardo DeSul Immobilier — Schéma SQL complet (single database)
+-- Pascal Hamm Immobilier — Schéma SQL complet (single database)
 -- Version consolidée des migrations + modules actifs du dépôt.
 -- Cible : MySQL 8+ / MariaDB 10.6+
 -- ============================================================
@@ -7,11 +7,11 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-CREATE DATABASE IF NOT EXISTS `eduardo_desul_immobilier`
+CREATE DATABASE IF NOT EXISTS `pascal_hamm_immobilier`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE `eduardo_desul_immobilier`;
+USE `pascal_hamm_immobilier`;
 
 -- ============================================================
 -- 1) AUTH / USERS

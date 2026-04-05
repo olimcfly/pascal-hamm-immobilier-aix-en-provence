@@ -1,5 +1,5 @@
 <?php
-$pageTitle  = 'Politique cookies — Eduardo Desul Immobilier';
+$pageTitle  = 'Politique cookies — Pascal Hamm Immobilier';
 $metaRobots = 'noindex, nofollow';
 ?>
 <div class="page-header">

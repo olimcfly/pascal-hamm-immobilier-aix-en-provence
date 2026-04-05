@@ -1,22 +1,23 @@
 <?php
-$advisorName = trim((string) setting('advisor_firstname', '') . ' ' . (string) setting('advisor_lastname', ''));
-if ($advisorName === '') {
-    $advisorName = ADVISOR_NAME ?: APP_NAME;
-}
-$advisorTitle = setting('advisor_title', 'Conseiller Immobilier');
-$advisorTagline = setting('advisor_tagline', '');
-$zoneCity = setting('zone_city', APP_CITY);
+$advisorName    = 'Pascal Hamm';
+$advisorTitle   = 'Expert Immobilier 360°';
+$advisorTagline = 'Expert immobilier indépendant dans le Pays d\'Aix. Je vous accompagne dans l\'achat, la vente, l\'estimation et le viager avec transparence et proximité.';
+$zoneCity       = 'Aix-en-Provence';
 ?>
+
 <footer class="site-footer">
     <div class="container footer__grid">
 
         <!-- Identité -->
         <div class="footer__col footer__brand">
             <a href="/" class="footer__logo">
-                <span>🏡</span>
-                <span><strong><?= e($advisorName) ?></strong><br><em><?= e((string)$advisorTitle) ?></em></span>
+                <span aria-hidden="true">🏡</span>
+                <span>
+                    <strong>Pascal Hamm</strong><br>
+                    <em><?= e($advisorTitle) ?></em>
+                </span>
             </a>
-            <p class="footer__tagline"><?= e($advisorTagline ?: "Expert immobilier indépendant. Je vous accompagne dans l'achat, la vente et l'estimation de votre bien avec transparence et proximité.") ?></p>
+            <p class="footer__tagline"><?= e($advisorTagline) ?></p>
             <div class="footer__social">
                 <a href="#" class="social-link" aria-label="Facebook" rel="noopener noreferrer">
                     <svg viewBox="0 0 24 24" width="20" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
@@ -37,6 +38,7 @@ $zoneCity = setting('zone_city', APP_CITY);
                 <li><a href="/services">Tous les services</a></li>
                 <li><a href="/estimation-gratuite">Estimation gratuite</a></li>
                 <li><a href="/biens">Annonces immobilières</a></li>
+                <li><a href="/viager">Viager éthique</a></li>
                 <li><a href="/ressources/guide-vendeur">Guide vendeur</a></li>
                 <li><a href="/ressources/guide-acheteur">Guide acheteur</a></li>
             </ul>
@@ -46,10 +48,10 @@ $zoneCity = setting('zone_city', APP_CITY);
         <div class="footer__col">
             <h3 class="footer__title">Informations</h3>
             <ul class="footer__links">
-                <li><a href="/a-propos">À propos</a></li>
+                <li><a href="/a-propos">À propos de Pascal</a></li>
                 <li><a href="/blog">Blog immobilier</a></li>
                 <li><a href="/actualites">Actualités</a></li>
-                <li><a href="/guide-local">Guide local <?= e($zoneCity ?: "local") ?></a></li>
+                <li><a href="/guide-local">Guide local <?= e($zoneCity) ?></a></li>
                 <li><a href="/avis">Avis clients</a></li>
             </ul>
         </div>
@@ -58,20 +60,23 @@ $zoneCity = setting('zone_city', APP_CITY);
         <div class="footer__col">
             <h3 class="footer__title">Contact</h3>
             <address class="footer__address">
-                <p>📍 <?= e(APP_ADDRESS) ?></p>
-                <?php if (APP_PHONE): ?>
-                <p>📞 <a href="tel:<?= e(preg_replace('/\s+/', '', APP_PHONE)) ?>"><?= e(APP_PHONE) ?></a></p>
-                <?php endif; ?>
+                <p>📍 Aix-en-Provence, Pays d'Aix</p>
+                <p>📞 <a href="tel:+33667198366">06 67 19 83 66</a></p>
                 <p>✉️ <a href="mailto:<?= e(APP_EMAIL) ?>"><?= e(APP_EMAIL) ?></a></p>
             </address>
-            <a href="/contact" class="btn btn--outline btn--sm" style="margin-top:1rem">Nous contacter</a>
+            <a href="/contact" class="btn btn--outline btn--sm" style="margin-top:1rem">
+                Me contacter
+            </a>
         </div>
 
     </div>
 
     <div class="footer__bottom">
         <div class="container footer__bottom-inner">
-            <p>&copy; <?= date('Y') ?> <?= e(APP_NAME) ?> — Tous droits réservés<?= APP_SIRET ? ' — SIRET&nbsp;: ' . e(APP_SIRET) : '' ?>.</p>
+            <p>
+                &copy; <?= date('Y') ?> Pascal Hamm — Tous droits réservés
+                <?= defined('APP_SIRET') && APP_SIRET ? ' — SIRET&nbsp;: ' . e(APP_SIRET) : '' ?>.
+            </p>
             <nav aria-label="Liens légaux">
                 <a href="/mentions-legales">Mentions légales</a>
                 <a href="/politique-confidentialite">Confidentialité</a>

@@ -47,7 +47,7 @@ $v = fn(string $k, string $d = '') => htmlspecialchars((string)($s[$k] ?? $d), E
         </div>
         <div class="form-group">
             <label>Nom expéditeur</label>
-            <input type="text" name="smtp_from_name" value="<?= $v('smtp_from_name') ?>" placeholder="Eduardo Desul Immobilier">
+            <input type="text" name="smtp_from_name" value="<?= $v('smtp_from_name') ?>" placeholder="Pascal Hamm Immobilier">
         </div>
     </div>
 

@@ -405,7 +405,7 @@ ob_start();
                         <div class="advisor-mini__avatar" aria-hidden="true">👤</div>
                         <div class="advisor-mini__info">
                             <strong><?= e(defined('ADVISOR_NAME') ? ADVISOR_NAME : 'Pascal Hamm') ?></strong>
-                            <span>Expert immobilier 360° — Pays d'Aix</span>
+                            <span>Expert immobilier 360° — Pays d\'Aix</span>
                         </div>
                     </div>
                     <p>

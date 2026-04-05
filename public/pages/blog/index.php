@@ -1,6 +1,6 @@
 <?php
-$pageTitle = 'Blog immobilier — Eduardo Desul';
-$metaDesc  = 'Conseils et actualités du marché immobilier bordelais';
+$pageTitle = 'Blog immobilier — Pascal Hamm';
+$metaDesc  = 'Conseils et actualités du marché immobilier aixois';
 $extraCss  = ['/assets/css/guide.css'];
 $extraJs   = ['/assets/js/guide.js'];
 
@@ -14,7 +14,7 @@ $articles = get_articles_list();
 <section class="hero">
     <div class="container">
         <h1><?= e($hero['title'] ?? 'Blog immobilier') ?></h1>
-        <p><?= e($hero['subtitle'] ?? 'Conseils et actualités du marché immobilier bordelais') ?></p>
+        <p><?= e($hero['subtitle'] ?? 'Conseils et actualités du marché immobilier aixois') ?></p>
     </div>
 </section>
 

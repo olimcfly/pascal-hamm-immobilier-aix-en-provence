@@ -1,5 +1,5 @@
 <?php
-$pageTitle  = 'Politique de confidentialité — Eduardo Desul Immobilier';
+$pageTitle  = 'Politique de confidentialité — Pascal Hamm Immobilier';
 $metaDesc   = 'Politique de confidentialité et protection des données personnelles.';
 $metaRobots = 'noindex, nofollow';
 ?>

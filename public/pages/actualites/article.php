@@ -1,16 +1,16 @@
 <?php
 $slug      = $slug ?? '';
-$pageTitle = 'Actualité — Eduardo Desul Immobilier';
+$pageTitle = 'Actualité — Pascal Hamm Immobilier';
 $metaDesc  = '';
 $extraCss  = ['/assets/css/guide.css'];
 $extraJs   = ['/assets/js/guide.js'];
 
 $articles = [
-    'prix-m2-etude-marche-bordeaux-via-perplexity' => [
-        'titre'   => 'Prix au m² & étude de marché Bordeaux : analyse assistée par Perplexity',
+    'prix-m2-etude-marche-aix-via-perplexity' => [
+        'titre'   => 'Prix au m² & étude de marché Aix-en-Provence : analyse assistée par Perplexity',
         'cat'     => 'Analyse IA',
         'date'    => '3 avril 2026',
-        'auteur'  => 'Eduardo Desul',
+        'auteur'  => 'Pascal Hamm',
         'img'     => '/assets/images/blog-2.jpg',
         'intro'   => "Cette page centralise les repères essentiels pour comprendre le marché local : prix au m², dynamique de demande et signaux d'évolution. Les recherches sont appuyées par Perplexity pour accélérer la veille et croiser les sources.",
         'sections' => [
@@ -18,7 +18,7 @@ $articles = [
                 'titre' => 'Prix au m² : repères rapides',
                 'texte' => "Les niveaux de prix varient fortement selon la typologie du bien, l'état, l'étage et la proximité des transports. Utilisez ces fourchettes comme base de discussion avant une estimation précise sur place.",
                 'points' => [
-                    'Bordeaux intra-muros : environ 3 900 € à 5 200 €/m².',
+                    'Aix-en-Provence intra-muros : environ 3 900 € à 5 200 €/m².',
                     'Chartrons / Saint-Seurin : tension plus forte sur les biens familiaux bien rénovés.',
                     'Mérignac / Pessac : marché plus accessible avec une demande active sur les maisons.',
                 ],
@@ -36,24 +36,24 @@ $articles = [
                 'titre' => 'Analyse via Perplexity (recherches prêtes à l’emploi)',
                 'texte' => "Pour une mise à jour continue, lancez directement ces recherches Perplexity et comparez les résultats avec les données de terrain.",
                 'links' => [
-                    ['label' => 'Prix au m² Bordeaux par quartier', 'url' => 'https://www.perplexity.ai/search?q=prix+au+m2+Bordeaux+par+quartier+2026'],
-                    ['label' => 'Volume de transactions immobilières Bordeaux 2026', 'url' => 'https://www.perplexity.ai/search?q=volume+transactions+immobilieres+Bordeaux+2026'],
+                    ['label' => 'Prix au m² Aix-en-Provence par quartier', 'url' => 'https://www.perplexity.ai/search?q=prix+au+m2+Aix-en-Provence+par+quartier+2026'],
+                    ['label' => 'Volume de transactions immobilières Aix-en-Provence 2026', 'url' => 'https://www.perplexity.ai/search?q=volume+transactions+immobilieres+Aix-en-Provence+2026'],
                     ['label' => 'Évolution des taux crédit immobilier France 2026', 'url' => 'https://www.perplexity.ai/search?q=evolution+taux+credit+immobilier+France+2026'],
                 ],
             ],
         ],
     ],
     'default' => [
-        'titre'   => 'Le marché immobilier bordelais au T1 2026 : reprise prudente',
+        'titre'   => 'Le marché immobilier aixois au T1 2026 : reprise prudente',
         'cat'     => 'Marché',
         'date'    => '2 avril 2026',
-        'auteur'  => 'Eduardo Desul',
+        'auteur'  => 'Pascal Hamm',
         'img'     => '/assets/images/blog-1.jpg',
-        'intro'   => "Le premier trimestre 2026 confirme la tendance prudente d'un marché en cours de stabilisation après deux années de correction. Les volumes de transactions à Bordeaux métropole restent en retrait de 12% par rapport à 2023, mais les premiers signes de reprise sont encourageants.",
+        'intro'   => "Le premier trimestre 2026 confirme la tendance prudente d'un marché en cours de stabilisation après deux années de correction. Les volumes de transactions à Aix-en-Provence métropole restent en retrait de 12% par rapport à 2023, mais les premiers signes de reprise sont encourageants.",
         'sections' => [
             [
                 'titre' => 'Des prix qui se stabilisent',
-                'texte' => "Après une correction de 8 à 12% sur certains secteurs, les prix au m² semblent trouver un plancher. Le prix médian à Bordeaux intra-muros s'établit autour de 4 200 €/m² pour les appartements, contre 4 800 €/m² au pic de 2022.",
+                'texte' => "Après une correction de 8 à 12% sur certains secteurs, les prix au m² semblent trouver un plancher. Le prix médian à Aix-en-Provence intra-muros s'établit autour de 4 200 €/m² pour les appartements, contre 4 800 €/m² au pic de 2022.",
             ],
             [
                 'titre' => 'Les secteurs les plus dynamiques',
@@ -63,7 +63,7 @@ $articles = [
     ],
 ];
 $article = $articles[$slug] ?? $articles['default'];
-$pageTitle = e($article['titre']) . ' — Eduardo Desul';
+$pageTitle = e($article['titre']) . ' — Pascal Hamm';
 ?>
 
 <div class="page-header" style="padding-bottom:2rem">

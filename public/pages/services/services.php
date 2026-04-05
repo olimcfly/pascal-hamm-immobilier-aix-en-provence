@@ -1,13 +1,13 @@
 <?php
-$pageTitle = 'Services immobiliers à Bordeaux — Eduardo Desul';
-$metaDesc  = 'Vente, achat, estimation, investissement locatif : Eduardo Desul vous accompagne pour tous vos projets immobiliers à Bordeaux.';
+$pageTitle = 'Services immobiliers à Aix-en-Provence — Pascal Hamm';
+$metaDesc  = 'Vente, achat, estimation, investissement locatif : Pascal Hamm vous accompagne pour tous vos projets immobiliers à Aix-en-Provence.';
 ?>
 
 <div class="page-header">
     <div class="container">
         <nav class="breadcrumb"><a href="/">Accueil</a><span>Services</span></nav>
         <h1>Mes services</h1>
-        <p>Un accompagnement complet pour tous vos projets immobiliers à Bordeaux et alentours.</p>
+        <p>Un accompagnement complet pour tous vos projets immobiliers à Aix-en-Provence et alentours.</p>
     </div>
 </div>
 

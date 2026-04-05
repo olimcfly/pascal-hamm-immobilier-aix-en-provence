@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'consent' => !empty($_POST['rgpd']),
             'metadata' => [
                 'profil' => trim((string)($_POST['profil'] ?? '')),
-                'ressource' => 'Guide Complet de l\'Immobilier Bordelais',
+                'ressource' => 'Guide Complet de l\'Immobilier Pays d\'Aix',
                 'origin_path' => $_SERVER['REQUEST_URI'] ?? '/guide-offert',
             ],
         ]);
@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle  = 'Guide immobilier gratuit — Eduardo Desul';
-$metaDesc   = 'Recevez gratuitement le guide immobilier de Eduardo Desul : conseils, tendances, stratégies pour réussir votre projet.';
+$pageTitle  = 'Guide immobilier gratuit — Pascal Hamm';
+$metaDesc   = 'Recevez gratuitement le guide immobilier de Pascal Hamm : conseils, tendances, stratégies pour réussir votre projet.';
 $metaRobots = 'noindex';
 $bodyClass  = 'page-capture';
 ?>
@@ -35,8 +35,8 @@ $bodyClass  = 'page-capture';
         <div style="display:grid;grid-template-columns:1fr 440px;gap:3rem;align-items:center">
             <div style="color:white">
                 <span class="section-label" style="color:rgba(255,255,255,.9)">Offert · Téléchargeable instantanément</span>
-                <h1 style="color:white;margin-bottom:1rem">Le Guide Complet<br>de l'Immobilier Bordelais</h1>
-                <p style="opacity:.85;font-size:1.05rem;margin-bottom:2rem">Tout ce qu'il faut savoir pour réussir votre projet immobilier à Bordeaux en 2026 : prix, quartiers, financement, stratégies.</p>
+                <h1 style="color:white;margin-bottom:1rem">Le Guide Complet<br>de l'Immobilier Aixois</h1>
+                <p style="opacity:.85;font-size:1.05rem;margin-bottom:2rem">Tout ce qu'il faut savoir pour réussir votre projet immobilier à Aix-en-Provence en 2026 : prix, quartiers, financement, stratégies.</p>
 
                 <div style="background:rgba(255,255,255,.1);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:2rem">
                     <div style="font-weight:700;margin-bottom:1rem">Au programme :</div>
@@ -57,7 +57,7 @@ $bodyClass  = 'page-capture';
                     <div style="font-size:2.5rem">📚</div>
                     <div>
                         <div style="font-weight:600">Guide PDF · 32 pages</div>
-                        <div style="font-size:.8rem;opacity:.7">Rédigé par Eduardo Desul · Édition 2026</div>
+                        <div style="font-size:.8rem;opacity:.7">Rédigé par Pascal Hamm · Édition 2026</div>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@ $bodyClass  = 'page-capture';
                     <div class="form-group">
                         <label style="display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem;cursor:pointer">
                             <input type="checkbox" name="rgpd" required style="margin-top:.2rem;flex-shrink:0">
-                            <span>J'accepte de recevoir le guide et les actualités immobilières d'Eduardo. <a href="/politique-confidentialite" target="_blank" style="color:var(--clr-primary)">Politique de confidentialité</a>. <span style="color:var(--clr-danger)">*</span></span>
+                            <span>J'accepte de recevoir le guide et les actualités immobilières de Pascal. <a href="/politique-confidentialite" target="_blank" style="color:var(--clr-primary)">Politique de confidentialité</a>. <span style="color:var(--clr-danger)">*</span></span>
                         </label>
                     </div>
                     <button type="submit" class="btn btn--primary btn--lg btn--full">

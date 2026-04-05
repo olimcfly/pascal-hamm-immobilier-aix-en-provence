@@ -1,4 +1,4 @@
-# Eduardo DeSul Immobilier
+# Pascal Hamm Immobilier
 
 Ce dépôt inclut désormais un module SEO avancé prêt à l'emploi dans `admin/seo/` pour IMMO LOCAL+.
 

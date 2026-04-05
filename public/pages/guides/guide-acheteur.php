@@ -18,7 +18,7 @@ ob_start();
     "@context": "https://schema.org",
     "@type": "HowTo",
     "name": "Comment acheter un bien immobilier à Aix-en-Provence",
-    "description": "Guide complet pour réussir votre achat immobilier à Aix-en-Provence et dans le Pays d'Aix en <?= date('Y') ?>",
+    "description": "Guide complet pour réussir votre achat immobilier à Aix-en-Provence et dans le Pays d\'Aix en <?= date('Y') ?>",
     "totalTime": "PT25M",
     "step": [
         {"@type":"HowToStep","name":"Définir votre budget","position":1},
@@ -54,7 +54,7 @@ ob_start();
                 <p class="guide-hero__subtitle">
                     De la définition de votre budget jusqu'à la remise des clés :
                     les 6 étapes pour réussir votre achat immobilier sur Aix-en-Provence
-                    et le Pays d'Aix, éviter les pièges et acheter au bon prix.
+                    et le Pays d\'Aix, éviter les pièges et acheter au bon prix.
                 </p>
 
                 <div class="guide-hero__stats">
@@ -119,7 +119,7 @@ ob_start();
                                 visiter des biens avant d'avoir validé leur financement.
                                 Résultat : coups de cœur impossibles, déceptions, et parfois
                                 offres refusées faute de dossier solide.
-                                Sur le marché d'Aix-en-Provence, très tendu, un dossier
+                                Sur le marché d\'Aix-en-Provence, très tendu, un dossier
                                 bancaire validé est souvent décisif.
                             </p>
 
@@ -219,7 +219,7 @@ ob_start();
                         <div class="guide-step__content">
 
                             <p>
-                                Le Pays d'Aix offre une grande diversité de biens :
+                                Le Pays d\'Aix offre une grande diversité de biens :
                                 appartements en centre-ville, bastides en périphérie,
                                 maisons de village à Éguilles ou Venelles, programmes neufs
                                 à Luynes ou Les Milles. Définir précisément votre projet
@@ -325,7 +325,7 @@ ob_start();
                                 <h2 class="guide-step__title">Organiser votre recherche</h2>
                                 <p class="guide-step__subtitle">
                                     Méthode, sources et checklist de visite pour ne rien laisser au hasard
-                                    sur le marché du Pays d'Aix.
+                                    sur le marché du Pays d\'Aix.
                                 </p>
                             </div>
                         </div>
@@ -426,7 +426,7 @@ ob_start();
                         <div class="guide-step__content">
 
                             <p>
-                                Le marché du Pays d'Aix est structurellement tendu.
+                                Le marché du Pays d\'Aix est structurellement tendu.
                                 Certains secteurs (Mazarin, Cours Mirabeau, Célony)
                                 se vendent au prix affiché voire au-dessus.
                                 D'autres communes limitrophes offrent plus de marge.
@@ -452,7 +452,7 @@ ob_start();
                                 <div class="nego-card nego-card--max">
                                     <div class="nego-card__pct">> 10 %</div>
                                     <div class="nego-card__label">Situation particulière</div>
-                                    <p>Succession urgente, mutation, problème de copropriété. Rare mais possible en communes rurales du Pays d'Aix.</p>
+                                    <p>Succession urgente, mutation, problème de copropriété. Rare mais possible en communes rurales du Pays d\'Aix.</p>
                                 </div>
                             </div>
 
@@ -632,7 +632,7 @@ ob_start();
                             <div class="guide-cta-final__icon">
                                 <i class="fas fa-key"></i>
                             </div>
-                            <h2>Prêt à acheter sur le Pays d'Aix ?</h2>
+                            <h2>Prêt à acheter sur le Pays d\'Aix ?</h2>
                             <p>
                                 Pascal Hamm vous accompagne de A à Z dans votre
                                 projet immobilier à Aix-en-Provence et ses environs.
@@ -646,7 +646,7 @@ ob_start();
                                 </a>
                                 <a href="/biens" class="btn btn--outline btn--lg">
                                     <i class="fas fa-search"></i>
-                                    Voir les biens disponibles à Aix et Pays d'Aix
+                                    Voir les biens disponibles à Aix et Pays d\'Aix
                                 </a>
                             </div>
                             <p class="guide-cta-final__reassurance">
@@ -731,7 +731,7 @@ ob_start();
                         </div>
                         <blockquote class="sidebar-testimonial__text">
                             "Grâce à ce guide et à l'accompagnement de Pascal,
-                            j'ai trouvé mon appartement en centre d'Aix en 3 semaines
+                            j'ai trouvé mon appartement en centre d\'Aix en 3 semaines
                             et j'ai négocié 15 000 € sous le prix affiché."
                         </blockquote>
                         <div class="sidebar-testimonial__author">

@@ -39,11 +39,11 @@ class SeoService
 
     public function getAdvisorIdentity(): array
     {
-        $fullName = trim((string)setting('advisor_firstname', 'Eduardo', $this->userId) . ' ' . (string)setting('advisor_lastname', 'De Sul', $this->userId));
+        $fullName = trim((string)setting('advisor_firstname', 'Pascal', $this->userId) . ' ' . (string)setting('advisor_lastname', 'Hamm', $this->userId));
 
         return [
-            'name' => $fullName !== '' ? $fullName : 'Eduardo De Sul',
-            'zone' => (string)setting('zone_city', 'Bordeaux', $this->userId),
+            'name' => $fullName !== '' ? $fullName : 'Pascal Hamm',
+            'zone' => (string)setting('zone_city', 'Aix-en-Provence', $this->userId),
         ];
     }
 }

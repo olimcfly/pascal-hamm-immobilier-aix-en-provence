@@ -1,20 +1,20 @@
 <?php
-$pageTitle = 'Guide local Bordeaux — Eduardo Desul Immobilier';
-$metaDesc  = 'Découvrez les quartiers de Bordeaux et du Bordelais : prix, ambiance, transports, commerces. Guide local par Eduardo Desul.';
+$pageTitle = 'Guide local Aix-en-Provence — Pascal Hamm Immobilier';
+$metaDesc  = 'Découvrez les quartiers de Aix-en-Provence et du Bordelais : prix, ambiance, transports, commerces. Guide local par Pascal Hamm.';
 $extraCss  = ['/assets/css/guide.css'];
 
 $villes = [
-    ['slug' => 'bordeaux-centre',    'nom' => 'Bordeaux Centre', 'prix' => '4 800 €/m²', 'desc' => 'Le cœur historique classé UNESCO. Prestige, animation et architecture exceptionnelle.', 'biens' => 12, 'img' => '/assets/images/bordeaux-centre.jpg'],
+    ['slug' => 'aix-centre',    'nom' => 'Aix-en-Provence Centre', 'prix' => '4 800 €/m²', 'desc' => 'Le cœur historique classé UNESCO. Prestige, animation et architecture exceptionnelle.', 'biens' => 12, 'img' => '/assets/images/aix-centre.jpg'],
     ['slug' => 'bordeaux-chartrons', 'nom' => 'Chartrons',       'prix' => '4 600 €/m²', 'desc' => 'Quartier bohème et branché, très prisé des jeunes actifs et des familles.', 'biens' => 8,  'img' => '/assets/images/chartrons.jpg'],
     ['slug' => 'bordeaux-cauderan',  'nom' => 'Caudéran',        'prix' => '3 900 €/m²', 'desc' => 'Quartier résidentiel calme, idéal pour les familles avec maisons et jardins.', 'biens' => 6,  'img' => '/assets/images/cauderan.jpg'],
-    ['slug' => 'merignac',           'nom' => 'Mérignac',        'prix' => '3 200 €/m²', 'desc' => 'Secteur prioritaire Bordeaux Métropole : habitat familial, tram et proximité aéroport.', 'biens' => 6,  'img' => '/assets/images/merignac.jpg'],
+    ['slug' => 'merignac',           'nom' => 'Mérignac',        'prix' => '3 200 €/m²', 'desc' => 'Secteur prioritaire Aix-en-Provence Métropole : habitat familial, tram et proximité aéroport.', 'biens' => 6,  'img' => '/assets/images/merignac.jpg'],
     ['slug' => 'pessac',             'nom' => 'Pessac',          'prix' => '2 900 €/m²', 'desc' => 'Ville universitaire avec une belle diversité de biens et une vraie vie de quartier.', 'biens' => 5,  'img' => '/assets/images/pessac.jpg'],
     ['slug' => 'talence',            'nom' => 'Talence',         'prix' => '3 100 €/m²', 'desc' => 'Résidentielle et verte, proche des campus et bien desservie par le tram.', 'biens' => 4,  'img' => '/assets/images/talence.jpg'],
 ];
 
 $tableau = [
     ['slug' => 'bordeaux-chartrons', 'nom' => 'Chartrons',  'prix' => '4 600 €/m²', 'tendance' => '↗ +2%',   'atout' => 'Vie de quartier', 'famille' => '⭐⭐⭐',    'invest' => '⭐⭐⭐⭐'],
-    ['slug' => 'bordeaux-centre',    'nom' => 'Centre',     'prix' => '4 800 €/m²', 'tendance' => '→ stable', 'atout' => 'Prestige',        'famille' => '⭐⭐',      'invest' => '⭐⭐⭐⭐⭐'],
+    ['slug' => 'aix-centre',    'nom' => 'Centre',     'prix' => '4 800 €/m²', 'tendance' => '→ stable', 'atout' => 'Prestige',        'famille' => '⭐⭐',      'invest' => '⭐⭐⭐⭐⭐'],
     ['slug' => 'bordeaux-cauderan',  'nom' => 'Caudéran',   'prix' => '3 900 €/m²', 'tendance' => '↗ +3%',   'atout' => 'Calme & vert',   'famille' => '⭐⭐⭐⭐⭐', 'invest' => '⭐⭐⭐'],
     ['slug' => 'merignac',           'nom' => 'Mérignac',   'prix' => '3 200 €/m²', 'tendance' => '↗ +5%',   'atout' => 'Accessibilité',  'famille' => '⭐⭐⭐⭐',  'invest' => '⭐⭐⭐⭐'],
     ['slug' => 'pessac',             'nom' => 'Pessac',     'prix' => '2 900 €/m²', 'tendance' => '↗ +4%',   'atout' => 'Université',     'famille' => '⭐⭐⭐',    'invest' => '⭐⭐⭐⭐⭐'],
@@ -26,8 +26,8 @@ $tableau = [
     <div class="container blog-hero__grid">
         <div>
             <nav class="breadcrumb"><a href="/">Accueil</a><span>Guide local</span></nav>
-            <span class="section-label">Bordeaux &amp; métropole</span>
-            <h1>Guide local des quartiers bordelais</h1>
+            <span class="section-label">Aix-en-Provence &amp; métropole</span>
+            <h1>Guide local des quartiers aixois</h1>
             <p>Prix au m², ambiance, transports, commerces — mon analyse terrain de chaque secteur pour vous aider à faire le bon choix.</p>
             <div class="blog-hero__actions">
                 <a href="/estimation-gratuite" class="btn btn--accent">Estimer mon bien</a>
@@ -45,7 +45,7 @@ $tableau = [
 <section class="section">
     <div class="container">
         <div class="section__header text-center">
-            <span class="section-label">Bordeaux &amp; métropole</span>
+            <span class="section-label">Aix-en-Provence &amp; métropole</span>
             <h2 class="section-title">Choisissez votre quartier</h2>
             <p class="section-subtitle">Prix au m², cadre de vie, accès, services — mon analyse terrain de chaque secteur.</p>
         </div>
@@ -66,7 +66,7 @@ $tableau = [
         <!-- Comparatif -->
         <div class="comparatif-section" data-animate>
             <h2>Comparatif des secteurs</h2>
-            <p class="section-subtitle" style="margin-bottom:1.5rem">Données issues de l'observation terrain et des transactions récentes sur la métropole bordelaise.</p>
+            <p class="section-subtitle" style="margin-bottom:1.5rem">Données issues de l'observation terrain et des transactions récentes sur la métropole aixoise.</p>
 
             <!-- Cartes mobiles -->
             <div class="comparatif-cards">
@@ -113,7 +113,7 @@ $tableau = [
         <div class="blog-cta" data-animate>
             <div>
                 <h3>Vous cherchez dans un quartier précis ?</h3>
-                <p>Parlez de votre projet avec Eduardo Desul et obtenez une analyse personnalisée de votre secteur en moins de 24h.</p>
+                <p>Parlez de votre projet avec Pascal Hamm et obtenez une analyse personnalisée de votre secteur en moins de 24h.</p>
             </div>
             <a href="/contact" class="btn btn--accent">Prendre contact</a>
         </div>

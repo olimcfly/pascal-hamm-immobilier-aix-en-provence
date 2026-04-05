@@ -1,8 +1,8 @@
 <?php
 // Récupérer le slug depuis les données passées par le routeur
 $slug      = $slug ?? '';
-$pageTitle = 'Article — Eduardo Desul Immobilier';
-$metaDesc  = 'Article du blog immobilier par Eduardo Desul.';
+$pageTitle = 'Article — Pascal Hamm Immobilier';
+$metaDesc  = 'Article du blog immobilier par Pascal Hamm.';
 $extraCss  = ['/assets/css/guide.css'];
 $extraJs   = ['/assets/js/guide.js'];
 
@@ -12,12 +12,12 @@ $article = [
     'cat'       => 'Vente',
     'date'      => '28 mars 2026',
     'lecture'   => '5 min',
-    'auteur'    => 'Eduardo Desul',
+    'auteur'    => 'Pascal Hamm',
     'img'       => '/assets/images/blog-1.jpg',
     'contenu'   => null, // Remplacer par contenu BD
 ];
-$pageTitle = e($article['titre']) . ' — Eduardo Desul';
-$metaDesc  = 'Conseils d\'Eduardo Desul : ' . mb_strimwidth($article['titre'], 0, 100);
+$pageTitle = e($article['titre']) . ' — Pascal Hamm';
+$metaDesc  = 'Conseils d\'Pascal Hamm : ' . mb_strimwidth($article['titre'], 0, 100);
 ?>
 
 <div class="page-header" style="padding-bottom:2rem">
@@ -81,7 +81,7 @@ $jsonLdArticle = json_encode([
                     <h2>4. Des photos de qualité professionnelle</h2>
                     <p>95% des acheteurs commencent leur recherche sur internet. Des photos professionnelles génèrent 3 fois plus de contacts qu'un simple smartphone.</p>
                     <h2>5. Choisir le bon moment pour vendre</h2>
-                    <p>Le marché bordelais a ses saisonnalités. Printemps et automne sont généralement les meilleures périodes. Votre conseiller local saura vous guider selon les conditions du moment.</p>
+                    <p>Le marché aixois a ses saisonnalités. Printemps et automne sont généralement les meilleures périodes. Votre conseiller local saura vous guider selon les conditions du moment.</p>
                     <?php endif; ?>
                 </div>
 
@@ -96,7 +96,7 @@ $jsonLdArticle = json_encode([
                 <!-- CTA article -->
                 <div style="background:linear-gradient(135deg,var(--clr-primary),#0f2644);color:white;border-radius:var(--radius-lg);padding:2rem;text-align:center;margin-top:2rem">
                     <h3 style="color:white;margin-bottom:.75rem">Prêt à vendre votre bien ?</h3>
-                    <p style="opacity:.8;margin-bottom:1.5rem">Obtenez une estimation gratuite de votre bien par Eduardo Desul en moins de 48h.</p>
+                    <p style="opacity:.8;margin-bottom:1.5rem">Obtenez une estimation gratuite de votre bien par Pascal Hamm en moins de 48h.</p>
                     <a href="/estimation-gratuite" class="btn btn--accent">Estimation gratuite →</a>
                 </div>
             </div>
@@ -114,7 +114,7 @@ $jsonLdArticle = json_encode([
                     <div class="sidebar-box__head">Articles récents</div>
                     <div class="sidebar-box__body">
                         <?php foreach ([
-                            ['Investir à Bordeaux en 2026', '15 mars 2026', '/assets/images/blog-2.jpg', '/blog/investir-bordeaux-2026'],
+                            ['Investir à Aix-en-Provence en 2026', '15 mars 2026', '/assets/images/blog-2.jpg', '/blog/investir-aix-en-provence-2026'],
                             ['Taux immobiliers 2026', '5 mars 2026', '/assets/images/blog-3.jpg', '/blog/taux-immobiliers-2026'],
                         ] as [$titre, $date, $img, $href]): ?>
                         <a href="<?= $href ?>" class="recent-post" style="text-decoration:none">

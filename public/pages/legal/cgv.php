@@ -1,5 +1,5 @@
 <?php
-$pageTitle  = 'CGV — Eduardo Desul Immobilier';
+$pageTitle  = 'CGV — Pascal Hamm Immobilier';
 $metaRobots = 'noindex, nofollow';
 ?>
 <div class="page-header">
@@ -12,7 +12,7 @@ $metaRobots = 'noindex, nofollow';
     <div class="container" style="max-width:800px">
         <div class="article-content">
             <h2>Objet</h2>
-            <p>Les présentes CGV définissent les conditions dans lesquelles Eduardo Desul Immobilier (ci-après "le Prestataire") fournit ses services de conseil et d'intermédiation immobilière aux clients.</p>
+            <p>Les présentes CGV définissent les conditions dans lesquelles Pascal Hamm Immobilier (ci-après "le Prestataire") fournit ses services de conseil et d'intermédiation immobilière aux clients.</p>
 
             <h2>Services proposés</h2>
             <ul>
@@ -35,7 +35,7 @@ $metaRobots = 'noindex, nofollow';
             <p>Le Prestataire s'engage à exercer sa mission avec toute la diligence requise mais ne peut garantir la réalisation de la transaction, celle-ci dépendant de facteurs extérieurs à sa volonté.</p>
 
             <h2>Droit applicable</h2>
-            <p>Les présentes CGV sont soumises au droit français. Tout litige relève de la compétence des tribunaux de Bordeaux.</p>
+            <p>Les présentes CGV sont soumises au droit français. Tout litige relève de la compétence des tribunaux de Aix-en-Provence.</p>
 
             <p><em>Mise à jour : <?= date('d/m/Y') ?></em></p>
         </div>

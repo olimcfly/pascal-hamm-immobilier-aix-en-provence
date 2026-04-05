@@ -1,0 +1,43 @@
+# ═══════════════════════════════════════════════════════════
+# CONFIGURATION (credentials dans .env uniquement)
+# ═══════════════════════════════════════════════════════════
+# config/config.php est désormais commité (plus de credentials dedans)
+config/smtp.php
+config/license.json
+config/.installed
+
+# ═══════════════════════════════════════════════════════════
+# LOGS & CACHE
+# ═══════════════════════════════════════════════════════════
+logs/*.log
+logs/*.txt
+cache/*
+!cache/.gitkeep
+
+# ═══════════════════════════════════════════════════════════
+# UPLOADS (contenu spécifique au site)
+# ═══════════════════════════════════════════════════════════
+uploads/*
+!uploads/.gitkeep
+
+# ═══════════════════════════════════════════════════════════
+# SYSTÈME
+# ═══════════════════════════════════════════════════════════
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.env
+.env.*
+!.env.example
+*.bak
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+storage/logs/
+public/error_log
+storage/logs/

@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'consent' => !empty($_POST['rgpd']),
             'metadata' => [
                 'profil' => trim((string)($_POST['profil'] ?? '')),
-                'ressource' => 'Guide Complet de l\'Immobilier Bordelais',
+                'ressource' => 'Guide Complet de l\'Immobilier Pays d\'Aix',
                 'origin_path' => $_SERVER['REQUEST_URI'] ?? '/guide-offert',
             ],
         ]);

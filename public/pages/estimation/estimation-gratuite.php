@@ -116,7 +116,7 @@ ob_start();
             <span>Estimation gratuite</span>
         </nav>
         <h1>Estimation gratuite<br><span>de votre bien immobilier</span></h1>
-        <p>Basée sur les ventes réelles du Pays d'Aix · Instantané · Sans inscription</p>
+        <p>Basée sur les ventes réelles du Pays d\'Aix · Instantané · Sans inscription</p>
     </div>
 </div>
 
@@ -363,7 +363,7 @@ ob_start();
                         <div class="advisor-mini__avatar" aria-hidden="true">👤</div>
                         <div class="advisor-mini__info">
                             <strong><?= e(defined('ADVISOR_NAME') ? ADVISOR_NAME : 'Pascal Hamm') ?></strong>
-                            <span>Expert immobilier 360° — Pays d'Aix</span>
+                            <span>Expert immobilier 360° — Pays d\'Aix</span>
                         </div>
                     </div>
                     <p class="advisor-mini__quote">

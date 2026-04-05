@@ -60,7 +60,7 @@ $zoneCity       = 'Aix-en-Provence';
         <div class="footer__col">
             <h3 class="footer__title">Contact</h3>
             <address class="footer__address">
-                <p>📍 Aix-en-Provence, Pays d'Aix</p>
+                <p>📍 Aix-en-Provence, Pays d\'Aix</p>
                 <p>📞 <a href="tel:+33667198366">06 67 19 83 66</a></p>
                 <p>✉️ <a href="mailto:<?= e(APP_EMAIL) ?>"><?= e(APP_EMAIL) ?></a></p>
             </address>

@@ -335,9 +335,9 @@ $extraJs   = ['/assets/js/estimation.js'];
                 <div class="advisor-box">
                     <div class="advisor-avatar" aria-hidden="true">👤</div>
                     <h4><?= e(defined('ADVISOR_NAME') ? ADVISOR_NAME : 'Pascal Hamm') ?></h4>
-                    <div class="role">Expert immobilier 360° — Pays d'Aix</div>
+                    <div class="role">Expert immobilier 360° — Pays d\'Aix</div>
                     <p class="advisor-desc">
-                        Plus de 15 ans d'expérience sur le marché du Pays d'Aix.
+                        Plus de 15 ans d'expérience sur le marché du Pays d\'Aix.
                         200+ transactions réussies.
                     </p>
                     <?php if (!empty(APP_PHONE)): ?>

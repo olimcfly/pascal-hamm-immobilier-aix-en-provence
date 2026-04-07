@@ -15,6 +15,7 @@ $appName             = 'Pascal Hamm | Expert Immobilier 360°';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle ?? $appName) ?></title>
     <meta name="description" content="<?= e($metaDesc ?? $siteMetaDescription) ?>">
+    <?php if (!empty($metaKeywords)): ?><meta name="keywords" content="<?= e($metaKeywords) ?>"><?php endif; ?>
     <meta name="robots"      content="<?= e($metaRobots ?? 'index, follow') ?>">
     <link rel="canonical"    href="<?= e($canonical ?? $appUrl . strtok($_SERVER['REQUEST_URI'], '?')) ?>">
 

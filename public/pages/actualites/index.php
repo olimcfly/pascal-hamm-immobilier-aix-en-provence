@@ -2,11 +2,17 @@
 $pageTitle = 'Actualités immobilières — Pascal Hamm';
 $metaDesc  = 'Suivez l\'actualité du marché immobilier aixois avec Pascal Hamm.';
 $extraCss  = ['/assets/css/guide.css'];
+$publicDomainImages = [
+    'city' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Aix-en-Provence%20-%20Cours%20Mirabeau%20(2).jpg',
+    'keys' => 'https://commons.wikimedia.org/wiki/Special:FilePath/House%20keys.jpg',
+    'map'  => 'https://commons.wikimedia.org/wiki/Special:FilePath/Aix-en-Provence%20locator%20map.png',
+];
 
 $actus = [
-    ['slug' => 'prix-m2-etude-marche-aix-en-provence-via-perplexity', 'cat' => 'Analyse IA', 'titre' => 'Prix au m² & étude de marché Aix-en-Provence : analyse assistée par Perplexity', 'excerpt' => 'Une synthèse claire des prix au m², des tendances quartier par quartier et des signaux de marché à suivre pour vendre ou acheter en 2026.', 'date' => '3 avril 2026', 'img' => '/assets/images/blog-2.jpg'],
-    ['slug' => 'marche-immobilier-aix-t1-2026', 'cat' => 'Marché', 'titre' => 'Le marché immobilier aixois au T1 2026 : reprise prudente', 'excerpt' => 'Après un ralentissement en 2025, les premiers signes de reprise se confirment sur le marché aixois. Analyse des indicateurs clés.', 'date' => '2 avril 2026', 'img' => '/assets/images/blog-1.jpg'],
-    ['slug' => 'ptz-prolonge-2026', 'cat' => 'Financement', 'titre' => 'PTZ élargi : les nouvelles conditions d\'éligibilité', 'excerpt' => 'Le Prêt à Taux Zéro est prolongé et ses conditions modifiées. Ce que ça change pour les primo-accédants en 2026.', 'date' => '18 mars 2026', 'img' => '/assets/images/blog-2.jpg'],    ['slug' => 'barometre-prix-aix-en-provence-2026', 'cat' => 'Prix', 'titre' => 'Baromètre des prix : Aix-en-Provence en détail par quartier', 'excerpt' => 'Tour d\'horizon complet des prix au m² dans les différents quartiers et communes du pays d\'Aix au premier trimestre 2026.', 'date' => '1er mars 2026', 'img' => '/assets/images/blog-3.jpg'],
+    ['slug' => 'prix-m2-etude-marche-aix-en-provence-via-perplexity', 'cat' => 'Analyse IA', 'titre' => 'Prix au m² & étude de marché Aix-en-Provence : analyse assistée par Perplexity', 'excerpt' => 'Une synthèse claire des prix au m², des tendances quartier par quartier et des signaux de marché à suivre pour vendre ou acheter en 2026.', 'date' => '3 avril 2026', 'img' => $publicDomainImages['city']],
+    ['slug' => 'marche-immobilier-aix-t1-2026', 'cat' => 'Marché', 'titre' => 'Le marché immobilier aixois au T1 2026 : reprise prudente', 'excerpt' => 'Après un ralentissement en 2025, les premiers signes de reprise se confirment sur le marché aixois. Analyse des indicateurs clés.', 'date' => '2 avril 2026', 'img' => $publicDomainImages['map']],
+    ['slug' => 'ptz-prolonge-2026', 'cat' => 'Financement', 'titre' => 'PTZ élargi : les nouvelles conditions d\'éligibilité', 'excerpt' => 'Le Prêt à Taux Zéro est prolongé et ses conditions modifiées. Ce que ça change pour les primo-accédants en 2026.', 'date' => '18 mars 2026', 'img' => $publicDomainImages['keys']],
+    ['slug' => 'barometre-prix-aix-en-provence-2026', 'cat' => 'Prix', 'titre' => 'Baromètre des prix : Aix-en-Provence en détail par quartier', 'excerpt' => 'Tour d\'horizon complet des prix au m² dans les différents quartiers et communes du pays d\'Aix au premier trimestre 2026.', 'date' => '1er mars 2026', 'img' => $publicDomainImages['city']],
 ];
 $categories = ['Tous', 'Marché', 'Financement', 'Prix', 'Réglementation', 'Aix-en-Provence', 'Analyse IA'];
 $activeCat = trim((string) ($_GET['cat'] ?? ''));

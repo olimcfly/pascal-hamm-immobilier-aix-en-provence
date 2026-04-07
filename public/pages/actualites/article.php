@@ -4,6 +4,10 @@ $pageTitle = 'Actualité — Pascal Hamm Immobilier';
 $metaDesc  = '';
 $extraCss  = ['/assets/css/guide.css'];
 $extraJs   = ['/assets/js/guide.js'];
+$publicDomainImages = [
+    'city' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Aix-en-Provence%20-%20Cours%20Mirabeau%20(2).jpg',
+    'map'  => 'https://commons.wikimedia.org/wiki/Special:FilePath/Aix-en-Provence%20locator%20map.png',
+];
 
 $articles = [
     'prix-m2-etude-marche-aix-en-provence-via-perplexity' => [
@@ -11,7 +15,7 @@ $articles = [
         'cat'     => 'Analyse IA',
         'date'    => '3 avril 2026',
         'auteur'  => 'Pascal Hamm',
-        'img'     => '/assets/images/blog-2.jpg',
+        'img'     => $publicDomainImages['city'],
         'intro'   => "Cette page centralise les repères essentiels pour comprendre le marché local : prix au m², dynamique de demande et signaux d'évolution. Les recherches sont appuyées par Perplexity pour accélérer la veille et croiser les sources.",
         'sections' => [
             [
@@ -48,7 +52,7 @@ $articles = [
         'cat'     => 'Marché',
         'date'    => '2 avril 2026',
         'auteur'  => 'Pascal Hamm',
-        'img'     => '/assets/images/blog-1.jpg',
+        'img'     => $publicDomainImages['map'],
         'intro'   => "Le premier trimestre 2026 confirme la tendance prudente d'un marché en cours de stabilisation après deux années de correction. Les volumes de transactions à Aix-en-Provence métropole restent en retrait de 12% par rapport à 2023, mais les premiers signes de reprise sont encourageants.",
         'sections' => [
             [

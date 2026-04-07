@@ -6,11 +6,7 @@ $advisorName = trim((string) setting('advisor_firstname', '') . ' ' . (string) s
 if ($advisorName === '') {
     $advisorName = ADVISOR_NAME ?: APP_NAME;
 }
-<!-- Inclure les styles -->
-<link rel="stylesheet" href="/assets/css/style.css">
-<?php foreach ($stylesToInclude as $cssFile): ?>
-    <link rel="stylesheet" href="<?= htmlspecialchars($cssFile) ?>">
-<?php endforeach; ?>
+?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -28,6 +24,7 @@ if ($advisorName === '') {
     <meta property="og:url" content="<?= 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>">
 
     <!-- Inclure les styles -->
+    <link rel="stylesheet" href="/assets/css/style.css">
     <?php foreach ($stylesToInclude as $cssFile): ?>
         <link rel="stylesheet" href="<?= htmlspecialchars($cssFile) ?>">
     <?php endforeach; ?>

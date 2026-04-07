@@ -1,5 +1,16 @@
 <?php
-$currentUri = $currentUri ?? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// Définir la fonction isActive() si elle n'est pas déjà définie
+if (!function_exists('isActive')) {
+    function isActive($path, $currentUri = null) {
+        if ($currentUri === null) {
+            $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        }
+
+        return $currentUri === $path || strpos($currentUri, $path) === 0;
+    }
+}
+
+$currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 $navItems = [
     [
@@ -66,10 +77,10 @@ $navItems = [
     <ul class="nav__list">
         <?php foreach ($navItems as $item): ?>
         <?php $active = isActive($item['path'], $currentUri); ?>
-        <li class="nav__item <?= !empty($item['sub']) ? 'has-dropdown' : '' ?> <?= $active ?>">
-            <a href="<?= e($item['href']) ?>" class="nav__link <?= $active ?>"
+        <li class="nav__item <?= !empty($item['sub']) ? 'has-dropdown' : '' ?> <?= $active ? 'active' : '' ?>">
+            <a href="<?= htmlspecialchars($item['href']) ?>" class="nav__link <?= $active ? 'active' : '' ?>"
                <?= !empty($item['sub']) ? 'aria-haspopup="true" aria-expanded="false"' : '' ?>>
-                <?= e($item['label']) ?>
+                <?= htmlspecialchars($item['label']) ?>
                 <?php if (!empty($item['sub'])): ?>
                     <span class="nav__arrow" aria-hidden="true">▾</span>
                 <?php endif; ?>
@@ -79,8 +90,8 @@ $navItems = [
             <ul class="nav__dropdown" role="menu">
                 <?php foreach ($item['sub'] as $sub): ?>
                 <li role="none">
-                    <a href="<?= e($sub['href']) ?>" class="dropdown__link" role="menuitem">
-                        <?= e($sub['label']) ?>
+                    <a href="<?= htmlspecialchars($sub['href']) ?>" class="dropdown__link <?= isActive($sub['path'], $currentUri) ? 'active' : '' ?>" role="menuitem">
+                        <?= htmlspecialchars($sub['label']) ?>
                     </a>
                 </li>
                 <?php endforeach; ?>
@@ -98,41 +109,45 @@ $navItems = [
         <?php foreach ($navItems as $item): ?>
         <li class="nav-mobile__item <?= !empty($item['sub']) ? 'has-submenu' : '' ?>">
             <?php if (!empty($item['sub'])): ?>
-            <button class="nav-mobile__toggle <?= isActive($item['path'], $currentUri) ?>"
+            <button class="nav-mobile__toggle <?= isActive($item['path'], $currentUri) ? 'active' : '' ?>"
                     type="button"
                     aria-expanded="false">
-                <span><?= e($item['label']) ?></span>
+                <span><?= htmlspecialchars($item['label']) ?></span>
                 <span class="nav-mobile__caret" aria-hidden="true">▾</span>
             </button>
 
             <ul class="mobile-sub" hidden>
                 <li>
-                    <a href="<?= e($item['href']) ?>"><?= e($item['label']) ?></a>
+                    <a href="<?= htmlspecialchars($item['href']) ?>" class="<?= isActive($item['path'], $currentUri) ? 'active' : '' ?>">
+                        <?= htmlspecialchars($item['label']) ?>
+                    </a>
                 </li>
                 <?php foreach ($item['sub'] as $sub): ?>
                 <li>
-                    <a href="<?= e($sub['href']) ?>"><?= e($sub['label']) ?></a>
+                    <a href="<?= htmlspecialchars($sub['href']) ?>" class="<?= isActive($sub['path'], $currentUri) ? 'active' : '' ?>">
+                        <?= htmlspecialchars($sub['label']) ?>
+                    </a>
                 </li>
                 <?php endforeach; ?>
             </ul>
             <?php else: ?>
-            <a href="<?= e($item['href']) ?>" class="<?= isActive($item['path'], $currentUri) ?>">
-                <?= e($item['label']) ?>
+            <a href="<?= htmlspecialchars($item['href']) ?>" class="nav-mobile__link <?= isActive($item['path'], $currentUri) ? 'active' : '' ?>">
+                <?= htmlspecialchars($item['label']) ?>
             </a>
             <?php endif; ?>
         </li>
         <?php endforeach; ?>
 
         <li class="nav-mobile__cta-wrap">
-            <a href="<?= e(url('/estimation-gratuite')) ?>" class="btn btn--primary btn--full">
+            <a href="<?= htmlspecialchars(url('/estimation-gratuite')) ?>" class="btn btn--primary btn--full">
                 Estimation gratuite
             </a>
         </li>
 
         <?php if (APP_PHONE): ?>
         <li style="margin-bottom:.5rem">
-            <a href="tel:<?= e(preg_replace('/\s+/', '', APP_PHONE)) ?>" class="btn btn--outline btn--full">
-                📞 <?= e(APP_PHONE) ?>
+            <a href="tel:<?= htmlspecialchars(preg_replace('/\s+/', '', APP_PHONE)) ?>" class="btn btn--outline btn--full">
+                📞 <?= htmlspecialchars(APP_PHONE) ?>
             </a>
         </li>
         <?php endif; ?>

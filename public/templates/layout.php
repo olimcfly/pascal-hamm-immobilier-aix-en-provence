@@ -7,6 +7,26 @@ $advisorPhoneDisplay = '06 67 19 83 66';
 $advisorEmail        = defined('APP_EMAIL') ? APP_EMAIL : '';
 $appUrl              = defined('APP_URL')   ? APP_URL   : 'https://pascalhamm.fr';
 $appName             = 'Pascal Hamm | Expert Immobilier 360°';
+$requestUri          = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
+$gaMeasurementId     = trim((string) setting('google_analytics_id', ''));
+
+$noindexPaths = [
+    '/merci',
+    '/merci-estimation',
+    '/tag',
+    '/author',
+    '/category',
+    '/wp-content',
+    '/wp-admin',
+    '/compte',
+];
+
+foreach ($noindexPaths as $pathPattern) {
+    if (str_starts_with($requestUri, $pathPattern)) {
+        $metaRobots = 'noindex, nofollow';
+        break;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -15,20 +35,30 @@ $appName             = 'Pascal Hamm | Expert Immobilier 360°';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle ?? $appName) ?></title>
     <meta name="description" content="<?= e($metaDesc ?? $siteMetaDescription) ?>">
-    <?php if (!empty($metaKeywords)): ?><meta name="keywords" content="<?= e($metaKeywords) ?>"><?php endif; ?>
     <meta name="robots"      content="<?= e($metaRobots ?? 'index, follow') ?>">
-    <link rel="canonical"    href="<?= e($canonical ?? $appUrl . strtok($_SERVER['REQUEST_URI'], '?')) ?>">
+    <link rel="canonical"    href="<?= e($canonical ?? $appUrl . $requestUri) ?>">
+    <link rel="icon" href="/assets/images/favicon.svg" type="image/svg+xml">
 
     <!-- Open Graph -->
     <meta property="og:title"       content="<?= e($pageTitle ?? $appName) ?>">
     <meta property="og:description" content="<?= e($metaDesc ?? ('Expert immobilier à ' . $zoneCity)) ?>">
     <meta property="og:type"        content="<?= e($ogType ?? 'website') ?>">
-    <meta property="og:url"         content="<?= e($appUrl . $_SERVER['REQUEST_URI']) ?>">
+    <meta property="og:url"         content="<?= e($appUrl . $requestUri) ?>">
     <meta property="og:locale"      content="fr_FR">
     <meta property="og:site_name"   content="<?= e($appName) ?>">
     <?php if (!empty($ogImage)): ?>
     <meta property="og:image"     content="<?= e($ogImage) ?>">
     <meta property="og:image:alt" content="<?= e($pageTitle ?? $appName) ?>">
+    <?php endif; ?>
+
+    <?php if ($gaMeasurementId !== ''): ?>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($gaMeasurementId) ?>"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '<?= e($gaMeasurementId) ?>');
+    </script>
     <?php endif; ?>
 
     <!-- Pagination SEO -->

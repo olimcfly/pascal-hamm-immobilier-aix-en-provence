@@ -25,6 +25,7 @@ $routeToPage = [
     '/contact' => 'core/contact',
     '/services' => 'services/services',
     '/biens' => 'biens/index',
+    '/search' => 'biens/index',
     '/blog' => 'blog/index',
     '/actualites' => 'actualites/index',
     '/guide-local' => 'guide-local/index',

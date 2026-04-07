@@ -1,24 +1,32 @@
 <?php
 $pageTitle = 'Guide local Aix-en-Provence — Pascal Hamm Immobilier';
-$metaDesc  = 'Découvrez les quartiers de Aix-en-Provence et du Bordelais : prix, ambiance, transports, commerces. Guide local par Pascal Hamm.';
+$metaDesc  = 'Découvrez les communes autour d’Aix-en-Provence, les secteurs majeurs aixois et les villes proches pertinentes pour votre recherche immobilière.';
 $extraCss  = ['/assets/css/guide.css'];
 
-$villes = [
-    ['slug' => 'aix-centre',    'nom' => 'Aix-en-Provence Centre', 'prix' => '4 800 €/m²', 'desc' => 'Le cœur historique classé UNESCO. Prestige, animation et architecture exceptionnelle.', 'biens' => 12, 'img' => '/assets/images/aix-centre.jpg'],
-    ['slug' => 'bordeaux-chartrons', 'nom' => 'Chartrons',       'prix' => '4 600 €/m²', 'desc' => 'Quartier bohème et branché, très prisé des jeunes actifs et des familles.', 'biens' => 8,  'img' => '/assets/images/chartrons.jpg'],
-    ['slug' => 'bordeaux-cauderan',  'nom' => 'Caudéran',        'prix' => '3 900 €/m²', 'desc' => 'Quartier résidentiel calme, idéal pour les familles avec maisons et jardins.', 'biens' => 6,  'img' => '/assets/images/cauderan.jpg'],
-    ['slug' => 'merignac',           'nom' => 'Mérignac',        'prix' => '3 200 €/m²', 'desc' => 'Secteur prioritaire Aix-en-Provence Métropole : habitat familial, tram et proximité aéroport.', 'biens' => 6,  'img' => '/assets/images/merignac.jpg'],
-    ['slug' => 'pessac',             'nom' => 'Pessac',          'prix' => '2 900 €/m²', 'desc' => 'Ville universitaire avec une belle diversité de biens et une vraie vie de quartier.', 'biens' => 5,  'img' => '/assets/images/pessac.jpg'],
-    ['slug' => 'talence',            'nom' => 'Talence',         'prix' => '3 100 €/m²', 'desc' => 'Résidentielle et verte, proche des campus et bien desservie par le tram.', 'biens' => 4,  'img' => '/assets/images/talence.jpg'],
+$communesRayon10 = [
+    ['nom' => 'Le Tholonet', 'cp' => '13100', 'note' => 'Commune résidentielle aux portes de la Sainte-Victoire.'],
+    ['nom' => 'Beaurecueil', 'cp' => '13100', 'note' => 'Cadre naturel recherché, faible densité urbaine.'],
+    ['nom' => 'Saint-Marc-Jaumegarde', 'cp' => '13100', 'note' => 'Village prisé pour son calme et sa proximité immédiate d’Aix.'],
+    ['nom' => 'Meyreuil', 'cp' => '13590', 'note' => 'Accès rapide à Aix et aux axes vers Marseille.'],
+    ['nom' => 'Éguilles', 'cp' => '13510', 'note' => 'Village provençal très demandé par les familles.'],
+    ['nom' => 'Venelles', 'cp' => '13770', 'note' => 'Secteur dynamique au nord d’Aix, apprécié pour sa qualité de vie.'],
+    ['nom' => 'Gardanne', 'cp' => '13120', 'note' => 'Environ 9,5 km du centre d’Aix-en-Provence.'],
+    ['nom' => 'Bouc-Bel-Air', 'cp' => '13320', 'note' => 'En limite du rayon d’environ 10 km.'],
+    ['nom' => 'Simiane-Collongue', 'cp' => '13109', 'note' => 'Certaines zones se situent autour des 10 km d’Aix.'],
 ];
 
-$tableau = [
-    ['slug' => 'bordeaux-chartrons', 'nom' => 'Chartrons',  'prix' => '4 600 €/m²', 'tendance' => '↗ +2%',   'atout' => 'Vie de quartier', 'famille' => '⭐⭐⭐',    'invest' => '⭐⭐⭐⭐'],
-    ['slug' => 'aix-centre',    'nom' => 'Centre',     'prix' => '4 800 €/m²', 'tendance' => '→ stable', 'atout' => 'Prestige',        'famille' => '⭐⭐',      'invest' => '⭐⭐⭐⭐⭐'],
-    ['slug' => 'bordeaux-cauderan',  'nom' => 'Caudéran',   'prix' => '3 900 €/m²', 'tendance' => '↗ +3%',   'atout' => 'Calme & vert',   'famille' => '⭐⭐⭐⭐⭐', 'invest' => '⭐⭐⭐'],
-    ['slug' => 'merignac',           'nom' => 'Mérignac',   'prix' => '3 200 €/m²', 'tendance' => '↗ +5%',   'atout' => 'Accessibilité',  'famille' => '⭐⭐⭐⭐',  'invest' => '⭐⭐⭐⭐'],
-    ['slug' => 'pessac',             'nom' => 'Pessac',     'prix' => '2 900 €/m²', 'tendance' => '↗ +4%',   'atout' => 'Université',     'famille' => '⭐⭐⭐',    'invest' => '⭐⭐⭐⭐⭐'],
-    ['slug' => 'talence',            'nom' => 'Talence',    'prix' => '3 100 €/m²', 'tendance' => '→ +1%',   'atout' => 'Résidentiel',    'famille' => '⭐⭐⭐⭐',  'invest' => '⭐⭐⭐'],
+$secteursAix = [
+    'Puyricard',
+    'Les Milles',
+    'Luynes',
+    'Jas-de-Bouffan',
+];
+
+$communesProches = [
+    ['nom' => 'Le Puy-Sainte-Réparade', 'cp' => '13610', 'note' => 'Ville voisine agréable, réputée pour ses domaines viticoles et son cadre recherché.'],
+    ['nom' => 'Saint-Cannat', 'cp' => '13760', 'note' => 'Commune résidentielle cohérente dans une recherche autour d’Aix.'],
+    ['nom' => 'Rognes', 'cp' => '13840', 'note' => 'Village provençal recherché, légèrement hors rayon strict.'],
+    ['nom' => 'Lambesc', 'cp' => '13410', 'note' => 'Secteur pertinent pour élargir la recherche au nord-ouest d’Aix.'],
 ];
 ?>
 
@@ -26,18 +34,18 @@ $tableau = [
     <div class="container blog-hero__grid">
         <div>
             <nav class="breadcrumb"><a href="/">Accueil</a><span>Guide local</span></nav>
-            <span class="section-label">Aix-en-Provence &amp; métropole</span>
-            <h1>Guide local des quartiers aixois</h1>
-            <p>Prix au m², ambiance, transports, commerces — mon analyse terrain de chaque secteur pour vous aider à faire le bon choix.</p>
+            <span class="section-label">Aix-en-Provence &amp; alentours</span>
+            <h1>Guide local des communes autour d’Aix-en-Provence</h1>
+            <p>Retrouvez les localités à privilégier dans un rayon proche d’Aix, avec les secteurs aixois majeurs et les communes voisines pertinentes pour votre projet immobilier.</p>
             <div class="blog-hero__actions">
                 <a href="/estimation-gratuite" class="btn btn--accent">Estimer mon bien</a>
                 <a href="/biens" class="btn btn--outline">Voir les annonces</a>
             </div>
         </div>
         <div class="blog-hero__card" aria-hidden="true">
-            <div class="blog-hero__metric"><strong><?= count($villes) ?></strong><span>quartiers analysés</span></div>
-            <div class="blog-hero__metric"><strong>Terrain</strong><span>connaissance locale</span></div>
-            <div class="blog-hero__metric"><strong>Gratuit</strong><span>accès illimité</span></div>
+            <div class="blog-hero__metric"><strong><?= count($communesRayon10) ?></strong><span>communes ~10 km</span></div>
+            <div class="blog-hero__metric"><strong><?= count($secteursAix) ?></strong><span>secteurs aixois majeurs</span></div>
+            <div class="blog-hero__metric"><strong><?= count($communesProches) ?></strong><span>communes proches en plus</span></div>
         </div>
     </div>
 </section>
@@ -45,75 +53,52 @@ $tableau = [
 <section class="section">
     <div class="container">
         <div class="section__header text-center">
-            <span class="section-label">Aix-en-Provence &amp; métropole</span>
-            <h2 class="section-title">Choisissez votre quartier</h2>
-            <p class="section-subtitle">Prix au m², cadre de vie, accès, services — mon analyse terrain de chaque secteur.</p>
+            <span class="section-label">Sélection locale</span>
+            <h2 class="section-title">📍 Communes dans un rayon d’environ 10 km autour d’Aix-en-Provence</h2>
+            <p class="section-subtitle">Une base solide pour cibler rapidement les communes les plus cohérentes autour du centre d’Aix.</p>
         </div>
 
-        <div class="villes-grid" data-animate>
-            <?php foreach ($villes as $v): ?>
-            <a href="/guide-local/<?= e($v['slug']) ?>" class="ville-card">
-                <img src="<?= e($v['img']) ?>" alt="Immobilier <?= e($v['nom']) ?>" loading="lazy" width="800" height="533">
-                <div class="ville-card__overlay">
-                    <div class="ville-card__name"><?= e($v['nom']) ?></div>
-                    <div class="ville-card__price"><?= e($v['prix']) ?></div>
-                    <div class="ville-card__count"><?= e($v['desc']) ?></div>
-                </div>
-            </a>
+        <div class="comparatif-cards" data-animate>
+            <?php foreach ($communesRayon10 as $commune): ?>
+                <article class="comparatif-card" style="cursor:default">
+                    <div class="comparatif-card__nom"><?= e($commune['nom']) ?> (<?= e($commune['cp']) ?>)</div>
+                    <div class="comparatif-card__row"><strong><?= e($commune['note']) ?></strong></div>
+                </article>
             <?php endforeach; ?>
         </div>
 
-        <!-- Comparatif -->
         <div class="comparatif-section" data-animate>
-            <h2>Comparatif des secteurs</h2>
-            <p class="section-subtitle" style="margin-bottom:1.5rem">Données issues de l'observation terrain et des transactions récentes sur la métropole aixoise.</p>
-
-            <!-- Cartes mobiles -->
+            <h2>⭐ Particularités importantes</h2>
+            <p class="section-subtitle" style="margin-bottom:1rem">
+                <strong>Puyricard, Les Milles, Luynes, Jas-de-Bouffan</strong> sont des quartiers d’Aix-en-Provence (et non des communes indépendantes), mais ils restent incontournables car très recherchés.
+            </p>
             <div class="comparatif-cards">
-                <?php foreach ($tableau as $row): ?>
-                <a href="/guide-local/<?= e($row['slug']) ?>" class="comparatif-card">
-                    <div class="comparatif-card__nom"><?= e($row['nom']) ?></div>
-                    <div class="comparatif-card__prix"><?= e($row['prix']) ?> <span class="comparatif-card__tendance"><?= e($row['tendance']) ?></span></div>
-                    <div class="comparatif-card__row"><span>Atout</span><strong><?= e($row['atout']) ?></strong></div>
-                    <div class="comparatif-card__row"><span>Famille</span><span><?= $row['famille'] ?></span></div>
-                    <div class="comparatif-card__row"><span>Invest.</span><span><?= $row['invest'] ?></span></div>
-                </a>
+                <?php foreach ($secteursAix as $secteur): ?>
+                    <article class="comparatif-card" style="cursor:default">
+                        <div class="comparatif-card__nom"><?= e($secteur) ?></div>
+                        <div class="comparatif-card__row"><strong>Secteur majeur d’Aix-en-Provence</strong></div>
+                    </article>
                 <?php endforeach; ?>
             </div>
+        </div>
 
-            <!-- Tableau desktop -->
-            <div class="comparatif-table-wrap">
-                <table class="comparatif-table">
-                    <thead>
-                        <tr>
-                            <th>Quartier</th>
-                            <th>Prix médian</th>
-                            <th>Tendance 12 m</th>
-                            <th>Atout principal</th>
-                            <th>Famille</th>
-                            <th>Investissement</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($tableau as $i => $row): ?>
-                        <tr class="<?= $i % 2 === 0 ? 'row-even' : '' ?>">
-                            <td><a href="/guide-local/<?= e($row['slug']) ?>" class="comparatif-link"><?= e($row['nom']) ?></a></td>
-                            <td><?= e($row['prix']) ?></td>
-                            <td><?= e($row['tendance']) ?></td>
-                            <td><?= e($row['atout']) ?></td>
-                            <td><?= $row['famille'] ?></td>
-                            <td><?= $row['invest'] ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+        <div class="comparatif-section" data-animate>
+            <h2>➕ Communes proches à ajouter (hors rayon strict mais pertinentes)</h2>
+            <p class="section-subtitle" style="margin-bottom:1rem">Ces communes dépassent légèrement les ~10 km, mais restent très cohérentes pour une recherche immobilière autour d’Aix-en-Provence.</p>
+            <div class="comparatif-cards">
+                <?php foreach ($communesProches as $commune): ?>
+                    <article class="comparatif-card" style="cursor:default">
+                        <div class="comparatif-card__nom"><?= e($commune['nom']) ?> (<?= e($commune['cp']) ?>)</div>
+                        <div class="comparatif-card__row"><strong><?= e($commune['note']) ?></strong></div>
+                    </article>
+                <?php endforeach; ?>
             </div>
         </div>
 
         <div class="blog-cta" data-animate>
             <div>
-                <h3>Vous cherchez dans un quartier précis ?</h3>
-                <p>Parlez de votre projet avec Pascal Hamm et obtenez une analyse personnalisée de votre secteur en moins de 24h.</p>
+                <h3>Vous cherchez dans une commune précise ?</h3>
+                <p>Parlez de votre projet avec Pascal Hamm et obtenez une orientation personnalisée selon votre budget, votre style de vie et vos délais.</p>
             </div>
             <a href="/contact" class="btn btn--accent">Prendre contact</a>
         </div>

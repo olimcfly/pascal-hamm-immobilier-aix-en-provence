@@ -6,46 +6,11 @@ $advisorName = trim((string) setting('advisor_firstname', '') . ' ' . (string) s
 if ($advisorName === '') {
     $advisorName = ADVISOR_NAME ?: APP_NAME;
 }
-
-function isActive(string $path, string $current): string {
-    return ($path !== '/' ? str_starts_with($current, $path) : $current === '/') ? 'active' : '';
-}
-
-// Définir les styles par défaut et spécifiques à la page
-$defaultStyles = [
-    '/assets/css/style.css',
-    '/assets/css/main.css',
-    '/assets/css/biens.css',
-    '/assets/css/secteurs.css',
-    '/assets/css/home.css',
-    '/assets/css/contact.css',
-    '/assets/css/estimation.css',
-    '/assets/css/guide.css'
-];
-
-// Styles spécifiques à certaines pages
-$pageSpecificStyles = [
-    '/biens' => '/assets/css/biens-specific.css',
-    '/contact' => '/assets/css/contact-specific.css',
-    '/estimation-gratuite' => '/assets/css/estimation-specific.css',
-    '/guide' => '/assets/css/guide-specific.css',
-    '/secteurs' => '/assets/css/secteurs-specific.css',
-    '/biens/vendus' => '/assets/css/biens-vendus-specific.css', // Ajoutez cette ligne
-];
-
-
-// Déterminer les styles à inclure
-$stylesToInclude = array_merge(
-    $defaultStyles,
-    isset($pageSpecificStyles[$currentUri]) ? [$pageSpecificStyles[$currentUri]] : []
-);
-
-// Fusionner avec les styles supplémentaires si nécessaire
-$stylesToInclude = array_merge(
-    $stylesToInclude,
-    !empty($extraCss) ? $extraCss : []
-);
-?>
+<!-- Inclure les styles -->
+<link rel="stylesheet" href="/assets/css/style.css">
+<?php foreach ($stylesToInclude as $cssFile): ?>
+    <link rel="stylesheet" href="<?= htmlspecialchars($cssFile) ?>">
+<?php endforeach; ?>
 
 <!DOCTYPE html>
 <html lang="fr">

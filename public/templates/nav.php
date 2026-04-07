@@ -2,19 +2,24 @@
 $currentUri = $currentUri ?? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 $navItems = [
-    ['path' => '/',         'href' => url('/'),         'label' => 'Accueil'],
-    ['path' => '/biens',    'href' => url('/biens'),    'label' => 'Biens'],
-    ['path' => '/services', 'href' => url('/services'), 'label' => 'Services'],
-    ['path' => '/blog',     'href' => url('/blog'),     'label' => 'Contenu',
-     'sub' => [
-        ['path' => '/blog',        'href' => url('/blog'),        'label' => 'Blog'],
-        ['path' => '/actualites',  'href' => url('/actualites'),  'label' => 'Actualités'],
-        ['path' => '/guide-local', 'href' => url('/guide-local'), 'label' => 'Guide local'],
-        ['path' => '/ressources',  'href' => url('/ressources'),  'label' => 'Ressources'],
-     ]
+    ['path' => '/',           'href' => url('/'),           'label' => 'Accueil'],
+    ['path' => '/biens',      'href' => url('/biens'),      'label' => 'Biens à vendre'],
+    ['path' => '/secteurs',   'href' => url('/secteurs'),   'label' => 'Secteurs'],
+    [
+        'path' => '/vendre',
+        'href' => url('/vendre'),
+        'label' => 'Vendre',
+        'sub' => [
+            ['path' => '/vendre',              'href' => url('/vendre'),              'label' => 'Vente classique'],
+            ['path' => '/estimation-gratuite', 'href' => url('/estimation-gratuite'), 'label' => 'Estimation immobilière'],
+            ['path' => '/services',            'href' => url('/services'),            'label' => 'Accompagnement vendeur'],
+            ['path' => '/viager',              'href' => url('/viager'),              'label' => 'Viager éthique'],
+        ],
     ],
-    ['path' => '/a-propos', 'href' => url('/a-propos'), 'label' => 'À propos'],
-    ['path' => '/contact',  'href' => url('/contact'),  'label' => 'Contact'],
+    ['path' => '/acheter',    'href' => url('/acheter'),    'label' => 'Acheter'],
+    ['path' => '/a-propos',   'href' => url('/a-propos'),   'label' => 'À propos'],
+    ['path' => '/contact',    'href' => url('/contact'),    'label' => 'Contact'],
+    ['path' => '/estimation-gratuite', 'href' => url('/estimation-gratuite'), 'label' => 'Estimation gratuite'],
 ];
 ?>
 <nav class="site-nav" id="site-nav" role="navigation" aria-label="Navigation principale">
@@ -43,7 +48,6 @@ $navItems = [
     </ul>
 </nav>
 
-<!-- Menu mobile -->
 <div class="nav-mobile" id="nav-mobile" aria-hidden="true">
     <button class="nav-mobile__close" id="nav-close" aria-label="Fermer le menu">×</button>
     <ul>
@@ -64,7 +68,6 @@ $navItems = [
         <?php if (APP_PHONE): ?>
         <li style="margin-bottom:.5rem"><a href="tel:<?= e(preg_replace('/\s+/', '', APP_PHONE)) ?>" class="btn btn--outline btn--full">📞 <?= e(APP_PHONE) ?></a></li>
         <?php endif; ?>
-        <li><a href="<?= e(url('/estimation-gratuite')) ?>" class="btn btn--primary btn--full">Estimation gratuite</a></li>
     </ul>
 </div>
 <div class="nav-overlay" id="nav-overlay"></div>

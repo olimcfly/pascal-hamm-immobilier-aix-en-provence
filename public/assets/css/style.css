@@ -1,0 +1,10 @@
+/* style.css - Fichier principal qui importe tous les autres fichiers CSS */
+
+/* Importer les fichiers CSS */
+@import url("main.css");
+@import url("biens.css");
+@import url("secteurs.css");
+@import url("home.css");
+@import url("contact.css");
+@import url("estimation.css");
+@import url("guide.css");

@@ -1,26 +1,24 @@
 <IfModule mod_rewrite.c>
-    Options -Indexes
     RewriteEngine On
-    RewriteBase /
 
-    # Redirection vers HTTPS + version canonique sans www
-    RewriteCond %{HTTPS} !=on [OR]
-    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-    RewriteRule ^ https://pascalhamm.fr%{REQUEST_URI} [L,R=301]
-
-    # 302 -> 301 pour anciennes URLs marketing
-    RewriteRule ^merci-estimation/?$ /merci [L,R=301]
-    RewriteRule ^merci-rdv/?$ /merci [L,R=301]
-
-    # 410 pour pages définitivement supprimées
-    RewriteRule ^old-biens/?$ - [G,L]
-
-    # Rediriger les requêtes vers le front controller
+    # Ne pas réécrire les fichiers existants
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
 
-    # Gérer les erreurs
-    ErrorDocument 404 /404.php
-    ErrorDocument 500 /500.php
+    # Assurez-vous que les fichiers CSS sont servis avec le bon type MIME
+    RewriteCond %{REQUEST_URI} \.css$
+    RewriteRule ^ - [L,T=text/css]
+
+    # Réécrire toutes les autres requêtes vers index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
+
+# Assurez-vous que les fichiers CSS sont servis avec le bon type MIME
+<IfModule mod_mime.c>
+    AddType text/css .css
+</IfModule>
+
+# Désactivez le parsing PHP pour les fichiers CSS
+<FilesMatch "\.css$">
+    SetHandler default-handler
+</FilesMatch>

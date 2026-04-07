@@ -46,7 +46,7 @@ require_once __DIR__ . '/config/database.php';
 // ── Core classes ─────────────────────────────────────────────
 require_once __DIR__ . '/Session.php';
 require_once __DIR__ . '/Auth.php';
-
+require_once __DIR__ . '/Router.php';
 // ── Helpers ──────────────────────────────────────────────────
 require_once __DIR__ . '/helpers/helpers.php';
 require_once __DIR__ . '/helpers/sanitize.php';
@@ -54,6 +54,8 @@ require_once __DIR__ . '/helpers/auth.php';
 require_once __DIR__ . '/helpers/cms.php';
 require_once dirname(__DIR__) . '/includes/settings.php';
 require_once __DIR__ . '/services/LeadService.php';
+require_once __DIR__ . '/controllers/ZoneController.php';
+
 
 // ── Session ──────────────────────────────────────────────────
 if (session_status() === PHP_SESSION_NONE) {

@@ -4,115 +4,142 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../core/bootstrap.php';
 
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-$uri = '/' . ltrim($uri, '/');
-if ($uri !== '/') {
-    $uri = rtrim($uri, '/');
+if (!class_exists('Router')) {
+    die('La classe Router n\'est pas définie.');
 }
 
+$router = new Router();
 
-if ($uri === '/api/estimation-instantanee' && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-    require_once ROOT_PATH . '/core/services/InstantEstimationService.php';
-
-    $raw = file_get_contents('php://input');
-    $payload = json_decode((string) $raw, true);
-    if (!is_array($payload)) {
-        $payload = [];
-    }
-
-    header('Content-Type: application/json; charset=utf-8');
-
-    if (!hash_equals($_SESSION['csrf_token'] ?? '', (string) ($payload['csrf_token'] ?? ''))) {
-        http_response_code(419);
-        echo json_encode(['ok' => false, 'message' => 'Session expirée, rechargez la page.']);
-        exit;
-    }
-
-    $result = InstantEstimationService::estimate($payload);
-
-    InstantEstimationService::saveRequest([
-        'address_input' => trim((string) ($payload['location'] ?? '')),
-        'address_normalized' => trim((string) ($payload['location_normalized'] ?? '')),
-        'place_id' => trim((string) ($payload['place_id'] ?? '')),
-        'lat' => (float) ($payload['lat'] ?? 0),
-        'lng' => (float) ($payload['lng'] ?? 0),
-        'property_type' => trim((string) ($payload['property_type'] ?? '')),
-        'surface' => (float) ($payload['surface'] ?? 0),
-        'result_low' => $result['low'] ?? null,
-        'result_med' => $result['median'] ?? null,
-        'result_high' => $result['high'] ?? null,
-        'comparables_count' => $result['comparables_count'] ?? 0,
-        'reliability_score' => $result['reliability_score'] ?? 0,
-        'status' => $result['status'] ?? 'error',
-        'source' => 'instant_page',
-        'metadata' => ['step' => $result['step'] ?? null],
-    ]);
-
-    if (empty($result['ok'])) {
-        http_response_code(422);
-    }
-
-    echo json_encode($result, JSON_UNESCAPED_UNICODE);
-    exit;
+if (!class_exists('ZoneController')) {
+    die('La classe ZoneController n\'est pas définie.');
 }
 
-// Permet au serveur PHP intégré de servir les fichiers statiques (CSS/JS/images).
-if (PHP_SAPI === 'cli-server') {
-    $staticPath = realpath(__DIR__ . $uri);
-    $publicRoot = realpath(__DIR__);
-    if ($staticPath && $publicRoot && str_starts_with($staticPath, $publicRoot) && is_file($staticPath)) {
-        return false;
-    }
+// Helper pour charger une page PHP
+function loadPage(string $file): string {
+    ob_start();
+    require $file;
+    return ob_get_clean();
 }
 
-$routeToPage = [
-    '/' => 'core/home',
-    '/a-propos' => 'core/a-propos',
-    '/contact' => 'core/contact',
-    '/services' => 'services/services',
-    '/viager' => 'services/services',
-    '/biens' => 'biens/index',
-    '/acheter' => 'ressources/guide-acheteur',
-    '/vendre' => 'ressources/guide-vendeur',
-    '/secteurs' => 'guide-local/index',
-    '/guide-local' => 'guide-local/index',
-    '/ressources' => 'ressources/index',
-    '/ressources/guide-acheteur' => 'ressources/guide-acheteur',
-    '/ressources/guide-vendeur' => 'ressources/guide-vendeur',
-    '/blog' => 'blog/index',
-    '/actualites' => 'actualites/index',
-    '/avis' => 'social-proof/avis',
-    '/avis-clients' => 'social-proof/avis',
-    '/estimation-gratuite' => 'capture/estimation-gratuite',
-    '/merci' => 'conversion/merci',
-    '/merci-estimation' => 'capture/merci',
-    '/mentions-legales' => 'legal/mentions-legales',
-    '/politique-confidentialite' => 'legal/politique-confidentialite',
-    '/politique-cookies' => 'legal/politique-cookies',
-    '/cgv' => 'legal/cgv',
-    '/plan-du-site' => 'core/plan-du-site',
-];
+// Accueil
+$router->get('/', function() {
+    $pageFile = ROOT_PATH . '/public/pages/core/home.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+// Biens
+$router->get('/biens', function() {
+    $pageFile = ROOT_PATH . '/public/pages/biens/index.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
 
-$pageKey = $routeToPage[$uri] ?? null;
-if ($pageKey === null) {
+// Bien individuel
+$router->get('/biens/{slug}', function(string $slug) {
+    $pageFile = ROOT_PATH . '/public/pages/biens/' . $slug . '.php';
+    if (!is_file($pageFile)) {
+        http_response_code(404);
+        $pageTitle   = 'Bien introuvable';
+        $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>Ce bien est introuvable.</p></div></section>';
+    } else {
+        ob_start();
+        require $pageFile;
+        $pageContent = ob_get_clean();
+    }
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// À propos
+$router->get('/a-propos', function() {
+    $pageFile = ROOT_PATH . '/public/pages/core/a-propos.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// Contact
+$router->get('/contact', function() {
+    $pageFile = ROOT_PATH . '/public/pages/core/contact.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// Mentions légales
+$router->get('/mentions-legales', function() {
+    $pageFile = ROOT_PATH . '/public/pages/legal/mentions-legales.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// Politique de confidentialité
+$router->get('/politique-confidentialite', function() {
+    $pageFile = ROOT_PATH . '/public/pages/legal/politique-confidentialite.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// CGV
+$router->get('/cgv', function() {
+    $pageFile = ROOT_PATH . '/public/pages/legal/cgv.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// Plan du site
+$router->get('/plan-du-site', function() {
+    $pageFile = ROOT_PATH . '/public/pages/legal/plan-du-site.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// Estimation
+$router->get('/estimation', function() {
+    $pageFile = ROOT_PATH . '/public/pages/estimation/estimation-gratuite.php';
+    ob_start();
+    require $pageFile;
+    $pageContent = ob_get_clean();
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// Services
+$router->get('/services/{slug}', function(string $slug) {
+    $pageFile = ROOT_PATH . '/public/pages/services/' . $slug . '.php';
+    if (!is_file($pageFile)) {
+        http_response_code(404);
+        $pageTitle   = 'Page introuvable';
+        $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>Service introuvable.</p></div></section>';
+    } else {
+        ob_start();
+        require $pageFile;
+        $pageContent = ob_get_clean();
+    }
+    require ROOT_PATH . '/public/templates/layout.php';
+});
+
+// Secteurs
+$router->get('/secteurs/{type}/{slug}', 'ZoneController@show');
+
+// 404
+$router->set404(function() {
     http_response_code(404);
-    $pageTitle = 'Page introuvable';
+    $pageTitle   = 'Page introuvable';
     $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>La page demandée est introuvable.</p></div></section>';
     require ROOT_PATH . '/public/templates/layout.php';
-    exit;
-}
+});
 
-$pageFile = ROOT_PATH . '/public/pages/' . $pageKey . '.php';
-if (!is_file($pageFile)) {
-    http_response_code(500);
-    $pageTitle = 'Erreur interne';
-    $pageContent = '<section class="section"><div class="container"><h1>500</h1><p>Le fichier de page est introuvable.</p></div></section>';
-    require ROOT_PATH . '/public/templates/layout.php';
-    exit;
-}
-
-ob_start();
-require $pageFile;
-$pageContent = ob_get_clean();
-
-require ROOT_PATH . '/public/templates/layout.php';
+$router->dispatch();

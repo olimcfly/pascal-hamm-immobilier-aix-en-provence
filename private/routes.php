@@ -154,6 +154,7 @@ $router->get('/merci', fn() => page('capture/merci'), 'merci');
 $router->get('/mentions-legales', fn() => page('legal/mentions-legales'), 'mentions-legales');
 $router->get('/politique-confidentialite', fn() => page('legal/politique-confidentialite'), 'politique-confidentialite');
 $router->get('/politique-cookies', fn() => page('legal/politique-cookies'), 'politique-cookies');
+$router->get('/plan-du-site', fn() => page('legal/plan-du-site'), 'plan-du-site');
 $router->get('/cgv', fn() => page('legal/cgv'), 'cgv');
 
 // CMS Admin

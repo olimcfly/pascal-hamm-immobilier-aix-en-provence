@@ -24,6 +24,7 @@ $routeToPage = [
     '/a-propos' => 'core/a-propos',
     '/contact' => 'core/contact',
     '/services' => 'services/services',
+    '/viager' => 'services/services',
     '/biens' => 'biens/index',
     '/acheter' => 'ressources/guide-acheteur',
     '/vendre' => 'ressources/guide-vendeur',
@@ -37,10 +38,13 @@ $routeToPage = [
     '/avis' => 'social-proof/avis',
     '/avis-clients' => 'social-proof/avis',
     '/estimation-gratuite' => 'capture/estimation-gratuite',
+    '/merci' => 'conversion/merci',
+    '/merci-estimation' => 'capture/merci',
     '/mentions-legales' => 'legal/mentions-legales',
     '/politique-confidentialite' => 'legal/politique-confidentialite',
     '/politique-cookies' => 'legal/politique-cookies',
     '/cgv' => 'legal/cgv',
+    '/plan-du-site' => 'core/plan-du-site',
 ];
 
 $pageKey = $routeToPage[$uri] ?? null;

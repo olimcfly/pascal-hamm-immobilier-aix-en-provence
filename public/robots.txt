@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Bloquer pages techniques / faible valeur SEO
+Disallow: /admin/
+Disallow: /settings/
+Disallow: /private/
+Disallow: /logs/
+Disallow: /*?*
+Disallow: /merci
+Disallow: /merci-estimation
+Disallow: /tag/
+Disallow: /author/
+Disallow: /wp-
+
+Sitemap: https://pascalhamm.fr/sitemap.xml

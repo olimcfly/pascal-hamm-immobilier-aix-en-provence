@@ -82,6 +82,7 @@ $zoneCity       = 'Aix-en-Provence';
                 <a href="/politique-confidentialite">Confidentialité</a>
                 <a href="/politique-cookies">Cookies</a>
                 <a href="/cgv">CGV</a>
+                <a href="/plan-du-site">Plan du site</a>
             </nav>
         </div>
     </div>

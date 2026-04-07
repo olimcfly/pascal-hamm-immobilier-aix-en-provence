@@ -12,9 +12,9 @@
 ### Éléments hardcodés trouvés
 - **Nom/prénom** : `Pascal Hamm`, `Pascal Hamm`.
 - **Titre pro** : `Conseiller immobilier`, `Conseiller Immobilier`, `Conseiller`.
-- **Photo** : `/assets/images/eduardo-portrait.jpg`.
+- **Photo** : `/assets/images/pascal-portrait.jpg`.
 - **Slogan/bio marketing** : textes fixes type “Expert immobilier indépendant à Aix-en-Provence...”.
-- **Signature/personnalisation messages** : textes “Eduardo vous répondra...”, “Eduardo vous contactera...”.
+- **Signature/personnalisation messages** : textes “Pascal vous répondra...”, “Pascal vous contactera...”.
 
 ### Fichiers principaux impactés
 - `public/templates/header.php`

@@ -114,7 +114,7 @@ $jsonLdArticle = json_encode([
                     <div class="sidebar-box__head">Articles récents</div>
                     <div class="sidebar-box__body">
                         <?php foreach ([
-                            ['Investir à Aix-en-Provence en 2026', '15 mars 2026', '/assets/images/blog-2.jpg', '/blog/investir-aix-2026'],
+                            ['Investir à Aix-en-Provence en 2026', '15 mars 2026', '/assets/images/blog-2.jpg', '/blog/investir-aix-en-provence-2026'],
                             ['Taux immobiliers 2026', '5 mars 2026', '/assets/images/blog-3.jpg', '/blog/taux-immobiliers-2026'],
                         ] as [$titre, $date, $img, $href]): ?>
                         <a href="<?= $href ?>" class="recent-post" style="text-decoration:none">

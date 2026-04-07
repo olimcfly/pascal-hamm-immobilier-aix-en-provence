@@ -6,7 +6,7 @@ $extraCss  = ['/assets/css/guide.css'];
 $extraJs   = ['/assets/js/guide.js'];
 
 $articles = [
-    'prix-m2-etude-marche-aix-via-perplexity' => [
+    'prix-m2-etude-marche-aix-en-provence-via-perplexity' => [
         'titre'   => 'Prix au m² & étude de marché Aix-en-Provence : analyse assistée par Perplexity',
         'cat'     => 'Analyse IA',
         'date'    => '3 avril 2026',

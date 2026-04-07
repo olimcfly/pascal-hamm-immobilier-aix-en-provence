@@ -27,7 +27,7 @@
                 </div>
                 <div class="noah-field">
                     <label class="noah-label">Zone géographique</label>
-                    <input class="noah-input" type="text" name="zone" placeholder="ex : Pays d\'Aix" required>
+                    <input class="noah-input" type="text" name="zone" placeholder="ex : Aix-en-Provence Métropole" required>
                 </div>
                 <div class="noah-field">
                     <label class="noah-label">Type de clients</label>

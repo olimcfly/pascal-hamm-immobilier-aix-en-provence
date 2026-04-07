@@ -100,7 +100,7 @@ function renderContent()
 
         <?php noahCard('positionnement', 'Positionnement', 'Formulations d\'accroche claires', '#8e44ad', '#f5eef8', 'fa-bullseye', [
             ['name' => 'metier',  'label' => 'Votre métier',        'placeholder' => 'ex : agent immobilier indépendant'],
-            ['name' => 'zone',    'label' => 'Zone géographique',   'placeholder' => 'ex : Pays d\'Aix'],
+            ['name' => 'zone',    'label' => 'Zone géographique',   'placeholder' => 'ex : Aix-en-Provence Métropole'],
             ['name' => 'persona', 'label' => 'Type de clients',     'placeholder' => 'ex : primo-accédants 30-45 ans'],
             ['name' => 'objectif','label' => 'Objectif principal',  'placeholder' => 'ex : générer des mandats vendeurs'],
         ]); ?>

@@ -27,12 +27,12 @@ INSERT INTO settings (user_id, `key`, `value`, `group`) VALUES
 
 -- Zone géographique
 (1, 'zone_ville',            'Aix-en-Provence',                                'zone'),
-(1, 'zone_departement',      'Gironde',                                 'zone'),
-(1, 'zone_region',           'Nouvelle-Aquitaine',                      'zone'),
+(1, 'zone_departement',      'Bouches-du-Rhône',                        'zone'),
+(1, 'zone_region',           'Provence-Alpes-Côte d'Azur',             'zone'),
 (1, 'zone_communes',         '',                                        'zone'),
 (1, 'zone_rayon_km',         '30',                                      'zone'),
-(1, 'zone_lat',              '44.8378',                                 'zone'),
-(1, 'zone_lng',              '-0.5792',                                 'zone'),
+(1, 'zone_lat',              '43.5297',                                 'zone'),
+(1, 'zone_lng',              '5.4474',                                  'zone'),
 
 -- Clés API
 (1, 'api_openai',            '',                                        'api'),

@@ -6,7 +6,7 @@ $postBySequence = $postBySequence ?? [];
     <?php if ($sequences === []): ?>
         <article class="social-empty-card">
             <h3>Aucune séquence trouvée</h3>
-            <p>Commencez par créer votre première séquence social pour Pays d\'Aix.</p>
+            <p>Commencez par créer votre première séquence social pour Aix-en-Provence Métropole.</p>
         </article>
     <?php endif; ?>
 

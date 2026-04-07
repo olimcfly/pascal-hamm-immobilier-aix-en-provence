@@ -1,21 +1,21 @@
 <?php
 $pageTitle = 'Guide local Aix-en-Provence — Pascal Hamm Immobilier';
-$metaDesc  = 'Découvrez les quartiers d\'Aix-en-Provence et du Pays d\'Aix : prix, ambiance, transports, commerces. Guide local par Pascal Hamm.';
+$metaDesc  = 'Découvrez les quartiers de Aix-en-Provence et du Bordelais : prix, ambiance, transports, commerces. Guide local par Pascal Hamm.';
 $extraCss  = ['/assets/css/guide.css'];
 
 $villes = [
     ['slug' => 'aix-centre',    'nom' => 'Aix-en-Provence Centre', 'prix' => '4 800 €/m²', 'desc' => 'Le cœur historique classé UNESCO. Prestige, animation et architecture exceptionnelle.', 'biens' => 12, 'img' => '/assets/images/aix-centre.jpg'],
-    ['slug' => 'aix-mazarin', 'nom' => 'Chartrons',       'prix' => '4 600 €/m²', 'desc' => 'Quartier bohème et branché, très prisé des jeunes actifs et des familles.', 'biens' => 8,  'img' => '/assets/images/chartrons.jpg'],
-    ['slug' => 'aix-celony',  'nom' => 'Caudéran',        'prix' => '3 900 €/m²', 'desc' => 'Quartier résidentiel calme, idéal pour les familles avec maisons et jardins.', 'biens' => 6,  'img' => '/assets/images/cauderan.jpg'],
-    ['slug' => 'merignac',           'nom' => 'Mérignac',        'prix' => '3 200 €/m²', 'desc' => 'Secteur prioritaire Pays d\'Aix : habitat familial, tram et proximité aéroport.', 'biens' => 6,  'img' => '/assets/images/merignac.jpg'],
+    ['slug' => 'bordeaux-chartrons', 'nom' => 'Chartrons',       'prix' => '4 600 €/m²', 'desc' => 'Quartier bohème et branché, très prisé des jeunes actifs et des familles.', 'biens' => 8,  'img' => '/assets/images/chartrons.jpg'],
+    ['slug' => 'bordeaux-cauderan',  'nom' => 'Caudéran',        'prix' => '3 900 €/m²', 'desc' => 'Quartier résidentiel calme, idéal pour les familles avec maisons et jardins.', 'biens' => 6,  'img' => '/assets/images/cauderan.jpg'],
+    ['slug' => 'merignac',           'nom' => 'Mérignac',        'prix' => '3 200 €/m²', 'desc' => 'Secteur prioritaire Aix-en-Provence Métropole : habitat familial, tram et proximité aéroport.', 'biens' => 6,  'img' => '/assets/images/merignac.jpg'],
     ['slug' => 'pessac',             'nom' => 'Pessac',          'prix' => '2 900 €/m²', 'desc' => 'Ville universitaire avec une belle diversité de biens et une vraie vie de quartier.', 'biens' => 5,  'img' => '/assets/images/pessac.jpg'],
     ['slug' => 'talence',            'nom' => 'Talence',         'prix' => '3 100 €/m²', 'desc' => 'Résidentielle et verte, proche des campus et bien desservie par le tram.', 'biens' => 4,  'img' => '/assets/images/talence.jpg'],
 ];
 
 $tableau = [
-    ['slug' => 'aix-mazarin', 'nom' => 'Chartrons',  'prix' => '4 600 €/m²', 'tendance' => '↗ +2%',   'atout' => 'Vie de quartier', 'famille' => '⭐⭐⭐',    'invest' => '⭐⭐⭐⭐'],
+    ['slug' => 'bordeaux-chartrons', 'nom' => 'Chartrons',  'prix' => '4 600 €/m²', 'tendance' => '↗ +2%',   'atout' => 'Vie de quartier', 'famille' => '⭐⭐⭐',    'invest' => '⭐⭐⭐⭐'],
     ['slug' => 'aix-centre',    'nom' => 'Centre',     'prix' => '4 800 €/m²', 'tendance' => '→ stable', 'atout' => 'Prestige',        'famille' => '⭐⭐',      'invest' => '⭐⭐⭐⭐⭐'],
-    ['slug' => 'aix-celony',  'nom' => 'Caudéran',   'prix' => '3 900 €/m²', 'tendance' => '↗ +3%',   'atout' => 'Calme & vert',   'famille' => '⭐⭐⭐⭐⭐', 'invest' => '⭐⭐⭐'],
+    ['slug' => 'bordeaux-cauderan',  'nom' => 'Caudéran',   'prix' => '3 900 €/m²', 'tendance' => '↗ +3%',   'atout' => 'Calme & vert',   'famille' => '⭐⭐⭐⭐⭐', 'invest' => '⭐⭐⭐'],
     ['slug' => 'merignac',           'nom' => 'Mérignac',   'prix' => '3 200 €/m²', 'tendance' => '↗ +5%',   'atout' => 'Accessibilité',  'famille' => '⭐⭐⭐⭐',  'invest' => '⭐⭐⭐⭐'],
     ['slug' => 'pessac',             'nom' => 'Pessac',     'prix' => '2 900 €/m²', 'tendance' => '↗ +4%',   'atout' => 'Université',     'famille' => '⭐⭐⭐',    'invest' => '⭐⭐⭐⭐⭐'],
     ['slug' => 'talence',            'nom' => 'Talence',    'prix' => '3 100 €/m²', 'tendance' => '→ +1%',   'atout' => 'Résidentiel',    'famille' => '⭐⭐⭐⭐',  'invest' => '⭐⭐⭐'],

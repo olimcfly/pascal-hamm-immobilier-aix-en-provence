@@ -222,7 +222,7 @@ p, li, dd, dt { font-size: clamp(1rem, 0.96rem + .22vw, 1.08rem); }
 
 .nav__dropdown {
   position: absolute;
-  top: calc(100% + .5rem);
+  top: 100%;
   left: 0;
   min-width: 200px;
   background: var(--clr-white);

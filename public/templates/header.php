@@ -1,6 +1,16 @@
 <?php
 // public/templates/header.php
 
+// Définir la variable $stylesToInclude si elle n'existe pas
+$stylesToInclude = $stylesToInclude ?? [];
+$extraJs = $extraJs ?? [];
+
+// Définir la fonction isActive()
+function isActive($path) {
+    return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) === $path ||
+           strpos(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $path) === 0;
+}
+
 $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $advisorName = trim((string) setting('advisor_firstname', '') . ' ' . (string) setting('advisor_lastname', ''));
 if ($advisorName === '') {

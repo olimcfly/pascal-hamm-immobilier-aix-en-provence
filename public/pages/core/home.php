@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Immobilier Clef en Main & Financement - Pascal Hamm | BeckHamm Real Estate';
+$pageTitle = 'Immobilier Clef en Main & Financement - Pascal Hamm Immobilier';
 $metaDesc = 'Pascal Hamm, votre allié 360° en immobilier clef en main : achat, vente, viager et financement. Spécialiste des biens d\'exception en Provence et Espagne.';
 ?>
 
@@ -174,7 +174,7 @@ $metaDesc = 'Pascal Hamm, votre allié 360° en immobilier clef en main : achat,
     <div class="container">
         <div class="grid-2">
             <div class="about-content" data-animate>
-                <span class="section-label">Bienvenue chez BeckHamm Real Estate</span>
+                <span class="section-label">Bienvenue chez Pascal Hamm Immobilier</span>
                 <h2 class="section-title">Résidence de charme & prestige en Provence</h2>
                 <p class="section-subtitle">
                     Spécialiste des biens d'exception en Provence et en Espagne, j'accompagne une clientèle exigeante à la recherche de propriétés uniques.

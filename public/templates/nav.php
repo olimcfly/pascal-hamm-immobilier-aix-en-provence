@@ -2,31 +2,9 @@
 $currentUri = $currentUri ?? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 $navItems = [
-    [
-        'path' => '/biens',
-        'href' => url('/biens'),
-        'label' => 'Nos biens',
-        'sub' => [
-            ['path' => '/biens', 'href' => url('/biens'), 'label' => 'Tous les biens'],
-            ['path' => '/biens', 'href' => url('/biens?type=maison'), 'label' => 'Maisons'],
-            ['path' => '/biens', 'href' => url('/biens?type=appartement'), 'label' => 'Appartements'],
-            ['path' => '/biens', 'href' => url('/biens?gamme=prestige'), 'label' => 'Prestige'],
-            ['path' => '/biens', 'href' => url('/biens?statut=vendu'), 'label' => 'Biens vendus'],
-        ],
-    ],
-    [
-        'path' => '/guide-local',
-        'href' => url('/guide-local'),
-        'label' => 'Secteurs',
-        'sub' => [
-            ['path' => '/guide-local', 'href' => url('/immobilier/aix-en-provence'), 'label' => 'Aix-en-Provence'],
-            ['path' => '/guide-local', 'href' => url('/guide-local'), 'label' => 'Pays d’Aix'],
-            ['path' => '/guide-local', 'href' => url('/immobilier/luynes'), 'label' => 'Luynes'],
-            ['path' => '/guide-local', 'href' => url('/immobilier/puyricard'), 'label' => 'Puyricard'],
-            ['path' => '/guide-local', 'href' => url('/immobilier/venelles'), 'label' => 'Venelles'],
-            ['path' => '/guide-local', 'href' => url('/guide-local'), 'label' => 'Tous les secteurs'],
-        ],
-    ],
+    ['path' => '/',           'href' => url('/'),           'label' => 'Accueil'],
+    ['path' => '/biens',      'href' => url('/biens'),      'label' => 'Biens à vendre'],
+    ['path' => '/secteurs',   'href' => url('/secteurs'),   'label' => 'Secteurs'],
     [
         'path' => '/vendre',
         'href' => url('/vendre'),
@@ -62,6 +40,10 @@ $navItems = [
             ['path' => '/financement', 'href' => url('/financement#faq-financement'), 'label' => 'FAQ financement'],
         ],
     ],
+    ['path' => '/acheter',    'href' => url('/acheter'),    'label' => 'Acheter'],
+    ['path' => '/a-propos',   'href' => url('/a-propos'),   'label' => 'À propos'],
+    ['path' => '/contact',    'href' => url('/contact'),    'label' => 'Contact'],
+    ['path' => '/estimation-gratuite', 'href' => url('/estimation-gratuite'), 'label' => 'Estimation gratuite'],
 ];
 ?>
 <nav class="site-nav" id="site-nav" role="navigation" aria-label="Navigation principale">

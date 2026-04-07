@@ -164,6 +164,29 @@ return [
         ],
     ],
 
+
+    // MODULE : Estimation DVF (production)
+    'estimation' => [
+        'slug' => 'estimation',
+        'title' => 'MODULE ESTIMATION : DVF',
+        'section' => 'Outils',
+        'route' => '/admin/index.php?module=estimation',
+        'icon' => 'fa-map-location-dot',
+        'description' => "Pilotage des imports DVF, de la fiabilité des estimations et des demandes de rendez-vous.",
+        'available' => true,
+        'hub_order' => 79,
+        'meta' => [
+            'motivation' => "Industrialiser l'estimation instantanée avec garde-fous et suivi qualité.",
+            'explanation' => "Ce module centralise l'import DVF, la surveillance de fiabilité et le suivi des demandes d'estimation.",
+            'recipe' => [
+                'Importer les données DVF régulièrement.',
+                'Contrôler les comparables et taux de blocage.',
+                'Suivre les demandes et la conversion vers rendez-vous.',
+            ],
+            'exercise' => "Vérifiez chaque semaine le taux d'estimations bloquées et ajustez les paramètres d'élargissement.",
+        ],
+    ],
+
     // MODULE : Estimation IA (module spécialisé)
     'estimation_ia' => [
         'slug' => 'estimation_ia',

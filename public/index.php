@@ -37,6 +37,7 @@ $routeToPage = [
     '/avis' => 'social-proof/avis',
     '/avis-clients' => 'social-proof/avis',
     '/estimation-gratuite' => 'capture/estimation-gratuite',
+    '/financement' => 'financement/financement',
     '/mentions-legales' => 'legal/mentions-legales',
     '/politique-confidentialite' => 'legal/politique-confidentialite',
     '/politique-cookies' => 'legal/politique-cookies',

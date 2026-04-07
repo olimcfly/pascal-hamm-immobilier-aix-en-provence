@@ -25,12 +25,7 @@ function isActive(string $path, string $current): string {
 
         <!-- CTA header -->
         <div class="header__actions">
-            <?php if (APP_PHONE): ?>
-            <a href="tel:<?= e(preg_replace('/\s+/', '', APP_PHONE)) ?>" class="btn btn--phone">
-                📞 <?= e(APP_PHONE) ?>
-            </a>
-            <?php endif; ?>
-            <a href="<?= e(url('/estimation-gratuite')) ?>" class="btn btn--primary">Estimation gratuite</a>
+            <a href="<?= e(url('/estimation-gratuite')) ?>" class="btn btn--primary btn--header-cta">Estimation gratuite</a>
         </div>
 
         <!-- Burger mobile -->

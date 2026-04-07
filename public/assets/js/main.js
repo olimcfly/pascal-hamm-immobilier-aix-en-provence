@@ -44,6 +44,27 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeNav();
 });
 
+// ── Mobile accordions (navigation) ───────────────────────────
+const mobileToggles = document.querySelectorAll('.nav-mobile__toggle');
+mobileToggles.forEach(toggle => {
+  toggle.addEventListener('click', () => {
+    const item = toggle.closest('.nav-mobile__item');
+    const panel = item?.querySelector('.mobile-sub');
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+
+    mobileToggles.forEach(other => {
+      if (other !== toggle) {
+        other.setAttribute('aria-expanded', 'false');
+        const otherPanel = other.closest('.nav-mobile__item')?.querySelector('.mobile-sub');
+        if (otherPanel) otherPanel.hidden = true;
+      }
+    });
+
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    if (panel) panel.hidden = expanded;
+  });
+});
+
 // ── Flash auto-dismiss ────────────────────────────────────────
 document.querySelectorAll('.flash').forEach(el => {
   setTimeout(() => el.remove(), 6000);

@@ -10,6 +10,52 @@ if ($uri !== '/') {
     $uri = rtrim($uri, '/');
 }
 
+
+if ($uri === '/api/estimation-instantanee' && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    require_once ROOT_PATH . '/core/services/InstantEstimationService.php';
+
+    $raw = file_get_contents('php://input');
+    $payload = json_decode((string) $raw, true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+
+    header('Content-Type: application/json; charset=utf-8');
+
+    if (!hash_equals($_SESSION['csrf_token'] ?? '', (string) ($payload['csrf_token'] ?? ''))) {
+        http_response_code(419);
+        echo json_encode(['ok' => false, 'message' => 'Session expirée, rechargez la page.']);
+        exit;
+    }
+
+    $result = InstantEstimationService::estimate($payload);
+
+    InstantEstimationService::saveRequest([
+        'address_input' => trim((string) ($payload['location'] ?? '')),
+        'address_normalized' => trim((string) ($payload['location_normalized'] ?? '')),
+        'place_id' => trim((string) ($payload['place_id'] ?? '')),
+        'lat' => (float) ($payload['lat'] ?? 0),
+        'lng' => (float) ($payload['lng'] ?? 0),
+        'property_type' => trim((string) ($payload['property_type'] ?? '')),
+        'surface' => (float) ($payload['surface'] ?? 0),
+        'result_low' => $result['low'] ?? null,
+        'result_med' => $result['median'] ?? null,
+        'result_high' => $result['high'] ?? null,
+        'comparables_count' => $result['comparables_count'] ?? 0,
+        'reliability_score' => $result['reliability_score'] ?? 0,
+        'status' => $result['status'] ?? 'error',
+        'source' => 'instant_page',
+        'metadata' => ['step' => $result['step'] ?? null],
+    ]);
+
+    if (empty($result['ok'])) {
+        http_response_code(422);
+    }
+
+    echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // Permet au serveur PHP intégré de servir les fichiers statiques (CSS/JS/images).
 if (PHP_SAPI === 'cli-server') {
     $staticPath = realpath(__DIR__ . $uri);
@@ -24,6 +70,7 @@ $routeToPage = [
     '/a-propos' => 'core/a-propos',
     '/contact' => 'core/contact',
     '/services' => 'services/services',
+    '/viager' => 'services/services',
     '/biens' => 'biens/index',
     '/acheter' => 'ressources/guide-acheteur',
     '/vendre' => 'ressources/guide-vendeur',
@@ -37,10 +84,13 @@ $routeToPage = [
     '/avis' => 'social-proof/avis',
     '/avis-clients' => 'social-proof/avis',
     '/estimation-gratuite' => 'capture/estimation-gratuite',
+    '/merci' => 'conversion/merci',
+    '/merci-estimation' => 'capture/merci',
     '/mentions-legales' => 'legal/mentions-legales',
     '/politique-confidentialite' => 'legal/politique-confidentialite',
     '/politique-cookies' => 'legal/politique-cookies',
     '/cgv' => 'legal/cgv',
+    '/plan-du-site' => 'core/plan-du-site',
 ];
 
 $pageKey = $routeToPage[$uri] ?? null;

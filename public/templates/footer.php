@@ -1,8 +1,7 @@
 <?php
 $advisorName    = 'Pascal Hamm';
 $advisorTitle   = 'Expert Immobilier 360°';
-$advisorTagline = 'Expert immobilier indépendant dans le Pays d\'Aix. Je vous accompagne dans l\'achat, la vente, l\'estimation et le viager avec transparence et proximité.';
-$zoneCity       = 'Aix-en-Provence';
+$advisorTagline = 'Expert immobilier indépendant dans le Pays d\'Aix. Accompagnement premium en vente, achat et financement, avec méthode et discrétion.';
 ?>
 
 <footer class="site-footer">
@@ -31,42 +30,40 @@ $zoneCity       = 'Aix-en-Provence';
             </div>
         </div>
 
-        <!-- Services -->
         <div class="footer__col">
-            <h3 class="footer__title">Services</h3>
+            <h3 class="footer__title">Découvrir</h3>
             <ul class="footer__links">
-                <li><a href="/services">Tous les services</a></li>
+                <li><a href="/biens">Nos biens</a></li>
+                <li><a href="/guide-local">Secteurs</a></li>
+                <li><a href="/acheter">Acheter</a></li>
+            </ul>
+        </div>
+
+        <div class="footer__col">
+            <h3 class="footer__title">Vendre</h3>
+            <ul class="footer__links">
+                <li><a href="/vendre">Vendre un bien</a></li>
                 <li><a href="/estimation-gratuite">Estimation gratuite</a></li>
-                <li><a href="/biens">Annonces immobilières</a></li>
-                <li><a href="/viager">Viager éthique</a></li>
-                <li><a href="/ressources/guide-vendeur">Guide vendeur</a></li>
-                <li><a href="/ressources/guide-acheteur">Guide acheteur</a></li>
+                <li><a href="/ressources/guide-vendeur">Méthode de vente</a></li>
             </ul>
         </div>
 
-        <!-- Informations -->
         <div class="footer__col">
-            <h3 class="footer__title">Informations</h3>
+            <h3 class="footer__title">Acheter</h3>
             <ul class="footer__links">
-                <li><a href="/a-propos">À propos de Pascal</a></li>
-                <li><a href="/blog">Blog immobilier</a></li>
-                <li><a href="/actualites">Actualités</a></li>
-                <li><a href="/guide-local">Guide local <?= e($zoneCity) ?></a></li>
-                <li><a href="/avis">Avis clients</a></li>
+                <li><a href="/acheter">Acheter un bien</a></li>
+                <li><a href="/financement">Financement</a></li>
+                <li><a href="/contact?sujet=Recherche+personnalisee">Recherche personnalisée</a></li>
             </ul>
         </div>
 
-        <!-- Contact -->
         <div class="footer__col">
-            <h3 class="footer__title">Contact</h3>
-            <address class="footer__address">
-                <p>📍 Aix-en-Provence, Pays d\'Aix</p>
-                <p>📞 <a href="tel:+33667198366">06 67 19 83 66</a></p>
-                <p>✉️ <a href="mailto:<?= e(APP_EMAIL) ?>"><?= e(APP_EMAIL) ?></a></p>
-            </address>
-            <a href="/contact" class="btn btn--outline btn--sm" style="margin-top:1rem">
-                Me contacter
-            </a>
+            <h3 class="footer__title">Entreprise</h3>
+            <ul class="footer__links">
+                <li><a href="/a-propos">À propos</a></li>
+                <li><a href="/avis">Avis clients</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
         </div>
 
     </div>
@@ -82,6 +79,7 @@ $zoneCity       = 'Aix-en-Provence';
                 <a href="/politique-confidentialite">Confidentialité</a>
                 <a href="/politique-cookies">Cookies</a>
                 <a href="/cgv">CGV</a>
+                <a href="/plan-du-site">Plan du site</a>
             </nav>
         </div>
     </div>

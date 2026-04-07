@@ -50,21 +50,34 @@ $navItems = [
 
 <div class="nav-mobile" id="nav-mobile" aria-hidden="true">
     <button class="nav-mobile__close" id="nav-close" aria-label="Fermer le menu">×</button>
-    <ul>
+    <ul class="nav-mobile__list">
         <?php foreach ($navItems as $item): ?>
-        <li>
-            <a href="<?= e($item['href']) ?>" class="<?= isActive($item['path'], $currentUri) ?>">
-                <?= e($item['label']) ?>
-            </a>
+        <li class="nav-mobile__item <?= !empty($item['sub']) ? 'has-submenu' : '' ?>">
             <?php if (!empty($item['sub'])): ?>
-            <ul class="mobile-sub">
+            <button class="nav-mobile__toggle <?= isActive($item['path'], $currentUri) ?>"
+                    type="button"
+                    aria-expanded="false">
+                <span><?= e($item['label']) ?></span>
+                <span class="nav-mobile__caret" aria-hidden="true">▾</span>
+            </button>
+            <?php if (!empty($item['sub'])): ?>
+            <ul class="mobile-sub" hidden>
+                <li><a href="<?= e($item['href']) ?>"><?= e($item['label']) ?></a></li>
                 <?php foreach ($item['sub'] as $sub): ?>
                 <li><a href="<?= e($sub['href']) ?>"><?= e($sub['label']) ?></a></li>
                 <?php endforeach; ?>
             </ul>
             <?php endif; ?>
+            <?php else: ?>
+            <a href="<?= e($item['href']) ?>" class="<?= isActive($item['path'], $currentUri) ?>">
+                <?= e($item['label']) ?>
+            </a>
+            <?php endif; ?>
         </li>
         <?php endforeach; ?>
+        <li class="nav-mobile__cta-wrap">
+            <a href="<?= e(url('/estimation-gratuite')) ?>" class="btn btn--primary btn--full">Estimation gratuite</a>
+        </li>
         <?php if (APP_PHONE): ?>
         <li style="margin-bottom:.5rem"><a href="tel:<?= e(preg_replace('/\s+/', '', APP_PHONE)) ?>" class="btn btn--outline btn--full">📞 <?= e(APP_PHONE) ?></a></li>
         <?php endif; ?>

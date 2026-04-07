@@ -3,7 +3,7 @@
 // CONFIG GLOBALE — Core (legacy)
 // ============================================================
 
-define('APP_NAME',      $_ENV['APP_NAME'] ?? 'CRM Immobilier');
+define('APP_NAME',      $_ENV['APP_NAME'] ?? 'Pascal Hamm Immobilier');
 
 $configuredAppUrl = trim((string) ($_ENV['APP_URL'] ?? ''));
 $appHost          = strtolower((string) parse_url($configuredAppUrl, PHP_URL_HOST));

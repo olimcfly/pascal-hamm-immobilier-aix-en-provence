@@ -76,7 +76,9 @@ $advisorTagline = 'Expert immobilier indépendant dans le Pays d\'Aix. Accompagn
             </p>
             <nav aria-label="Liens légaux">
                 <a href="/mentions-legales">Mentions légales</a>
-                <a href="/politique-confidentialite">Politique de confidentialité</a>
+                <a href="/politique-confidentialite">Confidentialité</a>
+                <a href="/politique-cookies">Cookies</a>
+                <a href="/cgv">CGV</a>
                 <a href="/plan-du-site">Plan du site</a>
             </nav>
         </div>

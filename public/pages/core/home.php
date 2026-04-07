@@ -1,584 +1,431 @@
 <?php
-$pageTitle = 'Immobilier Clef en Main & Financement - Pascal Hamm Immobilier';
-$metaDesc = 'Pascal Hamm, votre allié 360° en immobilier clef en main : achat, vente, viager et financement. Spécialiste des biens d\'exception en Provence et Espagne.';
+$pageTitle = 'Immobilier Aix-en-Provence | Bastides, Villas & Viager Éthique - Pascal Hamm';
+$metaDesc = 'Découvrez les bastides provençales, villas contemporaines et solutions de viager éthique à Aix-en-Provence avec Pascal Hamm, expert immobilier 360°.';
+$metaKeywords = 'immobilier Aix-en-Provence, bastide provençale, viager éthique, expert immobilier 360°, villa contemporaine Provence';
+
+// Préremplissage sécurisé des champs de recherche (GET) pour améliorer l'UX.
+$searchQuery = htmlspecialchars((string) ($_GET['query'] ?? ''), ENT_QUOTES, 'UTF-8');
+$searchType = htmlspecialchars((string) ($_GET['type'] ?? ''), ENT_QUOTES, 'UTF-8');
+$searchBudget = htmlspecialchars((string) ($_GET['budget'] ?? ''), ENT_QUOTES, 'UTF-8');
+
+// Fallback local : dans votre implémentation finale, hydratez via repository + requêtes préparées PDO.
+$latest_properties = $latest_properties ?? [
+    [
+        'id' => 101,
+        'title' => 'Bastide avec piscine et oliveraie',
+        'image' => '/assets/images/featured1.jpg',
+        'alt_text' => 'Bastide provençale avec piscine à Aix-en-Provence',
+        'type' => 'Exclusif',
+        'price' => 980000,
+        'city' => 'Aix-en-Provence',
+        'rooms' => 5,
+        'area' => 240,
+        'expiry_date' => '2026-05-31',
+    ],
+    [
+        'id' => 102,
+        'title' => 'Villa contemporaine vue Sainte-Victoire',
+        'image' => '/assets/images/featured2.jpg',
+        'alt_text' => 'Villa contemporaine avec terrasse et vue',
+        'type' => 'Villa',
+        'price' => 1450000,
+        'city' => 'Le Tholonet',
+        'rooms' => 4,
+        'area' => 210,
+        'expiry_date' => '2026-05-14',
+    ],
+    [
+        'id' => 103,
+        'title' => 'Viager éthique au cœur du Pays d\'Aix',
+        'image' => '/assets/images/property2.jpg',
+        'alt_text' => 'Maison en viager éthique en Provence',
+        'type' => 'Viager',
+        'price' => 347000,
+        'city' => 'Ventabren',
+        'rooms' => 3,
+        'area' => 140,
+        'expiry_date' => '2026-04-30',
+    ],
+];
+$total_properties = $total_properties ?? 127;
+
+// Hook CRM : cet endpoint peut être remplacé par un connecteur interne (HubSpot, Pipedrive, etc.).
+$crmEndpoint = '/send-contact';
 ?>
 
-<!-- ── Hero ────────────────────────────────────────────────── -->
-<section class="hero hero--full">
-    <div class="hero__bg" style="background-image:url('/assets/images/hero-provence.jpg')"></div>
-    <div class="container">
-        <div class="hero__content">
-            <div class="hero__tagline" data-animate>
-                <span>Rien ne se perd, tout se transforme</span>
-                <h1>Immobilier Clef en Main<br>Partenaire en Financements</h1>
-                <p>Pascal Hamm, votre allié 360° pour tous vos projets immobiliers</p>
+<style>
+/* Cohérence avec l'existant + styles homepage neuromarketing */
+.hero-section { background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('/images/background-provence.jpg') center/cover no-repeat; color: #fff; min-height: 70vh; display: flex; align-items: center; }
+.home-section { padding: 4rem 0; }
+.home-container { width: min(1200px, 92%); margin: 0 auto; }
+.text-shadow { text-shadow: 0 2px 12px rgba(0,0,0,.35); }
+.cta-button { background: #d4a762; color: #fff; padding: 12px 24px; border-radius: 4px; border: 0; display: inline-block; text-decoration: none; font-weight: 600; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+.cta-button:hover, .cta-button:focus-visible { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,.18); }
+.cta-button.secondary { background: transparent; border: 1px solid #d4a762; color: #d4a762; }
+.search-grid, .properties-grid, .story-grid, .services-grid, .contact-content, .footer-grid { display: grid; gap: 1rem; }
+.search-grid { grid-template-columns: 1fr; background: rgba(255,255,255,.12); padding: 1rem; border-radius: 10px; backdrop-filter: blur(4px); }
+.search-grid input, .search-grid select, .contact-form input, .contact-form select, .contact-form textarea { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: .75rem; }
+.properties-grid { grid-template-columns: 1fr; }
+.property-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.08); position: relative; }
+.property-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+.property-badge { position: absolute; top: .75rem; left: .75rem; background: #d4a762; color: #fff; padding: .25rem .65rem; border-radius: 999px; z-index: 2; font-size: .85rem; }
+.property-card img { width: 100%; height: 220px; object-fit: cover; }
+.property-body { padding: 1rem; }
+.benefits li::marker { content: '✔ '; color: #2ecc71; }
+.story-image img { width: 100%; border-radius: 10px; }
+.service-card, .testimonial-card, .faq-item { background: #fff; border-radius: 10px; padding: 1.25rem; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+.testimonial-card { background: #f9f9f9; border-left: 4px solid #d4a762; }
+.contact { background: #0f172a; color: #fff; }
+.contact .cta-button[type='submit'], .contact-form .submit-btn { background: #2ecc71; }
+.footer { background: #111827; color: #fff; }
+.footer a { color: #f8d7a2; }
+.faq-answer[hidden] { display: none; }
+
+@media (min-width: 768px) {
+  .search-grid { grid-template-columns: repeat(2, 1fr); }
+  .properties-grid { grid-template-columns: repeat(2, 1fr); }
+  .story-grid, .contact-content { grid-template-columns: 1.15fr .85fr; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .search-grid { grid-template-columns: 2fr 1fr 1fr auto; }
+  .properties-grid { grid-template-columns: repeat(3, 1fr); }
+  .services-grid { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid { grid-template-columns: 1.2fr 1fr 1fr 1fr; }
+}
+</style>
+
+<header>
+    <section class="hero-section" aria-labelledby="hero-title">
+        <div class="home-container">
+            <h1 id="hero-title" class="text-shadow">Votre rêve immobilier en Provence commence ici</h1>
+            <p class="text-shadow">Bastides, villas, viagers éthiques… Je transforme vos projets en réalité, sans stress et avec expertise.</p>
+
+            <form id="hero-search" action="/search" method="GET" aria-label="Recherche de biens en Provence">
+                <div class="search-grid">
+                    <input type="text" name="query" value="<?= $searchQuery ?>" placeholder="Ex: Bastide avec piscine à Aix-en-Provence" aria-label="Recherche de biens">
+                    <select name="type" aria-label="Type de bien recherché">
+                        <option value="">Type de bien</option>
+                        <option value="bastide" <?= $searchType === 'bastide' ? 'selected' : '' ?>>Bastide provençale</option>
+                        <option value="villa" <?= $searchType === 'villa' ? 'selected' : '' ?>>Villa contemporaine</option>
+                        <option value="viager" <?= $searchType === 'viager' ? 'selected' : '' ?>>Viager</option>
+                    </select>
+                    <select name="budget" aria-label="Budget">
+                        <option value="">Budget</option>
+                        <option value="300000-500000" <?= $searchBudget === '300000-500000' ? 'selected' : '' ?>>300k - 500k €</option>
+                        <option value="500000-1000000" <?= $searchBudget === '500000-1000000' ? 'selected' : '' ?>>500k - 1M €</option>
+                    </select>
+                    <button type="submit" class="cta-button">Rechercher</button>
+                </div>
+            </form>
+
+            <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem">
+                <a id="cta-primary-a" href="/search" class="cta-button">🔍 Trouvez votre bien idéal</a>
+                <a id="cta-primary-b" href="/search?utm_ab=variantB" class="cta-button" hidden>🔍 Démarrer ma recherche exclusive</a>
+                <a href="#contact" class="cta-button secondary">📞 Parlez à un expert</a>
+            </div>
+        </div>
+    </section>
+</header>
+
+<main>
+    <section class="home-section opportunities" aria-labelledby="opportunities-heading">
+        <div class="home-container">
+            <h2 id="opportunities-heading">Dernières opportunités en Provence</h2>
+            <p class="subtitle">Ces biens ne resteront pas longtemps sur le marché. Découvrez-les avant qu'il ne soit trop tard.</p>
+
+            <div class="properties-grid">
+                <?php foreach ($latest_properties as $property): ?>
+                    <article class="property-card" itemscope itemtype="https://schema.org/RealEstateListing">
+                        <meta itemprop="name" content="<?= htmlspecialchars($property['title'], ENT_QUOTES, 'UTF-8') ?>">
+                        <img src="<?= htmlspecialchars($property['image'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($property['alt_text'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy" width="640" height="420">
+                        <div class="property-badge"><?= htmlspecialchars($property['type'], ENT_QUOTES, 'UTF-8') ?></div>
+                        <div class="property-body">
+                            <h3 itemprop="name"><?= htmlspecialchars($property['title'], ENT_QUOTES, 'UTF-8') ?></h3>
+                            <p class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                <span itemprop="priceCurrency" content="EUR">€</span>
+                                <span itemprop="price"><?= number_format((float) $property['price'], 0, ',', ' ') ?></span>
+                                <meta itemprop="priceValidUntil" content="<?= htmlspecialchars($property['expiry_date'], ENT_QUOTES, 'UTF-8') ?>">
+                            </p>
+                            <p class="location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                                <span itemprop="addressLocality"><?= htmlspecialchars($property['city'], ENT_QUOTES, 'UTF-8') ?></span>
+                            </p>
+                            <ul class="features">
+                                <li><span itemprop="numberOfRooms"><?= (int) $property['rooms'] ?></span> chambres</li>
+                                <li><span itemprop="floorSize" itemscope itemtype="https://schema.org/QuantitativeValue"><span itemprop="value"><?= (int) $property['area'] ?></span> <span itemprop="unitText">m²</span></span></li>
+                            </ul>
+                            <div class="cta-container">
+                                <a href="/biens/<?= (int) $property['id'] ?>" class="cta-button">🔥 Offre exclusive</a>
+                                <small class="urgency">Disponible jusqu'au <?= date('d/m', strtotime((string) $property['expiry_date'])) ?></small>
+                            </div>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
             </div>
 
-            <div class="hero__cta" data-animate>
-                <a href="#contact" class="btn btn--accent btn--lg">Entrer en contact</a>
-                <a href="#biens" class="btn btn--outline-white btn--lg">Trouvez le bien de vos rêves</a>
+            <p style="margin-top:1rem"><a href="/biens" class="cta-button secondary">Voir tous les biens (<?= (int) $total_properties ?>)</a></p>
+        </div>
+    </section>
+
+    <section class="home-section storytelling" aria-labelledby="story-heading">
+        <div class="home-container story-content">
+            <h2 id="story-heading">Pourquoi choisir un expert 360° pour votre projet immobilier ?</h2>
+            <p class="intro">Imaginez : vous rêvez d'une bastide provençale avec vue sur le Luberon, mais vous ne savez pas par où commencer...</p>
+            <div class="story-grid">
+                <div class="story-text">
+                    <p>Les agences classiques vous font perdre du temps, les annonces en ligne sont floues, et les démarches administratives vous donnent mal à la tête.</p>
+                    <p>C'est pour cela que j'ai créé <strong>BeckHamm Real Estate</strong> : une approche <strong>sans stress, transparente et sur mesure</strong>.</p>
+                    <ul class="benefits">
+                        <li><strong>Recherche ciblée</strong> (y compris des biens non publiés)</li>
+                        <li><strong>Négociation optimisée</strong> (économie moyenne de 10-15%)</li>
+                        <li><strong>Financement sur mesure</strong> avec partenaires courtiers</li>
+                        <li><strong>Gestion complète</strong> : notaire, travaux, mise en location</li>
+                    </ul>
+                    <div class="cta-container" style="display:flex;gap:.75rem;flex-wrap:wrap">
+                        <a href="/services" class="cta-button">📩 Recevoir mon guide gratuit</a>
+                        <a href="#contact" class="cta-button secondary">🗓️ Réserver un appel découverte</a>
+                    </div>
+                </div>
+                <figure class="story-image">
+                    <img src="/images/pascal-hamm-story.jpg" alt="Pascal Hamm en Provence avec un client" loading="lazy" width="700" height="500">
+                    <figcaption>Pascal Hamm accompagnant un client dans une bastide provençale.</figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section services" aria-labelledby="services-heading">
+        <div class="home-container">
+            <h2 id="services-heading">Votre projet immobilier, géré de A à Z – Sans stress ni tracas</h2>
+            <div class="services-grid">
+                <article class="service-card">
+                    <div class="service-icon" aria-hidden="true">🔑</div>
+                    <h3>Immobilier clef en main Aix-en-Provence</h3>
+                    <p>Je m'occupe de tout : recherche, visites, négociation, signature.</p>
+                    <p class="proof"><strong>90%</strong> de mes clients signent en moins de 2 mois.</p>
+                    <a href="/services/clef-en-main" class="cta-button">🔑 Découvrir le Clef en Main</a>
+                </article>
+                <article class="service-card">
+                    <div class="service-icon" aria-hidden="true">💰</div>
+                    <h3>Financement immobilier sur mesure</h3>
+                    <p>Accès à des prêts avantageux, même pour les dossiers complexes.</p>
+                    <p class="proof">Taux négociés jusqu'à <strong>-0,5%</strong> vs le marché.</p>
+                    <a href="/services/financement" class="cta-button">💰 Obtenir une simulation gratuite</a>
+                </article>
+                <article class="service-card">
+                    <div class="service-icon" aria-hidden="true">🏆</div>
+                    <h3>Viager éthique Aix-en-Provence</h3>
+                    <p>Montages sécurisés pour vendeurs et acquéreurs, en toute transparence.</p>
+                    <a href="/services/viager" class="cta-button">🏆 En savoir plus sur le viager</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section testimonials" aria-labelledby="testimonials-heading">
+        <div class="home-container">
+            <h2 id="testimonials-heading">Ils ont réalisé leur projet immobilier avec nous</h2>
+            <div class="testimonials-slider">
+                <article class="testimonial-card">
+                    <div class="testimonial-header" style="display:flex;gap:.75rem;align-items:center">
+                        <img src="/images/clients/jean-marie.jpg" alt="Jean et Marie D." loading="lazy" width="72" height="72" style="border-radius:50%;object-fit:cover">
+                        <div>
+                            <h4>Jean &amp; Marie D.</h4>
+                            <p>Acheteurs d'une bastide provençale</p>
+                        </div>
+                    </div>
+                    <blockquote>
+                        <p>🏡 Grâce à Pascal, nous avons acheté notre bastide à Lourmarin 12% en dessous du prix du marché.</p>
+                    </blockquote>
+                    <div class="testimonial-footer" style="display:flex;gap:.75rem;flex-wrap:wrap">
+                        <a href="/avis" class="cta-button secondary">📢 Voir tous les avis</a>
+                        <a href="#" class="cta-button">🎥 Voir la vidéo témoignage</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="home-section contact" aria-labelledby="contact-heading">
+        <div class="home-container contact-content">
+            <div class="contact-text">
+                <h2 id="contact-heading">Contact expert immobilier Aix-en-Provence</h2>
+                <p>Un expert vous répond sous 24h pour vous aider à concrétiser votre rêve.</p>
+                <p><strong>📞 Téléphone :</strong> <a href="tel:+33667198366">+33 6 67 19 83 66</a></p>
+                <p><strong>✉️ Email :</strong> <a href="mailto:pascal.hamm@expfrance.fr">pascal.hamm@expfrance.fr</a></p>
+                <p><strong>📍 Adresse :</strong> Aix-en-Provence, Pays d'Aix</p>
             </div>
 
-            <div class="hero__social">
-                <a href="https://www.facebook.com/people/Pascal-Hamm/" class="social-link" aria-label="Facebook">
-                    <svg><use xlink:href="#icon-facebook"></use></svg>
-                </a>
-                <a href="https://www.instagram.com/pascal.hamm2025" class="social-link" aria-label="Instagram">
-                    <svg><use xlink:href="#icon-instagram"></use></svg>
-                </a>
-                <a href="https://www.linkedin.com/in/pascal-hamm2025immobilierclefenmaincourtagefinancier" class="social-link" aria-label="LinkedIn">
-                    <svg><use xlink:href="#icon-linkedin"></use></svg>
-                </a>
+            <form id="contact-form" action="<?= htmlspecialchars($crmEndpoint, ENT_QUOTES, 'UTF-8') ?>" method="POST" class="contact-form" aria-label="Formulaire de contact">
+                <input type="hidden" name="crm_source" value="homepage-2026-v2">
+                <input type="hidden" name="ab_variant" id="ab_variant" value="A">
+                <div class="form-group">
+                    <label for="name">Votre nom *</label>
+                    <input type="text" id="name" name="name" required aria-required="true" maxlength="120">
+                </div>
+                <div class="form-group">
+                    <label for="email">Votre email *</label>
+                    <input type="email" id="email" name="email" required aria-required="true" maxlength="190">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Votre téléphone</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+33 6 12 34 56 78">
+                </div>
+                <div class="form-group">
+                    <label for="project">Type de projet *</label>
+                    <select id="project" name="project" required aria-required="true">
+                        <option value="">Sélectionnez...</option>
+                        <option value="achat">Achat</option>
+                        <option value="vente">Vente</option>
+                        <option value="viager">Viager</option>
+                        <option value="investissement">Investissement</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Votre message *</label>
+                    <textarea id="message" name="message" rows="4" required aria-required="true" placeholder="Décrivez votre projet en 2-3 lignes..."></textarea>
+                </div>
+                <!-- Hook anti-spam : remplacer par hCaptcha/Turnstile côté serveur. -->
+                <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="privacy" name="privacy" required aria-required="true">
+                    <label for="privacy">J'accepte la <a href="/confidentialite">politique de confidentialité</a> *</label>
+                </div>
+                <button type="submit" class="cta-button submit-btn">🚀 Envoyer ma demande</button>
+                <p class="guarantee">✅ Réponse sous 24h ou votre étude gratuite !</p>
+            </form>
+        </div>
+    </section>
+
+    <section class="home-section faq" aria-labelledby="faq-heading">
+        <div class="home-container">
+            <h2 id="faq-heading">Questions fréquentes sur l'immobilier en Provence</h2>
+            <div class="faq-container">
+                <article class="faq-item">
+                    <h3>
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq1">Comment fonctionne le viager éthique ?</button>
+                    </h3>
+                    <div id="faq1" class="faq-answer" hidden>
+                        <p>Le viager éthique permet une acquisition sécurisée, avec un cadre contractuel clair et un accompagnement juridique complet.</p>
+                        <a href="/viager-ethique" class="cta-button secondary">En savoir plus</a>
+                    </div>
+                </article>
+                <article class="faq-item">
+                    <h3>
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq2">Quels sont les avantages d'un expert immobilier 360° ?</button>
+                    </h3>
+                    <div id="faq2" class="faq-answer" hidden>
+                        <p>Vous centralisez recherche, négociation, financement et accompagnement notarial avec un interlocuteur unique.</p>
+                    </div>
+                </article>
             </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer home-section">
+    <div class="home-container">
+        <div class="footer-grid">
+            <div class="footer-logo">
+                <img src="/images/logo-beckhamm.svg" alt="BeckHamm Real Estate" width="150" loading="lazy">
+                <p>Expert immobilier indépendant dans le Pays d'Aix, spécialisé en biens d'exception, estimation et viager éthique.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="/services/clef-en-main">Immobilier Clef en Main</a></li>
+                    <li><a href="/services/viager">Viager Éthique</a></li>
+                    <li><a href="/services/financement">Solutions de Financement</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Informations</h4>
+                <ul>
+                    <li><a href="/a-propos">À propos de Pascal</a></li>
+                    <li><a href="/blog">Blog immobilier Provence</a></li>
+                    <li><a href="/guide-local">Guide local Aix-en-Provence</a></li>
+                    <li><a href="/avis">Avis clients</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Contact</h4>
+                <p>📍 Aix-en-Provence, Pays d'Aix</p>
+                <p>📞 <a href="tel:+33667198366">06 67 19 83 66</a></p>
+                <p>✉️ <a href="mailto:pascal.hamm@expfrance.fr">pascal.hamm@expfrance.fr</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom" style="margin-top:1rem;border-top:1px solid rgba(255,255,255,.15);padding-top:1rem">
+            <p>© <?= date('Y') ?> Pascal Hamm — Tous droits réservés — SIRET : 12345678901234</p>
         </div>
     </div>
-</section>
+</footer>
 
-<!-- ── Search Bar ───────────────────────────────────────────── -->
-<section class="search-bar">
-    <div class="container">
-        <form class="property-search" data-animate>
-            <div class="search-group">
-                <select name="transaction">
-                    <option value="all">Acheter</option>
-                    <option value="buy">Acheter</option>
-                    <option value="rent">Louer</option>
-                    <option value="viager">Viager</option>
-                </select>
-            </div>
-
-            <div class="search-group">
-                <select name="type">
-                    <option value="all">Type de Bien</option>
-                    <option value="house">Maison</option>
-                    <option value="apartment">Appartement</option>
-                    <option value="villa">Villa</option>
-                    <option value="domain">Domaine</option>
-                </select>
-            </div>
-
-            <div class="search-group">
-                <input type="text" name="location" placeholder="Ville (ex: Aix-en-Provence)">
-            </div>
-
-            <div class="search-group">
-                <select name="bedrooms">
-                    <option value="all">Chambres</option>
-                    <option value="1">1+</option>
-                    <option value="2">2+</option>
-                    <option value="3">3+</option>
-                    <option value="4">4+</option>
-                </select>
-            </div>
-
-            <div class="search-group">
-                <select name="bathrooms">
-                    <option value="all">Salles de Bains</option>
-                    <option value="1">1+</option>
-                    <option value="2">2+</option>
-                    <option value="3">3+</option>
-                </select>
-            </div>
-
-            <div class="search-group">
-                <input type="number" name="min-area" placeholder="Min m²">
-            </div>
-
-            <div class="search-group price-range">
-                <input type="number" name="min-price" placeholder="Prix min">
-                <span>à</span>
-                <input type="number" name="max-price" placeholder="Prix max">
-            </div>
-
-            <button type="submit" class="btn btn--accent">Rechercher</button>
-        </form>
-    </div>
-</section>
-
-<!-- ── Property Listings ────────────────────────────────────── -->
-<section class="section" id="biens">
-    <div class="container">
-        <div class="section__header">
-            <h2 class="section-title">Notre sélection de biens</h2>
-            <div class="sort-options">
-                <span>Trier par:</span>
-                <select>
-                    <option>Par défaut</option>
-                    <option>Prix croissant</option>
-                    <option>Prix décroissant</option>
-                    <option>Surface</option>
-                    <option>Date d'ajout</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="property-grid">
-            <!-- Property Card Example -->
-            <div class="property-card" data-animate>
-                <div class="property-badge">Viager</div>
-                <div class="property-image">
-                    <img src="/assets/images/property1.jpg" alt="Appartement T5 en viager">
-                    <div class="property-price">€90 000 <span>1/6</span></div>
-                </div>
-                <div class="property-details">
-                    <h3>VIAGER - APPARTEMENT T5</h3>
-                    <p class="property-location">Limoges</p>
-                    <div class="property-features">
-                        <span>3 Chambres</span>
-                        <span>98 m²</span>
-                    </div>
-                    <a href="#" class="btn btn--outline">Voir les détails</a>
-                </div>
-            </div>
-
-            <!-- More property cards would be dynamically loaded -->
-            <div class="property-card" data-animate>
-                <div class="property-badge">Viager Éthique</div>
-                <div class="property-image">
-                    <img src="/assets/images/property2.jpg" alt="Viager Saint-Médard-en-Jalles">
-                    <div class="property-price">€347 000 <span>1/13</span></div>
-                </div>
-                <div class="property-details">
-                    <h3>Viager occupé sans rente</h3>
-                    <p class="property-location">Saint-Médard-en-Jalles</p>
-                    <div class="property-features">
-                        <span>2 Chambres</span>
-                        <span>1 Salle de bain</span>
-                        <span>104.23 m²</span>
-                    </div>
-                    <a href="#" class="btn btn--outline">Voir les détails</a>
-                </div>
-            </div>
-            <!-- End of example cards -->
-        </div>
-
-        <div class="pagination">
-            <span>Affichage de 1-10 sur 3274 propriétés</span>
-            <div class="pagination-controls">
-                <button class="btn btn--outline">Précédent</button>
-                <span>1</span>
-                <span>2</span>
-                <span>3</span>
-                <span>4</span>
-                <span>5</span>
-                <span>...</span>
-                <span>328</span>
-                <button class="btn btn--outline">Suivant</button>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── About Section ────────────────────────────────────────── -->
-<section class="section section--alt">
-    <div class="container">
-        <div class="grid-2">
-            <div class="about-content" data-animate>
-                <span class="section-label">Bienvenue chez Pascal Hamm Immobilier</span>
-                <h2 class="section-title">Résidence de charme & prestige en Provence</h2>
-                <p class="section-subtitle">
-                    Spécialiste des biens d'exception en Provence et en Espagne, j'accompagne une clientèle exigeante à la recherche de propriétés uniques.
-                </p>
-                <p>
-                    Bastides provençales, villas contemporaines, appartements de standing, domaines viticoles ou résidences en bord de mer - mon expertise couvre tous les types de biens d'exception.
-                </p>
-                <p>
-                    Grâce à ma connaissance approfondie du marché local et à un réseau exclusif, je mets à votre service toute mon expertise pour concrétiser vos projets immobiliers, que vous souhaitiez acquérir, vendre ou investir.
-                </p>
-                <p>
-                    <strong>Discrétion, écoute et accompagnement personnalisé</strong> sont au cœur de ma démarche - votre rêve devient réalité.
-                </p>
-            </div>
-            <div class="about-image" data-animate>
-                <img src="/assets/images/pascal-hamm-provence.jpg" alt="Pascal Hamm - Expert immobilier">
-                <div class="signature">
-                    <img src="/assets/images/signature.png" alt="Signature Pascal Hamm">
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── Services 360° ────────────────────────────────────────── -->
-<section class="section">
-    <div class="container">
-        <div class="section__header text-center" data-animate>
-            <span class="section-label">Notre approche 360°</span>
-            <h2 class="section-title">Immobilier Clef en Main & Solutions de Financement</h2>
-            <p class="section-subtitle">
-                Une expertise complète pour tous vos projets immobiliers
-            </p>
-        </div>
-
-        <div class="services-grid">
-            <div class="service-card" data-animate>
-                <div class="service-icon">
-                    <svg><use xlink:href="#icon-keys"></use></svg>
-                </div>
-                <h3>Immobilier Clef en Main</h3>
-                <p>De la recherche à la signature, je gère l'intégralité de votre projet immobilier pour une expérience sans stress.</p>
-            </div>
-
-            <div class="service-card" data-animate>
-                <div class="service-icon">
-                    <svg><use xlink:href="#icon-finance"></use></svg>
-                </div>
-                <h3>Partenaire en Financements</h3>
-                <p>Accès à des solutions de financement sur mesure et optimisées pour votre projet.</p>
-            </div>
-
-            <div class="service-card" data-animate>
-                <div class="service-icon">
-                    <svg><use xlink:href="#icon-viager"></use></svg>
-                </div>
-                <h3>Expertise Viager</h3>
-                <p>Spécialiste du viager éthique avec des solutions adaptées à chaque situation.</p>
-            </div>
-
-            <div class="service-card" data-animate>
-                <div class="service-icon">
-                    <svg><use xlink:href="#icon-luxury"></use></svg>
-                </div>
-                <h3>Biens d'Exception</h3>
-                <p>Accès à un portefeuille exclusif de propriétés haut de gamme en Provence et en Espagne.</p>
-            </div>
-
-            <div class="service-card" data-animate>
-                <div class="service-icon">
-                    <svg><use xlink:href="#icon-investment"></use></svg>
-                </div>
-                <h3>Investissement Immobilier</h3>
-                <p>Conseil en investissement locatif et patrimonial avec optimisation fiscale.</p>
-            </div>
-
-            <div class="service-card" data-animate>
-                <div class="service-icon">
-                    <svg><use xlink:href="#icon-renovation"></use></svg>
-                </div>
-                <h3>Gestion de Projet</h3>
-                <p>Accompagnement complet pour les projets de rénovation ou de construction.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── Featured Properties ───────────────────────────────────── -->
-<section class="section section--alt">
-    <div class="container">
-        <div class="section__header text-center" data-animate>
-            <span class="section-label">Nos coups de cœur</span>
-            <h2 class="section-title">Propriétés d'exception</h2>
-        </div>
-
-        <div class="featured-slider">
-            <div class="featured-property" data-animate>
-                <div class="featured-image">
-                    <img src="/assets/images/featured1.jpg" alt="Propriété d'exception 1">
-                </div>
-                <div class="featured-content">
-                    <h3>Bastide provençale avec vue sur Luberon</h3>
-                    <p class="price">Prix sur demande</p>
-                    <p class="location">Lourmarin (84)</p>
-                    <div class="features">
-                        <span>6 chambres</span>
-                        <span>4 salles de bain</span>
-                        <span>350 m²</span>
-                        <span>2 ha de terrain</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="featured-property" data-animate>
-                <div class="featured-image">
-                    <img src="/assets/images/featured2.jpg" alt="Propriété d'exception 2">
-                </div>
-                <div class="featured-content">
-                    <h3>Villa contemporaine en bord de mer</h3>
-                    <p class="price">€2 850 000</p>
-                    <p class="location">Cassis (13)</p>
-                    <div class="features">
-                        <span>4 chambres</span>
-                        <span>3 salles de bain</span>
-                        <span>220 m²</span>
-                        <span>1 200 m² de terrain</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="featured-property" data-animate>
-                <div class="featured-image">
-                    <img src="/assets/images/featured3.jpg" alt="Propriété d'exception 3">
-                </div>
-                <div class="featured-content">
-                    <h3>Domaine viticole en Côtes de Provence</h3>
-                    <p class="price">Prix sur demande</p>
-                    <p class="location">Les Arcs-sur-Argens (83)</p>
-                    <div class="features">
-                        <span>8 chambres</span>
-                        <span>5 salles de bain</span>
-                        <span>450 m²</span>
-                        <span>15 ha de vignes</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── Viager Section ────────────────────────────────────────── -->
-<section class="section">
-    <div class="container">
-        <div class="section__header text-center" data-animate>
-            <span class="section-label">Solutions innovantes</span>
-            <h2 class="section-title">Le Viager Éthique by EXP REALTY</h2>
-            <p class="section-subtitle">
-                Une approche moderne et sécurisée du viager pour toutes les parties
-            </p>
-        </div>
-
-        <div class="viager-grid">
-            <div class="viager-card" data-animate>
-                <div class="viager-icon">
-                    <svg><use xlink:href="#icon-handshake"></use></svg>
-                </div>
-                <h3>Viager occupé sans rente</h3>
-                <p>Solution 100% bouquet pour une acquisition immédiate sans paiement de rente.</p>
-            </div>
-
-            <div class="viager-card" data-animate>
-                <div class="viager-icon">
-                    <svg><use xlink:href="#icon-calculator"></use></svg>
-                </div>
-                <h3>Viager libre</h3>
-                <p>Acquisition immédiate d'un bien libre d'occupation avec paiement différé.</p>
-            </div>
-
-            <div class="viager-card" data-animate>
-                <div class="viager-icon">
-                    <svg><use xlink:href="#icon-family"></use></svg>
-                </div>
-                <h3>Viager familial</h3>
-                <p>Solutions adaptées pour les transmissions intrafamiliales.</p>
-            </div>
-
-            <div class="viager-card" data-animate>
-                <div class="viager-icon">
-                    <svg><use xlink:href="#icon-invest"></use></svg>
-                </div>
-                <h3>Viager investissement</h3>
-                <p>Opportunités d'investissement avec rendement attractif.</p>
-            </div>
-        </div>
-
-        <div class="viager-cta" data-animate>
-            <p>Vous souhaitez en savoir plus sur le viager ou évaluer une opportunité ?</p>
-            <a href="#contact" class="btn btn--accent">Demander une étude personnalisée</a>
-        </div>
-    </div>
-</section>
-
-<!-- ── Contact Section ───────────────────────────────────────── -->
-<section class="section section--alt" id="contact">
-    <div class="container">
-        <div class="section__header text-center" data-animate>
-            <span class="section-label">Contactez-nous</span>
-            <h2 class="section-title">Je suis là pour vous aider</h2>
-            <p class="section-subtitle">
-                Contactez-moi dès aujourd'hui pour commencer une conversation sur votre projet immobilier.
-            </p>
-        </div>
-
-        <div class="contact-grid">
-            <div class="contact-info" data-animate>
-                <div class="contact-method">
-                    <div class="contact-icon">
-                        <svg><use xlink:href="#icon-phone"></use></svg>
-                    </div>
-                    <h3>Téléphone</h3>
-                    <p>+33 6 67 19 83 66</p>
-                </div>
-
-                <div class="contact-method">
-                    <div class="contact-icon">
-                        <svg><use xlink:href="#icon-whatsapp"></use></svg>
-                    </div>
-                    <h3>WhatsApp</h3>
-                    <p>Disponible sur WhatsApp</p>
-                </div>
-
-                <div class="contact-method">
-                    <div class="contact-icon">
-                        <svg><use xlink:href="#icon-email"></use></svg>
-                    </div>
-                    <h3>E-mail</h3>
-                    <p>pascal.hamm@expfrance.fr</p>
-                </div>
-
-                <div class="contact-social">
-                    <h3>Réseaux sociaux</h3>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/people/Pascal-Hamm/" class="social-link" aria-label="Facebook">
-                            <svg><use xlink:href="#icon-facebook"></use></svg>
-                        </a>
-                        <a href="https://www.instagram.com/pascal.hamm2025" class="social-link" aria-label="Instagram">
-                            <svg><use xlink:href="#icon-instagram"></use></svg>
-                        </a>
-                        <a href="https://www.linkedin.com/in/pascal-hamm2025immobilierclefenmaincourtagefinancier" class="social-link" aria-label="LinkedIn">
-                            <svg><use xlink:href="#icon-linkedin"></use></svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="contact-form" data-animate>
-                <form id="contact-form">
-                    <div class="form-group">
-                        <input type="text" name="name" placeholder="Votre nom" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" name="email" placeholder="Votre email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="tel" name="phone" placeholder="Votre téléphone">
-                    </div>
-                    <div class="form-group">
-                        <select name="subject" required>
-                            <option value="">Type de demande</option>
-                            <option value="achat">Achat immobilier</option>
-                            <option value="vente">Vente immobilière</option>
-                            <option value="viager">Viager</option>
-                            <option value="financement">Financement</option>
-                            <option value="autre">Autre demande</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <textarea name="message" placeholder="Votre message" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn--accent">Envoyer ma demande</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── Testimonials ─────────────────────────────────────────── -->
-<section class="section">
-    <div class="container">
-        <div class="section__header text-center" data-animate>
-            <span class="section-label">Témoignages</span>
-            <h2 class="section-title">Ce que disent nos clients</h2>
-        </div>
-
-        <div class="testimonial-slider">
-            <div class="testimonial" data-animate>
-                <div class="testimonial-content">
-                    <p>"Pascal Hamm a su trouver la propriété de nos rêves en Provence. Son expertise et son réseau nous ont permis d'acquérir une bastide exceptionnelle à un prix très compétitif. Son accompagnement tout au long du processus a été exemplaire."</p>
-                </div>
-                <div class="testimonial-author">
-                    <img src="/assets/images/client1.jpg" alt="Jean et Marie D.">
-                    <div>
-                        <h4>Jean et Marie D.</h4>
-                        <p>Acheteurs d'une bastide provençale</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="testimonial" data-animate>
-                <div class="testimonial-content">
-                    <p>"Grâce à l'expertise de Pascal en viager, nous avons pu vendre notre bien dans des conditions optimales tout en sécurisant notre avenir. Une approche humaine et professionnelle que je recommande sans hésiter."</p>
-                </div>
-                <div class="testimonial-author">
-                    <img src="/assets/images/client2.jpg" alt="Claire M.">
-                    <div>
-                        <h4>Claire M.</h4>
-                        <p>Vendeuse en viager</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── CTA Final ─────────────────────────────────────────────── -->
-<section class="cta-final">
-    <div class="container">
-        <div class="cta-content" data-animate>
-            <h2>Votre projet immobilier mérite une expertise 360°</h2>
-            <p>Que vous cherchiez à acheter, vendre, investir ou optimiser votre patrimoine, Pascal Hamm et son équipe vous accompagnent avec professionnalisme et discrétion.</p>
-            <a href="#contact" class="btn btn--accent btn--lg">Contactez-nous dès maintenant</a>
-        </div>
-    </div>
-</section>
-
-<!-- ── JSON-LD Schema ────────────────────────────────────────── -->
-<?php
-$jsonLd = json_encode([
-    "@context" => "https://schema.org",
-    "@type" => "RealEstateAgent",
-    "name" => "BeckHamm Real Estate Properties",
-    "description" => "Spécialiste des biens d'exception en Provence et en Espagne, accompagnement 360° en immobilier clef en main et solutions de financement.",
-    "url" => "https://www.pascalhamm-immobilier.com",
-    "telephone" => "+33667198366",
-    "email" => "pascal.hamm@expfrance.fr",
-    "address" => [
-        "@type" => "PostalAddress",
-        "streetAddress" => "Adresse à préciser",
-        "addressLocality" => "Aix-en-Provence",
-        "addressRegion" => "Provence-Alpes-Côte d'Azur",
-        "postalCode" => "13100",
-        "addressCountry" => "FR"
+<script type="application/ld+json">
+<?= json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'RealEstateAgent',
+    'name' => 'Pascal Hamm - BeckHamm Real Estate',
+    'description' => 'Expert immobilier indépendant spécialisé dans les biens d\'exception en Provence et en Espagne.',
+    'address' => [
+        '@type' => 'PostalAddress',
+        'streetAddress' => 'Aix-en-Provence, Pays d\'Aix',
+        'addressLocality' => 'Aix-en-Provence',
+        'addressRegion' => 'Provence-Alpes-Côte d\'Azur',
+        'postalCode' => '13100',
+        'addressCountry' => 'FR',
     ],
-    "sameAs" => [
-        "https://www.facebook.com/people/Pascal-Hamm/",
-        "https://www.instagram.com/pascal.hamm2025",
-        "https://www.linkedin.com/in/pascal-hamm2025immobilierclefenmaincourtagefinancier"
-    ],
-    "areaServed" => [
-        "@type" => "Place",
-        "name" => "Provence-Alpes-Côte d'Azur"
-    ],
-    "makesOffer" => [
-        "@type" => "Offer",
-        "name" => "Immobilier clef en main",
-        "description" => "Accompagnement complet pour l'achat ou la vente de biens immobiliers"
-    ],
-    "hasOfferCatalog" => [
-        "@type" => "OfferCatalog",
-        "name" => "Services immobiliers",
-        "itemListElement" => [
-            [
-                "@type" => "Offer",
-                "name" => "Achat immobilier",
-                "description" => "Recherche et acquisition de biens immobiliers"
+    'telephone' => '+33667198366',
+    'email' => 'pascal.hamm@expfrance.fr',
+    'url' => 'https://www.pascal-hamm-immobilier.fr',
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
+</script>
+<script type="application/ld+json">
+<?= json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'FAQPage',
+    'mainEntity' => [
+        [
+            '@type' => 'Question',
+            'name' => 'Comment fonctionne le viager éthique ?',
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text' => 'Le viager éthique est une solution encadrée avec accompagnement juridique et financier personnalisé.',
             ],
-            [
-                "@type" => "Offer",
-                "name" => "Vente immobilière",
-                "description" => "Vente de biens avec stratégie optimisée"
+        ],
+        [
+            '@type' => 'Question',
+            'name' => 'Quels sont les avantages d\'acheter avec un expert 360° ?',
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text' => 'Vous centralisez recherche, négociation, financement et suivi administratif avec un interlocuteur unique.',
             ],
-            [
-                "@type" => "Offer",
-                "name" => "Viager éthique",
-                "description" => "Solutions de viager pour vendeurs et acquéreurs"
-            ],
-            [
-                "@type" => "Offer",
-                "name" => "Financement immobilier",
-                "description" => "Accompagnement dans la recherche de solutions de financement"
-            ]
-        ]
-    ]
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-?>
-<script type="application/ld+json"><?= $jsonLd ?></script>
+        ],
+    ],
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
+</script>
+<script>
+// Hook A/B testing basique (peut être branché à Google Optimize, AB Tasty, etc.).
+(function() {
+  const variant = Math.random() < 0.5 ? 'A' : 'B';
+  const a = document.getElementById('cta-primary-a');
+  const b = document.getElementById('cta-primary-b');
+  const field = document.getElementById('ab_variant');
+  if (variant === 'B' && a && b) {
+    a.hidden = true;
+    b.hidden = false;
+  }
+  if (field) field.value = variant;
+})();
 
-<!-- ── Cookie Banner ─────────────────────────────────────────── -->
-<div id="cookie-banner">
-    <div class="cookie-content">
-        <p>🍪 Ce site utilise des cookies pour améliorer votre expérience. En continuant à naviguer, vous acceptez leur utilisation.</p>
-        <div class="cookie-actions">
-            <button id="cookie-refuse" class="btn btn--outline">Refuser</button>
-            <button id="cookie-accept" class="btn btn--accent">Accepter</button>
-        </div>
-    </div>
-</div>
+document.querySelectorAll('.faq-question').forEach((button) => {
+  button.addEventListener('click', () => {
+    const answer = document.getElementById(button.getAttribute('aria-controls'));
+    const expanded = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    if (answer) {
+      answer.hidden = expanded;
+    }
+  });
+});
+</script>

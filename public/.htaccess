@@ -1,24 +1,11 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Ne pas réécrire les fichiers existants
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
+    # Si le fichier (CSS, image, etc.) ou le dossier existe physiquement, on le charge normalement
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
 
-    # Assurez-vous que les fichiers CSS sont servis avec le bon type MIME
-    RewriteCond %{REQUEST_URI} \.css$
-    RewriteRule ^ - [L,T=text/css]
-
-    # Réécrire toutes les autres requêtes vers index.php
-    RewriteRule ^(.*)$ index.php [QSA,L]
+    # Pour tout le reste (les URL virtuelles), on redirige vers index.php
+    RewriteRule ^ index.php [QSA,L]
 </IfModule>
-
-# Assurez-vous que les fichiers CSS sont servis avec le bon type MIME
-<IfModule mod_mime.c>
-    AddType text/css .css
-</IfModule>
-
-# Désactivez le parsing PHP pour les fichiers CSS
-<FilesMatch "\.css$">
-    SetHandler default-handler
-</FilesMatch>

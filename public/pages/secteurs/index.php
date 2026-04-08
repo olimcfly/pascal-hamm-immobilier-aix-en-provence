@@ -1,232 +1,206 @@
 <?php
-// Métadonnées SEO
-$pageTitle = 'Nos secteurs immobiliers en Provence - Expertise locale | Pascal Hamm Immobilier';
-$pageDescription = 'Découvrez nos secteurs d\'intervention autour d\'Aix-en-Provence. Expertise locale pour Aix-en-Provence, Bouc-Bel-Air, Eguilles et leurs alentours.';
-$pageKeywords = 'secteurs immobiliers Provence, expert immobilier Aix-en-Provence, immobilier Bouc-Bel-Air, immobilier Eguilles, immobilier Simiane-Collongue, immobilier Beaurecueil';
-$canonicalUrl = 'https://votresite.com/secteurs-immobiliers';
-
-// Schema.org
-$schemaMarkup = '
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "Pascal Hamm - Expert immobilier",
-  "description": "Expertise immobilière locale dans les secteurs d\'Aix-en-Provence et ses alentours.",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Aix-en-Provence",
-    "addressRegion": "Provence-Alpes-Côte d\'Azur",
-    "postalCode": "13090",
-    "addressCountry": "FR"
-  },
-  "telephone": "+33412345678",
-  "url": "https://votresite.com",
-  "openingHours": "Mo-Sa 09:00-19:00",
-  "hasMap": "https://www.google.com/maps/place/Aix-en-Provence",
-  "areaServed": {
-    "@type": "GeoCircle",
-    "geoMidpoint": {
-      "@type": "GeoCoordinates",
-      "latitude": 43.5297,
-      "longitude": 5.4442
-    },
-    "geoRadius": "20"
-  },
-  "sameAs": [
-    "https://www.facebook.com/votrepage",
-    "https://www.linkedin.com/company/votresociete"
-  ]
-}
-</script>
-';
-
-// CSS
-$cssFiles = ['/assets/css/secteurs.css', '/assets/css/animations.css'];
-
-// Données des secteurs (à remplacer par une requête à votre base de données)
-$sectors = [
-    [
-        'name' => 'Aix-en-Provence',
-        'type' => 'Centre-ville',
-        'description' => 'Notre zone d\'intervention principale avec une connaissance approfondie des quartiers : Mazarin, Sextius, Jas de Bouffan, etc.',
-        'stats' => [
-            'Prix moyen au m² : 3 200 €',
-            'Temps de vente moyen : 45 jours'
-        ],
-        'url' => '/villes/aix-en-provence-immobilier'
-    ],
-    [
-        'name' => 'Bouc-Bel-Air',
-        'type' => 'Zone résidentielle',
-        'description' => 'Commune rurale avec des propriétés spacieuses et un cadre de vie préservé.',
-        'stats' => [
-            'Prix moyen au m² : 2 100 €',
-            'Temps de vente moyen : 50 jours'
-        ],
-        'url' => '/villes/bouc-bel-air-immobilier'
-    ],
-    [
-        'name' => 'Simiane-Collongue',
-        'type' => 'Campagne',
-        'description' => 'Commune rurale avec des propriétés spacieuses et un cadre de vie préservé.',
-        'stats' => [
-            'Prix moyen au m² : 2 100 €',
-            'Temps de vente moyen : 50 jours'
-        ],
-        'url' => '/villes/simiane-collongue-immobilier'
-    ],
-    [
-        'name' => 'Beaurecueil',
-        'type' => 'Village',
-        'description' => 'Petit village résidentiel très prisé pour sa proximité avec Aix-en-Provence.',
-        'stats' => [
-            'Prix moyen au m² : 2 800 €',
-            'Temps de vente moyen : 30 jours'
-        ],
-        'url' => '/villes/beaurecueil-immobilier'
-    ]
-];
+$pageTitle    = 'Nos secteurs immobiliers en Provence — Expertise locale | Pascal Hamm';
+$metaDesc     = 'Découvrez nos secteurs d\'intervention autour d\'Aix-en-Provence. Expertise locale pour Aix-en-Provence, Venelles, Bouc-Bel-Air, Eguilles et leurs alentours.';
+$metaKeywords = 'secteurs immobiliers Provence, expert immobilier Aix-en-Provence, immobilier Bouc-Bel-Air, immobilier Eguilles, immobilier Simiane-Collongue';
+$extraCss     = ['/assets/css/villes.css'];
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?php echo htmlspecialchars($pageDescription); ?>">
-    <meta name="keywords" content="<?php echo htmlspecialchars($pageKeywords); ?>">
-    <meta name="robots" content="index, follow">
-    <title><?php echo htmlspecialchars($pageTitle); ?></title>
-    <link rel="canonical" href="<?php echo htmlspecialchars($canonicalUrl); ?>">
-    <?php foreach ($cssFiles as $cssFile): ?>
-        <link rel="stylesheet" href="<?php echo htmlspecialchars($cssFile); ?>" onerror="console.error('Failed to load CSS: <?php echo htmlspecialchars($cssFile); ?>')">
-    <?php endforeach; ?>
-    <?php echo $schemaMarkup; ?>
-</head>
-<body>
-    <header>
-        <!-- Votre header ici -->
-    </header>
+<section class="hero hero--light" aria-labelledby="secteurs-hero-title">
+    <div class="container">
+        <div class="hero__content" style="max-width:700px">
+            <span class="section-label">Secteurs</span>
+            <h1 id="secteurs-hero-title" style="color:var(--clr-primary)">Nos secteurs immobiliers en Provence</h1>
+            <p class="hero__subtitle" style="color:var(--clr-text-muted)">Expertise locale pour une transaction immobilière sereine dans toute la région d'Aix-en-Provence et le Pays d'Aix.</p>
+        </div>
+    </div>
+</section>
 
-    <main>
-        <section class="section hero-section" aria-labelledby="secteurs-hero">
-            <div class="container">
-                <h1 id="secteurs-hero">Nos secteurs immobiliers en Provence</h1>
-                <p class="lead">Expertise locale pour une transaction immobilière sereine dans toute la région d'Aix-en-Provence</p>
-            </div>
-        </section>
-
-        <section class="section introduction" aria-labelledby="secteurs-intro">
-            <div class="container">
-                <div class="sectors-intro">
-                    <p>Nous intervenons sur l'ensemble des communes et quartiers autour d'Aix-en-Provence, avec une connaissance approfondie des spécificités locales de chaque secteur.</p>
-                    <p>Notre couverture géographique s'étend des centres-villes aux zones résidentielles, en passant par les villages environnants.</p>
+<!-- Villes -->
+<section class="section" aria-labelledby="villes-title">
+    <div class="container">
+        <div class="section__header">
+            <span class="section-label">Villes</span>
+            <h2 id="villes-title" class="section-title">Villes couvertes</h2>
+            <p class="section-subtitle">Pascal Hamm intervient sur l'ensemble des communes du Pays d'Aix avec une connaissance approfondie de chaque secteur.</p>
+        </div>
+        <div class="cities-grid">
+            <a href="<?= url('/secteurs/villes/aix-en-provence') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Aix-en-Provence</h3>
+                    <p class="city-card__desc">Zone principale d'intervention — quartiers historiques, résidentiels et périphérie.</p>
+                    <span class="city-card__cta">Découvrir →</span>
                 </div>
-            </div>
-        </section>
-
-        <section class="section map-section" aria-labelledby="secteurs-map">
-            <div class="container">
-                <div class="sectors-map">
-                    <img src="/assets/images/secteurs-carte.jpg" alt="Carte des secteurs immobiliers couverts par Pascal Hamm Immobilier" class="map-image" loading="lazy">
-                    <div class="map-legend">
-                        <h3>Légende</h3>
-                        <ul>
-                            <li><span class="legend-color color-1" aria-label="Centre-ville"></span> Centre-ville</li>
-                            <li><span class="legend-color color-2" aria-label="Zones résidentielles"></span> Zones résidentielles</li>
-                            <li><span class="legend-color color-3" aria-label="Villages et campagnes"></span> Villages et campagnes</li>
-                        </ul>
-                    </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/venelles') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Venelles</h3>
+                    <p class="city-card__desc">Village résidentiel calme au nord d'Aix, très prisé des familles.</p>
+                    <span class="city-card__cta">Découvrir →</span>
                 </div>
-            </div>
-        </section>
-
-        <section class="section sectors-grid-section" aria-labelledby="secteurs-grid">
-            <div class="container">
-                <h2 id="secteurs-grid">Nos secteurs d'intervention</h2>
-
-                <?php if (!empty($sectors)): ?>
-                    <div class="sectors-grid">
-                        <?php foreach ($sectors as $sector): ?>
-                            <article class="sector-card" itemscope itemtype="https://schema.org/Place">
-                                <div class="sector-header" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-                                    <h2 itemprop="addressLocality"><?php echo htmlspecialchars($sector['name']); ?></h2>
-                                    <span class="sector-type" itemprop="addressRegion"><?php echo htmlspecialchars($sector['type']); ?></span>
-                                </div>
-                                <div class="sector-content" itemprop="description">
-                                    <p><?php echo htmlspecialchars($sector['description']); ?></p>
-                                    <ul class="sector-stats">
-                                        <?php foreach ($sector['stats'] as $stat): ?>
-                                            <li><?php echo htmlspecialchars($stat); ?></li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                    <a href="<?php echo htmlspecialchars($sector['url']); ?>" class="btn btn-primary" itemprop="url">Découvrir <?php echo htmlspecialchars($sector['name']); ?></a>
-                                </div>
-                            </article>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else: ?>
-                    <p>Aucun secteur disponible pour le moment. Contactez-nous pour plus d'informations.</p>
-                <?php endif; ?>
-            </div>
-        </section>
-
-        <section class="section expertise-section" aria-labelledby="expertise-section">
-            <div class="container">
-                <h2 id="expertise-section">Pourquoi choisir un expert local ?</h2>
-                <p>Chaque secteur a ses particularités : prix, demande, types de biens, etc. Notre connaissance approfondie de chaque zone nous permet de vous conseiller au mieux pour votre projet immobilier.</p>
-
-                <div class="expertise-points">
-                    <div class="point">
-                        <h3>Analyse précise</h3>
-                        <p>Nous connaissons les spécificités de chaque quartier et leur évolution.</p>
-                    </div>
-                    <div class="point">
-                        <h3>Conseils adaptés</h3>
-                        <p>Notre expertise locale vous garantit des conseils pertinents et personnalisés.</p>
-                    </div>
-                    <div class="point">
-                        <h3>Réseau local</h3>
-                        <p>Nous avons un réseau solide d'acteurs locaux pour faciliter vos transactions.</p>
-                    </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/bouc-bel-air') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Bouc-Bel-Air</h3>
+                    <p class="city-card__desc">Commune résidentielle au sud d'Aix, espaces verts et cadre de vie paisible.</p>
+                    <span class="city-card__cta">Découvrir →</span>
                 </div>
-            </div>
-        </section>
-
-        <section class="section cta-section" aria-labelledby="secteurs-cta">
-            <div class="container">
-                <div class="cta-section">
-                    <h2 id="secteurs-cta">Vous avez un projet immobilier dans l'un de ces secteurs ?</h2>
-                    <p>Contactez-nous pour une expertise locale et des conseils personnalisés.</p>
-                    <a href="/contact" class="btn btn-primary btn-lg">Contactez-nous</a>
+            </a>
+            <a href="<?= url('/secteurs/villes/le-tholonet') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Le Tholonet</h3>
+                    <p class="city-card__desc">Village de charme au pied de la Sainte-Victoire, propriétés de caractère.</p>
+                    <span class="city-card__cta">Découvrir →</span>
                 </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/eguilles') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Eguilles</h3>
+                    <p class="city-card__desc">Village perché à l'ouest d'Aix, vues panoramiques et mas provençaux.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/simiane-collongue') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Simiane-Collongue</h3>
+                    <p class="city-card__desc">Commune verdoyante entre Aix et Marseille, cadre naturel préservé.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/gardanne') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Gardanne</h3>
+                    <p class="city-card__desc">Ville dynamique entre Aix et Marseille, prix attractifs et bonne desserte.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/lambesc') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Lambesc</h3>
+                    <p class="city-card__desc">Bourg provençal typique à l'ouest d'Aix, bastides et maisons de village.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/meyreuil') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Meyreuil</h3>
+                    <p class="city-card__desc">Village résidentiel à l'est d'Aix, calme et proche du bassin minier.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/rognes') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Rognes</h3>
+                    <p class="city-card__desc">Village provençal au nord-ouest d'Aix, propriétés rurales et vignobles.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/saint-cannat') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Saint-Cannat</h3>
+                    <p class="city-card__desc">Commune entre Aix et Salon-de-Provence, maisons provençales abordables.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/villes/ventabren') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Ventabren</h3>
+                    <p class="city-card__desc">Village médiéval surplombant l'Arc, vues d'exception et biens de caractère.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Quartiers d'Aix -->
+<section class="section section--alt" aria-labelledby="quartiers-title">
+    <div class="container">
+        <div class="section__header">
+            <span class="section-label">Quartiers d'Aix-en-Provence</span>
+            <h2 id="quartiers-title" class="section-title">Quartiers couverts</h2>
+            <p class="section-subtitle">Une connaissance fine de chaque quartier aixois pour vous orienter vers le bien qui correspond à votre projet.</p>
+        </div>
+        <div class="cities-grid">
+            <a href="<?= url('/secteurs/quartiers/mazarin') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Mazarin</h3>
+                    <p class="city-card__desc">Quartier historique haussmannien, hôtels particuliers et immeubles de prestige.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/quartiers/centre-ville') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Centre-ville</h3>
+                    <p class="city-card__desc">Le cœur d'Aix — Cours Mirabeau, vieux-Aix, commerces et vie culturelle.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/quartiers/puyricard') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Puyricard</h3>
+                    <p class="city-card__desc">Quartier résidentiel premium au nord — villas, piscines et grand calme.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/quartiers/jas-de-bouffan') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Jas de Bouffan</h3>
+                    <p class="city-card__desc">Quartier résidentiel à l'ouest, maisons individuelles et résidences récentes.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/quartiers/luynes') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Luynes</h3>
+                    <p class="city-card__desc">Village intégré au sud-ouest d'Aix, pavillons et copropriétés récentes.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+            <a href="<?= url('/secteurs/quartiers/les-milles') ?>" class="city-card">
+                <div class="city-card__body">
+                    <h3 class="city-card__name">Les Milles</h3>
+                    <p class="city-card__desc">Secteur économique et résidentiel au sud, technopôle et résidences modernes.</p>
+                    <span class="city-card__cta">Découvrir →</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Pourquoi un expert local -->
+<section class="section" aria-labelledby="expertise-title">
+    <div class="container">
+        <div class="section__header">
+            <span class="section-label">Notre expertise</span>
+            <h2 id="expertise-title" class="section-title">Pourquoi choisir un expert local ?</h2>
+        </div>
+        <div class="grid-3">
+            <div class="card" data-animate>
+                <h3 class="card__title">Connaissance précise</h3>
+                <p class="card__text">Chaque secteur a ses particularités de prix, de demande et de types de biens. Notre expertise hyperlocale vous garantit une évaluation juste.</p>
             </div>
-        </section>
-    </main>
+            <div class="card" data-animate>
+                <h3 class="card__title">Réseau local solide</h3>
+                <p class="card__text">Notaires, courtiers, artisans — notre réseau de partenaires locaux facilite chaque étape de votre transaction immobilière.</p>
+            </div>
+            <div class="card" data-animate>
+                <h3 class="card__title">Accès off-market</h3>
+                <p class="card__text">Des biens non publiés sur les portails, disponibles en exclusivité grâce à notre ancrage local et notre portefeuille de vendeurs.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <footer>
-        <!-- Votre footer ici -->
-    </footer>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Vérification du chargement des secteurs
-        const sectors = document.querySelectorAll('.sector-card');
-        if (sectors.length === 0) {
-            console.warn('Aucun secteur trouvé. Vérifiez votre base de données ou le chargement des données.');
-        } else {
-            console.log(`Nombre de secteurs chargés: ${sectors.length}`);
-        }
-
-        // Vérification du chargement des fichiers CSS
-        <?php foreach ($cssFiles as $cssFile): ?>
-            const cssLoaded = document.querySelector(`link[href="<?php echo htmlspecialchars($cssFile); ?>"]`);
-            if (!cssLoaded || !cssLoaded.rel === 'stylesheet') {
-                console.error('CSS non chargé: <?php echo htmlspecialchars($cssFile); ?>');
-            }
-        <?php endforeach; ?>
-    });
-    </script>
-</body>
-</html>
+<!-- CTA -->
+<section class="cta-banner">
+    <div class="container">
+        <div class="cta-banner__content">
+            <h2 class="cta-banner__title">Vous avez un projet dans l'un de ces secteurs ?</h2>
+            <p class="cta-banner__text">Contactez Pascal pour une expertise locale et des conseils personnalisés.</p>
+            <div class="cta-banner__actions">
+                <a href="<?= url('/estimation-gratuite') ?>" class="btn btn--accent">Estimation gratuite</a>
+                <a href="<?= url('/contact') ?>" class="btn btn--outline-white">Nous contacter</a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,35 +1,113 @@
 <?php
-$pageTitle = 'Blog immobilier — Pascal Hamm';
-$metaDesc  = 'Conseils et actualités du marché immobilier aixois';
+$pageTitle = 'Blog immobilier — Conseils & Actualités | Pascal Hamm';
+$metaDesc  = 'Conseils, guides et actualités du marché immobilier à Aix-en-Provence et dans le Pays d\'Aix. Expertise locale par Pascal Hamm, expert immobilier indépendant.';
 $extraCss  = ['/assets/css/guide.css'];
-$extraJs   = ['/assets/js/guide.js'];
 
-require_once ROOT_PATH . '/core/helpers/cms.php';
 require_once ROOT_PATH . '/core/helpers/articles.php';
 
-$hero = get_page_content('blog', 'hero');
-$articles = get_articles_list();
+try {
+    $articles = get_articles_list(12);
+} catch (\Throwable $e) {
+    $articles = [];
+}
 ?>
 
-<section class="hero">
+<section class="hero hero--light" aria-labelledby="blog-hero-title">
     <div class="container">
-        <h1><?= e($hero['title'] ?? 'Blog immobilier') ?></h1>
-        <p><?= e($hero['subtitle'] ?? 'Conseils et actualités du marché immobilier aixois') ?></p>
+        <div class="hero__content" style="max-width:700px">
+            <span class="section-label">Blog immobilier</span>
+            <h1 id="blog-hero-title" style="color:var(--clr-primary)">Conseils & Actualités immobilières</h1>
+            <p class="hero__subtitle" style="color:var(--clr-text-muted)">Guides pratiques, analyses de marché et conseils d'expert pour réussir votre projet immobilier dans le Pays d'Aix.</p>
+        </div>
     </div>
 </section>
 
-<section class="articles-list section">
+<section class="section">
     <div class="container">
+
         <?php if (empty($articles)): ?>
-            <p>Aucun article publié pour le moment.</p>
+            <!-- État vide — pas encore d'articles publiés -->
+            <div style="text-align:center;padding:4rem 1rem;max-width:560px;margin:0 auto">
+                <div style="font-size:4rem;margin-bottom:1.5rem">📝</div>
+                <h2 style="margin-bottom:1rem">Des articles arrivent bientôt</h2>
+                <p style="color:var(--clr-text-muted);margin-bottom:2rem">
+                    Notre équipe prépare des guides et analyses du marché immobilier aixois. En attendant, consultez nos ressources ci-dessous.
+                </p>
+                <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+                    <a href="<?= url('/guides/guide-vendeur') ?>" class="btn btn--primary">Guide du vendeur</a>
+                    <a href="<?= url('/guides/guide-acheteur') ?>" class="btn btn--outline">Guide de l'acheteur</a>
+                </div>
+            </div>
+
+            <!-- Ressources alternatives -->
+            <div style="margin-top:4rem;padding-top:3rem;border-top:1px solid var(--clr-border)">
+                <div class="section__header text-center">
+                    <span class="section-label">Nos ressources</span>
+                    <h2 class="section-title">Guides pratiques disponibles</h2>
+                </div>
+                <div class="grid-3" style="margin-top:2rem">
+                    <a href="<?= url('/guides/guide-vendeur') ?>" class="card" style="text-decoration:none;display:block">
+                        <div style="padding:1.75rem">
+                            <div style="font-size:2.5rem;margin-bottom:1rem">🏠</div>
+                            <h3 class="card__title">Guide du vendeur</h3>
+                            <p class="card__text">Tout ce qu'il faut savoir pour vendre votre bien au meilleur prix dans le Pays d'Aix.</p>
+                            <span style="color:var(--clr-primary);font-weight:600;font-size:.875rem;margin-top:1rem;display:inline-block">Lire le guide →</span>
+                        </div>
+                    </a>
+                    <a href="<?= url('/guides/guide-acheteur') ?>" class="card" style="text-decoration:none;display:block">
+                        <div style="padding:1.75rem">
+                            <div style="font-size:2.5rem;margin-bottom:1rem">🔑</div>
+                            <h3 class="card__title">Guide de l'acheteur</h3>
+                            <p class="card__text">Les étapes clés pour acheter sereinement et sécuriser votre transaction immobilière.</p>
+                            <span style="color:var(--clr-primary);font-weight:600;font-size:.875rem;margin-top:1rem;display:inline-block">Lire le guide →</span>
+                        </div>
+                    </a>
+                    <a href="<?= url('/financement') ?>" class="card" style="text-decoration:none;display:block">
+                        <div style="padding:1.75rem">
+                            <div style="font-size:2.5rem;margin-bottom:1rem">💰</div>
+                            <h3 class="card__title">Guide du financement</h3>
+                            <p class="card__text">Simulateur de prêt, conseils sur les taux et les conditions d'emprunt en 2024.</p>
+                            <span style="color:var(--clr-primary);font-weight:600;font-size:.875rem;margin-top:1rem;display:inline-block">Voir le financement →</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
         <?php else: ?>
-            <?php foreach ($articles as $article): ?>
-                <article class="article-card">
-                    <h2><?= e($article['title']) ?></h2>
-                    <p><?= e($article['excerpt']) ?></p>
-                    <a href="/blog/<?= rawurlencode((string) $article['slug']) ?>" class="btn">Lire la suite</a>
+            <!-- Grille d'articles -->
+            <div class="grid-3">
+                <?php foreach ($articles as $article): ?>
+                <article class="card" style="display:flex;flex-direction:column">
+                    <div style="padding:1.75rem;flex:1;display:flex;flex-direction:column">
+                        <h2 class="card__title" style="font-size:1.15rem;margin-bottom:.75rem">
+                            <?= e($article['title']) ?>
+                        </h2>
+                        <p class="card__text" style="flex:1;margin-bottom:1.25rem">
+                            <?= e($article['excerpt']) ?>
+                        </p>
+                        <a href="<?= url('/blog/' . rawurlencode((string) $article['slug'])) ?>"
+                           class="btn btn--outline btn--sm" style="align-self:flex-start">
+                            Lire l'article →
+                        </a>
+                    </div>
                 </article>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
+
+    </div>
+</section>
+
+<!-- CTA newsletter / contact -->
+<section class="cta-banner">
+    <div class="container">
+        <div class="cta-banner__content">
+            <h2 class="cta-banner__title">Une question sur le marché immobilier aixois ?</h2>
+            <p class="cta-banner__text">Contactez Pascal directement pour un conseil personnalisé et gratuit.</p>
+            <div class="cta-banner__actions">
+                <a href="<?= url('/contact') ?>" class="btn btn--accent">Poser ma question</a>
+                <a href="<?= url('/estimation-gratuite') ?>" class="btn btn--outline-white">Estimation gratuite</a>
+            </div>
+        </div>
     </div>
 </section>

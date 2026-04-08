@@ -83,4 +83,4 @@ $metaDesc = 'Découvrez les avis vérifiés de nos clients satisfaits. Pascal Ha
                     'date' => 'Avril 2024',
                     'service' => 'vente',
                     'ville' => 'Beaurecueil',
-                    'text' => 'Notre bastide provençale vendue en 10 jours au prix demandé ! Pascal a su mettre en valeur notre bien et trouver l\'acheteur idéal. Son approche clef en main nous...⏹
+                    'text' => 'Notre bastide provençale vendue en 10 jours au prix demandé ! Pascal a su mettre en valeur notre bien et trouver l\'acheteur idéal. Son approche clef en main nous a évité bien des tracas. Merci pour ce professionnalisme remarquable !'

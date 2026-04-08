@@ -130,6 +130,29 @@
   list-style: none;
 }
 
+/* Liens du dropdown */
+.submenu__link {
+  display: block;
+  padding: .6rem .875rem;
+  font-size: .875rem;
+  font-weight: 500;
+  color: var(--clr-text, #1a1a2e);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background .15s ease, color .15s ease;
+  white-space: nowrap;
+}
+.submenu__link:hover,
+.submenu__link:focus-visible {
+  background: var(--clr-bg, #f8f7f4);
+  color: var(--clr-primary, #1a3c5e);
+}
+.submenu__link.active {
+  color: var(--clr-primary, #1a3c5e);
+  font-weight: 600;
+  background: var(--clr-bg, #f8f7f4);
+}
+/* Rétrocompatibilité — les <a> directs dans .submenu */
 .submenu a {
   display: block;
   padding: .6rem .875rem;
@@ -141,38 +164,86 @@
   transition: background .15s ease, color .15s ease;
   white-space: nowrap;
 }
+.submenu a:hover { background: var(--clr-bg, #f8f7f4); color: var(--clr-primary, #1a3c5e); }
+.submenu a.active { color: var(--clr-primary, #1a3c5e); font-weight: 600; background: var(--clr-bg, #f8f7f4); }
 
-.submenu a:hover,
-.submenu a:focus-visible {
-  background: var(--clr-bg, #f8f7f4);
-  color: var(--clr-primary, #1a3c5e);
+/* ── Séparateur de section dans le dropdown ─────────────────────── */
+.submenu__section-label {
+  padding: .75rem .875rem .3rem;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--clr-accent, #c9a84c);
+  list-style: none;
+  pointer-events: none;
+}
+.submenu__section-label:not(:first-child) {
+  margin-top: .25rem;
+  border-top: 1px solid var(--clr-border, #e5e0d8);
+  padding-top: .75rem;
 }
 
-.submenu a.active {
-  color: var(--clr-primary, #1a3c5e);
-  font-weight: 600;
-  background: var(--clr-bg, #f8f7f4);
+/* ── Ligne de séparation ─────────────────────────────────────────── */
+.submenu__divider {
+  height: 1px;
+  background: var(--clr-border, #e5e0d8);
+  margin: .35rem .875rem;
+  list-style: none;
 }
 
-.submenu .disabled-link {
-  display: block;
-  padding: .6rem .875rem;
-  font-size: .875rem;
-  border-radius: 8px;
+/* ── Dropdown large (2 colonnes) ────────────────────────────────── */
+.submenu--wide {
+  min-width: 320px;
+  columns: 2;
+  column-gap: 0;
+}
+.submenu--wide li {
+  break-inside: avoid;
+}
+.submenu--wide .submenu__section-label,
+.submenu--wide .submenu__divider {
+  column-span: all;
 }
 
 /* ── Liens désactivés ────────────────────────────────────────────── */
 .disabled-link {
+  display: block;
+  padding: .6rem .875rem;
+  font-size: .875rem;
+  border-radius: 8px;
   color: var(--clr-text-muted, #6b7280);
   cursor: default;
   opacity: .55;
   text-decoration: none;
 }
-
 .disabled-link:hover {
   background: none !important;
   color: var(--clr-text-muted, #6b7280) !important;
   cursor: default;
+}
+
+/* ── Mobile : labels de section ─────────────────────────────────── */
+.mobile-sub__label {
+  padding: .65rem 1rem .3rem;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--clr-accent, #c9a84c);
+  list-style: none;
+  pointer-events: none;
+}
+.mobile-sub__label:not(:first-child) {
+  margin-top: .25rem;
+  border-top: 1px solid var(--clr-border, #e5e0d8);
+  padding-top: .65rem;
+}
+.mobile-sub__divider {
+  height: 1px;
+  background: var(--clr-border, #e5e0d8);
+  margin: .35rem 1rem;
+  list-style: none;
 }
 
 /* ── Responsive ──────────────────────────────────────────────────── */

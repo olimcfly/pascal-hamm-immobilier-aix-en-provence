@@ -25,9 +25,14 @@ class ZoneController
             return;
         }
 
-        // Rendu de la page
+        // Titre de repli (écrasé par $pageTitle défini dans le fichier de page)
         $pageTitle = $this->generatePageTitle($type, $slug);
-        $pageContent = $this->renderPageContent($pageFile);
+
+        // Exécuter le fichier de page dans le scope courant pour que ses variables
+        // ($pageTitle, $metaDesc, $extraCss, $extraJs…) soient disponibles pour layout.php
+        ob_start();
+        require $pageFile;
+        $pageContent = ob_get_clean();
 
         require ROOT_PATH . '/public/templates/layout.php';
     }

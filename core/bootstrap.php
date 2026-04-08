@@ -53,7 +53,10 @@ require_once __DIR__ . '/helpers/sanitize.php';
 require_once __DIR__ . '/helpers/auth.php';
 require_once __DIR__ . '/helpers/cms.php';
 require_once dirname(__DIR__) . '/includes/settings.php';
+require_once __DIR__ . '/services/MailService.php';
 require_once __DIR__ . '/services/LeadService.php';
+require_once __DIR__ . '/services/InstantEstimationService.php';
+require_once __DIR__ . '/services/EstimationTunnelService.php';
 require_once __DIR__ . '/controllers/ZoneController.php';
 
 

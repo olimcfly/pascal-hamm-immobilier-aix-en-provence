@@ -7,138 +7,200 @@ require_once __DIR__ . '/../core/bootstrap.php';
 if (!class_exists('Router')) {
     die('La classe Router n\'est pas définie.');
 }
-
-$router = new Router();
-
 if (!class_exists('ZoneController')) {
     die('La classe ZoneController n\'est pas définie.');
 }
 
-// Helper pour charger une page PHP
-function loadPage(string $file): string {
-    ob_start();
-    require $file;
-    return ob_get_clean();
-}
+$router = new Router();
 
-// Accueil
-$router->get('/', function() {
-    $pageFile = ROOT_PATH . '/public/pages/core/home.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-// Biens
-$router->get('/biens', function() {
-    $pageFile = ROOT_PATH . '/public/pages/biens/index.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// Bien individuel
-$router->get('/biens/{slug}', function(string $slug) {
-    $pageFile = ROOT_PATH . '/public/pages/biens/' . $slug . '.php';
-    if (!is_file($pageFile)) {
-        http_response_code(404);
-        $pageTitle   = 'Bien introuvable';
-        $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>Ce bien est introuvable.</p></div></section>';
-    } else {
-        ob_start();
-        require $pageFile;
-        $pageContent = ob_get_clean();
-    }
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// À propos
-$router->get('/a-propos', function() {
-    $pageFile = ROOT_PATH . '/public/pages/core/a-propos.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// Contact
-$router->get('/contact', function() {
-    $pageFile = ROOT_PATH . '/public/pages/core/contact.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// Mentions légales
-$router->get('/mentions-legales', function() {
-    $pageFile = ROOT_PATH . '/public/pages/legal/mentions-legales.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// Politique de confidentialité
-$router->get('/politique-confidentialite', function() {
-    $pageFile = ROOT_PATH . '/public/pages/legal/politique-confidentialite.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// CGV
-$router->get('/cgv', function() {
-    $pageFile = ROOT_PATH . '/public/pages/legal/cgv.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// Plan du site
-$router->get('/plan-du-site', function() {
-    $pageFile = ROOT_PATH . '/public/pages/legal/plan-du-site.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// Estimation
-$router->get('/estimation', function() {
-    $pageFile = ROOT_PATH . '/public/pages/estimation/estimation-gratuite.php';
-    ob_start();
-    require $pageFile;
-    $pageContent = ob_get_clean();
-    require ROOT_PATH . '/public/templates/layout.php';
-});
-
-// Services
-$router->get('/services/{slug}', function(string $slug) {
-    $pageFile = ROOT_PATH . '/public/pages/services/' . $slug . '.php';
-    if (!is_file($pageFile)) {
+// ── Helper : charge une page dans le layout ────────────────────
+function servePage(string $file): void {
+    if (!is_file($file)) {
         http_response_code(404);
         $pageTitle   = 'Page introuvable';
-        $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>Service introuvable.</p></div></section>';
-    } else {
-        ob_start();
-        require $pageFile;
-        $pageContent = ob_get_clean();
+        $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>Cette page est introuvable.</p></div></section>';
+        require ROOT_PATH . '/public/templates/layout.php';
+        return;
     }
+    ob_start();
+    require $file;
+    $pageContent = ob_get_clean();
     require ROOT_PATH . '/public/templates/layout.php';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ACCUEIL
+// ══════════════════════════════════════════════════════════════
+$router->get('/', function() {
+    servePage(ROOT_PATH . '/public/pages/core/home.php');
 });
 
-// Secteurs
+// ══════════════════════════════════════════════════════════════
+//  BIENS IMMOBILIERS
+// ══════════════════════════════════════════════════════════════
+
+// Liste principale (page autonome avec header intégré)
+$router->get('/biens', function() {
+    servePage(ROOT_PATH . '/public/pages/biens/index.php');
+});
+
+// Sous-catégories (doivent être déclarées AVANT /biens/{slug})
+$router->get('/biens/maisons', function() {
+    servePage(ROOT_PATH . '/public/pages/biens/maisons.php');
+});
+$router->get('/biens/appartements', function() {
+    servePage(ROOT_PATH . '/public/pages/biens/appartements.php');
+});
+$router->get('/biens/prestige', function() {
+    servePage(ROOT_PATH . '/public/pages/biens/prestige.php');
+});
+$router->get('/biens/vendus', function() {
+    servePage(ROOT_PATH . '/public/pages/biens/vendus.php');
+});
+
+// Détail d'un bien via slug dynamique
+$router->get('/bien/{slug}', function(string $slug) {
+    $GLOBALS['bienSlug'] = $slug;
+    servePage(ROOT_PATH . '/public/pages/biens/bien-detail.php');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  ESTIMATION & CONVERSION
+// ══════════════════════════════════════════════════════════════
+
+// Tunnel d'estimation — URL canonique SEO
+$router->get('/estimation-gratuite', function() {
+    servePage(ROOT_PATH . '/public/pages/estimation/tunnel.php');
+});
+
+// /estimation → 301 vers /estimation-gratuite (alias court)
+$router->get('/estimation', function() {
+    header('Location: /estimation-gratuite', true, 301);
+    exit;
+});
+
+// API — Calcul estimation
+$router->post('/api/estimation/calculate', function() {
+    require ROOT_PATH . '/public/api/estimation/calculate.php';
+});
+
+// API — Conversion (lead capture)
+$router->post('/api/estimation/convert', function() {
+    require ROOT_PATH . '/public/api/estimation/convert.php';
+});
+
+$router->get('/avis-de-valeur', function() {
+    servePage(ROOT_PATH . '/public/pages/conversion/avis-valeur.php');
+});
+$router->post('/avis-de-valeur', function() {
+    servePage(ROOT_PATH . '/public/pages/conversion/avis-valeur.php');
+});
+
+$router->get('/prendre-rendez-vous', function() {
+    servePage(ROOT_PATH . '/public/pages/conversion/prendre-rendez-vous.php');
+});
+$router->post('/prendre-rendez-vous', function() {
+    servePage(ROOT_PATH . '/public/pages/conversion/prendre-rendez-vous.php');
+});
+
+$router->get('/merci', function() {
+    servePage(ROOT_PATH . '/public/pages/conversion/merci.php');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  SECTEURS GÉOGRAPHIQUES
+// ══════════════════════════════════════════════════════════════
+
+// Page index des secteurs
+$router->get('/secteurs', function() {
+    servePage(ROOT_PATH . '/public/pages/secteurs/index.php');
+});
+
+// Route avec type explicite : /secteurs/villes/aix-en-provence
 $router->get('/secteurs/{type}/{slug}', 'ZoneController@show');
 
-// 404
+// Route simplifiée sans type : /secteurs/aix-en-provence (fallback)
+$router->get('/secteurs/{slug}', function(string $slug) {
+    (new ZoneController())->show('', $slug);
+});
+
+// ══════════════════════════════════════════════════════════════
+//  FINANCEMENT
+// ══════════════════════════════════════════════════════════════
+$router->get('/financement', function() {
+    servePage(ROOT_PATH . '/public/pages/financement/financement.php');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  BLOG & ACTUALITÉS
+// ══════════════════════════════════════════════════════════════
+$router->get('/blog', function() {
+    servePage(ROOT_PATH . '/public/pages/blog/index.php');
+});
+
+$router->get('/blog/{slug}', function(string $slug) {
+    $GLOBALS['articleSlug'] = $slug;
+    servePage(ROOT_PATH . '/public/pages/blog/article.php');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  AVIS CLIENTS
+// ══════════════════════════════════════════════════════════════
+$router->get('/avis-clients', function() {
+    servePage(ROOT_PATH . '/public/pages/social-proof/avis.php');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  PAGES PRINCIPALES
+// ══════════════════════════════════════════════════════════════
+$router->get('/a-propos', function() {
+    servePage(ROOT_PATH . '/public/pages/core/a-propos.php');
+});
+
+$router->get('/contact', function() {
+    servePage(ROOT_PATH . '/public/pages/core/contact.php');
+});
+$router->post('/contact', function() {
+    servePage(ROOT_PATH . '/public/pages/core/contact.php');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  SERVICES (page dynamique par slug)
+// ══════════════════════════════════════════════════════════════
+$router->get('/services/{slug}', function(string $slug) {
+    servePage(ROOT_PATH . '/public/pages/services/' . $slug . '.php');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  MENTIONS LÉGALES
+// ══════════════════════════════════════════════════════════════
+$router->get('/mentions-legales', function() {
+    servePage(ROOT_PATH . '/public/pages/legal/mentions-legales.php');
+});
+
+$router->get('/politique-confidentialite', function() {
+    servePage(ROOT_PATH . '/public/pages/legal/politique-confidentialite.php');
+});
+
+$router->get('/politique-cookies', function() {
+    servePage(ROOT_PATH . '/public/pages/legal/politique-cookies.php');
+});
+
+$router->get('/cgv', function() {
+    servePage(ROOT_PATH . '/public/pages/legal/cgv.php');
+});
+
+$router->get('/plan-du-site', function() {
+    servePage(ROOT_PATH . '/public/pages/legal/plan-du-site.php');
+});
+
+// ══════════════════════════════════════════════════════════════
+//  404 PAR DÉFAUT
+// ══════════════════════════════════════════════════════════════
 $router->set404(function() {
     http_response_code(404);
     $pageTitle   = 'Page introuvable';
-    $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>La page demandée est introuvable.</p></div></section>';
+    $pageContent = '<section class="section"><div class="container text-center"><h1 style="font-size:4rem;color:var(--clr-primary)">404</h1><p>La page demandée est introuvable.</p><a href="/" class="btn btn--primary" style="margin-top:1.5rem">Retour à l\'accueil</a></div></section>';
     require ROOT_PATH . '/public/templates/layout.php';
 });
 

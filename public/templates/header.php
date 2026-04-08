@@ -14,9 +14,21 @@ if (!function_exists('isActive')) {
 }
 
 $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$advisorName = trim((string) setting('advisor_firstname', '') . ' ' . (string) setting('advisor_lastname', ''));
+$advisorFirstname = trim((string) setting('advisor_firstname', ''));
+$advisorLastname  = trim((string) setting('advisor_lastname', ''));
+$advisorName      = trim($advisorFirstname . ' ' . $advisorLastname);
 if ($advisorName === '') {
-    $advisorName = defined('ADVISOR_NAME') ? ADVISOR_NAME : (defined('APP_NAME') ? APP_NAME : 'Pascal Hamm');
+    // Fallback : ADVISOR_NAME ou 'Pascal Hamm' (pas APP_NAME qui contient "Immobilier")
+    if (defined('ADVISOR_NAME') && ADVISOR_NAME !== '') {
+        $advisorName = ADVISOR_NAME;
+    } else {
+        // Extraire juste le nom (sans " Immobilier") depuis APP_NAME si besoin
+        $advisorName = defined('APP_NAME') ? preg_replace('/\s+Immobilier$/i', '', APP_NAME) : 'Pascal Hamm';
+    }
+}
+$advisorPhoto = setting('advisor_photo', '');
+if (empty($advisorPhoto)) {
+    $advisorPhoto = '/assets/images/pascal-hamm.jpeg';
 }
 ?>
 <!DOCTYPE html>
@@ -35,8 +47,8 @@ if ($advisorName === '') {
     <meta property="og:url" content="<?= 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>">
 
     <!-- Inclure les styles -->
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <?php foreach ($stylesToInclude as $cssFile): ?>
+
+<link rel="stylesheet" href="/assets/css/nav.css">  <?php foreach ($stylesToInclude as $cssFile): ?>
         <link rel="stylesheet" href="<?= htmlspecialchars($cssFile) ?>">
     <?php endforeach; ?>
 
@@ -46,26 +58,28 @@ if ($advisorName === '') {
             <script src="<?= htmlspecialchars($jsFile) ?>" defer></script>
         <?php endforeach; ?>
     <?php endif; ?>
+    
+
 </head>
 <body>
     <header class="site-header" id="site-header">
         <div class="container header__inner">
 
             <!-- Logo -->
-            <a href="<?= htmlspecialchars(url('/')) ?>" class="header__logo" aria-label="<?= htmlspecialchars($advisorName) ?> — Accueil">
-                <span class="logo__icon">🏡</span>
-                <span class="logo__text">
-                    <strong><?= htmlspecialchars($advisorName) ?></strong>
-                    <em>Immobilier</em>
-                </span>
-            </a>
+           <a href="<?= htmlspecialchars(url('/')) ?>" class="header__logo" aria-label="<?= htmlspecialchars($advisorName) ?> — Accueil">
+    <span class="logo__text">
+        <strong><?= htmlspecialchars($advisorName) ?></strong>
+        <em>Immobilier</em>
+    </span>
+</a>
 
             <!-- Navigation principale -->
             <?php require __DIR__ . '/nav.php'; ?>
 
             <!-- CTA header -->
             <div class="header__actions">
-                <a href="<?= htmlspecialchars(url('/estimation-gratuite')) ?>" class="btn btn--primary btn--header-cta">Estimation gratuite</a>
+                <a href="<?= htmlspecialchars(url('/avis-de-valeur')) ?>" class="btn btn--outline btn--header-cta">Avis de valeur</a>
+                <a href="<?= htmlspecialchars(url('/prendre-rendez-vous')) ?>" class="btn btn--primary btn--header-cta">Prendre RDV</a>
             </div>
 
             <!-- Burger mobile -->

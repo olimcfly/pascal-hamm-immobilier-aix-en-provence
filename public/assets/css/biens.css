@@ -311,3 +311,28 @@
 .service-card__link:hover {
     text-decoration: underline;
 }
+.placeholder-image {
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, #1a3c5e, #0f2644);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.placeholder-image span {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.placeholder-image p {
+    font-size: 14px;
+    opacity: 0.8;
+}
+.biens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+}

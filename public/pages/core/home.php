@@ -225,6 +225,227 @@ $featuredProperties = [
     </div>
 </section>
 
+<!-- ══ SECTION SEO : MARCHÉ IMMOBILIER ══════════════════════════ -->
+<section class="section" id="marche-immobilier-aix">
+    <div class="container">
+        <div class="section__header">
+            <span class="section-label">Le marché local</span>
+            <h2 class="section-title">Immobilier à Aix-en-Provence : comprendre le marché</h2>
+            <p class="section-subtitle">
+                Le marché immobilier à Aix-en-Provence est l'un des plus actifs de la région Provence-Alpes-Côte d'Azur.
+                La ville attire chaque année de nombreux acquéreurs, qu'il s'agisse de familles cherchant une maison avec jardin,
+                de cadres souhaitant un appartement proche du centre historique, ou d'investisseurs intéressés par les biens de prestige du Pays d'Aix.
+            </p>
+        </div>
+
+        <div class="grid-3">
+            <article class="card">
+                <div class="card__body">
+                    <h3 class="card__title">Un marché porteur et exigeant</h3>
+                    <p class="card__text">
+                        Les prix de vente à Aix-en-Provence se maintiennent à un niveau élevé, souvent entre 3 500 et 6 000 € du m²
+                        selon les quartiers et le type de bien. Les maisons avec extérieur, les appartements bien situés et les biens
+                        de prestige en périphérie du centre-ville restent très recherchés. Un bon positionnement prix reste
+                        déterminant pour attirer des acheteurs sérieux dans des délais raisonnables.
+                    </p>
+                </div>
+            </article>
+            <article class="card">
+                <div class="card__body">
+                    <h3 class="card__title">Des acheteurs exigeants et bien informés</h3>
+                    <p class="card__text">
+                        Les acquéreurs sur le marché aixois arrivent préparés. Ils consultent les transactions comparables,
+                        connaissent les prix pratiqués dans chaque quartier et n'hésitent pas à négocier si le bien est
+                        surestimé. C'est pourquoi une estimation immobilière réaliste, fondée sur des données objectives,
+                        est indispensable avant toute mise en vente. Une annonce mal positionnée peut rester sans offre
+                        pendant des semaines et perdre sa crédibilité.
+                    </p>
+                </div>
+            </article>
+            <article class="card">
+                <div class="card__body">
+                    <h3 class="card__title">Aix-en-Provence et le Pays d'Aix</h3>
+                    <p class="card__text">
+                        Au-delà d'Aix-en-Provence, le Pays d'Aix regroupe des communes très prisées : Venelles, Luynes,
+                        Puyricard, Le Tholonet, Eguilles ou encore Bouc-Bel-Air. Chacune de ces zones a ses propres
+                        réalités de marché, ses profils d'acheteurs et ses spécificités. Une connaissance fine de ce
+                        territoire est indispensable pour conduire une transaction immobilière dans de bonnes conditions.
+                    </p>
+                </div>
+            </article>
+        </div>
+
+        <div class="text-center mt-32">
+            <a href="/estimation-gratuite" class="btn btn--primary">Obtenir une estimation de mon bien</a>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SECTION SEO : COMMENT VENDRE ════════════════════════════ -->
+<section class="section section--alt" id="comment-vendre-bien-immobilier">
+    <div class="container">
+        <div class="section__header">
+            <span class="section-label">Vendre sereinement</span>
+            <h2 class="section-title">Comment vendre un bien immobilier à Aix-en-Provence</h2>
+            <p class="section-subtitle">
+                Une vente immobilière réussie ne s'improvise pas. Entre l'estimation du bien, la préparation des diagnostics
+                immobiliers obligatoires, la rédaction de l'annonce, les visites, la négociation avec les acquéreurs et le
+                passage devant notaire, chaque étape demande méthode et disponibilité.
+            </p>
+        </div>
+
+        <div class="grid-2" style="gap:2rem">
+            <div>
+                <h3 style="font-size:1.15rem;margin-bottom:.75rem;color:var(--clr-primary)">1. Estimer juste, pas haut</h3>
+                <p>
+                    L'erreur la plus fréquente sur le marché immobilier d'Aix-en-Provence est de surestimer son bien.
+                    Un prix de vente trop élevé génère peu de visites, aucune offre, et force souvent à baisser le prix
+                    après plusieurs semaines — au détriment de la crédibilité de l'annonce. Une estimation immobilière
+                    sérieuse compare les transactions récentes sur des biens similaires dans le même secteur,
+                    tient compte des caractéristiques du logement et anticipe ce que des acheteurs réels sont
+                    prêts à payer aujourd'hui.
+                </p>
+            </div>
+            <div>
+                <h3 style="font-size:1.15rem;margin-bottom:.75rem;color:var(--clr-primary)">2. Préparer les documents en amont</h3>
+                <p>
+                    Avant de mettre un bien immobilier en vente, plusieurs diagnostics immobiliers sont obligatoires :
+                    DPE (Diagnostic de Performance Énergétique), amiante, plomb, électricité, gaz, état des risques…
+                    Anticiper ces démarches évite des délais inutiles et rassure les acquéreurs dès la première visite.
+                    Un dossier complet est aussi un signal positif pour le notaire lors de la rédaction du compromis de vente.
+                </p>
+            </div>
+            <div>
+                <h3 style="font-size:1.15rem;margin-bottom:.75rem;color:var(--clr-primary)">3. Mettre en valeur et diffuser intelligemment</h3>
+                <p>
+                    La présentation d'un bien conditionne en grande partie la qualité des visiteurs. Photos soignées,
+                    description claire, mise en avant des atouts réels du logement — ces éléments permettent d'attirer
+                    des acheteurs qualifiés plutôt que des curieux. La diffusion doit être ciblée : les bons canaux,
+                    la bonne cible, au bon moment.
+                </p>
+            </div>
+            <div>
+                <h3 style="font-size:1.15rem;margin-bottom:.75rem;color:var(--clr-primary)">4. Négocier et sécuriser la transaction</h3>
+                <p>
+                    Une fois une offre reçue, la négociation avec l'acquéreur doit être menée avec sang-froid et méthode.
+                    Accepter une offre trop basse par peur de perdre le contact, ou au contraire refuser sans contre-proposer,
+                    peut faire capoter une vente qui aurait pu aboutir. Après l'accord, le compromis de vente est signé
+                    (chez le notaire ou en agence), puis l'acte authentique vient finaliser la transaction immobilière.
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-32">
+            <a href="/avis-de-valeur" class="btn btn--outline">Demander un avis de valeur gratuit</a>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SECTION SEO : FAQ ════════════════════════════════════════ -->
+<section class="section" id="faq-immobilier-aix-en-provence">
+    <div class="container">
+        <div class="section__header text-center">
+            <span class="section-label">Questions fréquentes</span>
+            <h2 class="section-title">FAQ immobilier à Aix-en-Provence</h2>
+            <p class="section-subtitle">Les questions que posent le plus souvent les vendeurs et acheteurs du Pays d'Aix.</p>
+        </div>
+
+        <div class="accordion" style="max-width:820px;margin:0 auto">
+
+            <div class="accordion__item" style="border-bottom:1px solid var(--clr-border);padding-bottom:1.25rem;margin-bottom:1.25rem">
+                <h3 style="font-size:1rem;font-weight:600;color:var(--clr-primary);margin-bottom:.5rem">
+                    Combien vaut mon bien immobilier à Aix-en-Provence ?
+                </h3>
+                <p style="color:var(--clr-text-muted);line-height:1.7">
+                    Le prix d'un bien immobilier à Aix-en-Provence dépend de nombreux facteurs : la surface, le secteur,
+                    l'étage, l'état général, la présence d'un extérieur, le niveau du DPE et les transactions récentes
+                    comparables dans le quartier. Une estimation immobilière sérieuse ne se fait pas en 2 minutes sur
+                    Internet : elle demande une analyse terrain et une connaissance du marché local. Je vous propose un
+                    avis de valeur précis et argumenté, sans engagement.
+                </p>
+            </div>
+
+            <div class="accordion__item" style="border-bottom:1px solid var(--clr-border);padding-bottom:1.25rem;margin-bottom:1.25rem">
+                <h3 style="font-size:1rem;font-weight:600;color:var(--clr-primary);margin-bottom:.5rem">
+                    Quelle est la différence entre un agent immobilier et un conseiller indépendant ?
+                </h3>
+                <p style="color:var(--clr-text-muted);line-height:1.7">
+                    Un agent immobilier en agence gère généralement plusieurs dizaines de mandats en simultané, ce qui
+                    limite le suivi individuel de chaque vente. En tant que conseiller immobilier indépendant rattaché
+                    au réseau eXp Realty, j'interviens en interlocuteur unique sur un portefeuille limité de clients.
+                    Chaque projet de vente ou d'achat bénéficie d'un suivi personnalisé, d'une stratégie adaptée
+                    et d'une disponibilité réelle.
+                </p>
+            </div>
+
+            <div class="accordion__item" style="border-bottom:1px solid var(--clr-border);padding-bottom:1.25rem;margin-bottom:1.25rem">
+                <h3 style="font-size:1rem;font-weight:600;color:var(--clr-primary);margin-bottom:.5rem">
+                    Quels diagnostics immobiliers sont obligatoires pour vendre ?
+                </h3>
+                <p style="color:var(--clr-text-muted);line-height:1.7">
+                    La liste des diagnostics immobiliers obligatoires dépend du type de bien et de sa date de construction.
+                    Pour une maison ou un appartement à Aix-en-Provence, vous devrez en général fournir : le DPE,
+                    le diagnostic amiante, plomb (si avant 1949), électricité et gaz (si installation de plus de 15 ans),
+                    l'état des risques et pollutions, et selon les cas le diagnostic termites.
+                    Ces documents doivent être annexés au compromis de vente signé chez le notaire.
+                </p>
+            </div>
+
+            <div class="accordion__item" style="border-bottom:1px solid var(--clr-border);padding-bottom:1.25rem;margin-bottom:1.25rem">
+                <h3 style="font-size:1rem;font-weight:600;color:var(--clr-primary);margin-bottom:.5rem">
+                    Combien de temps faut-il pour vendre un bien immobilier à Aix-en-Provence ?
+                </h3>
+                <p style="color:var(--clr-text-muted);line-height:1.7">
+                    Le délai de vente dépend avant tout du positionnement prix. Un bien correctement estimé, bien présenté
+                    et sur un secteur demandé à Aix-en-Provence peut trouver un acquéreur en 3 à 8 semaines.
+                    Après l'acceptation de l'offre, il faut compter environ 3 mois entre le compromis de vente et
+                    l'acte authentique chez le notaire (délai légal de rétractation, instruction du financement
+                    de l'acheteur, etc.).
+                </p>
+            </div>
+
+            <div class="accordion__item" style="border-bottom:1px solid var(--clr-border);padding-bottom:1.25rem;margin-bottom:1.25rem">
+                <h3 style="font-size:1rem;font-weight:600;color:var(--clr-primary);margin-bottom:.5rem">
+                    Est-il possible de vendre sans agence immobilière à Aix-en-Provence ?
+                </h3>
+                <p style="color:var(--clr-text-muted);line-height:1.7">
+                    Oui, techniquement. Mais la vente entre particuliers demande de maîtriser l'estimation immobilière,
+                    la rédaction des annonces, la qualification des acheteurs, la gestion des visites, la négociation
+                    et les aspects juridiques du compromis. Elle expose aussi à des risques si les diagnostics sont
+                    incomplets ou si le dossier est mal constitué. Faire appel à un conseiller immobilier, c'est
+                    déléguer ces étapes à quelqu'un qui les maîtrise — et souvent vendre mieux et plus vite.
+                </p>
+            </div>
+
+            <div class="accordion__item" style="border-bottom:1px solid var(--clr-border);padding-bottom:1.25rem;margin-bottom:1.25rem">
+                <h3 style="font-size:1rem;font-weight:600;color:var(--clr-primary);margin-bottom:.5rem">
+                    Comment se passe l'achat d'un bien immobilier à Aix-en-Provence ?
+                </h3>
+                <p style="color:var(--clr-text-muted);line-height:1.7">
+                    L'achat immobilier commence par la définition d'un projet clair : budget (avec ou sans financement),
+                    type de bien souhaité (maison, appartement, terrain), secteur géographique et critères prioritaires.
+                    Vient ensuite la phase de recherche et de visites, puis la négociation du prix de vente avec le vendeur.
+                    Une fois l'accord trouvé, on signe un compromis de vente qui engage les deux parties,
+                    puis l'acte authentique chez le notaire finalise la transaction.
+                </p>
+            </div>
+
+            <div class="accordion__item" style="padding-bottom:1.25rem;margin-bottom:1.25rem">
+                <h3 style="font-size:1rem;font-weight:600;color:var(--clr-primary);margin-bottom:.5rem">
+                    Pourquoi choisir Pascal Hamm pour votre projet immobilier à Aix-en-Provence ?
+                </h3>
+                <p style="color:var(--clr-text-muted);line-height:1.7">
+                    Parce que je travaille avec peu de clients à la fois pour pouvoir m'impliquer vraiment sur chacun.
+                    Pas de promesse de prix irréaliste pour décrocher un mandat, pas de communication de masse sans résultat.
+                    Une approche structurée, un suivi transparent et un objectif simple : vous aider à vendre ou acheter
+                    dans de bonnes conditions, au bon prix, avec le moins de stress possible.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
 <section class="cta-banner" id="cta-final">
     <div class="container">
         <h2>Parlons de votre projet immobilier à Aix-en-Provence.</h2>

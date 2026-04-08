@@ -1,43 +1,44 @@
-# ═══════════════════════════════════════════════════════════
-# CONFIGURATION (credentials dans .env uniquement)
-# ═══════════════════════════════════════════════════════════
-# config/config.php est désormais commité (plus de credentials dedans)
+# Config sensible
+.env
+.env.*
+!.env.example
 config/smtp.php
 config/license.json
 config/.installed
 
-# ═══════════════════════════════════════════════════════════
-# LOGS & CACHE
-# ═══════════════════════════════════════════════════════════
+/tmp/
+
+# Archives / dumps / gros fichiers
+*.zip
+*.tar
+*.gz
+
+# Logs / cache
 logs/*.log
 logs/*.txt
 cache/*
 !cache/.gitkeep
+*.log
+error_log
+public/error_log
 
-# ═══════════════════════════════════════════════════════════
-# UPLOADS (contenu spécifique au site)
-# ═══════════════════════════════════════════════════════════
+# Uploads / fichiers générés
 uploads/*
 !uploads/.gitkeep
+/storage/
 
-# ═══════════════════════════════════════════════════════════
-# SYSTÈME
-# ═══════════════════════════════════════════════════════════
+# Temp / système
 .DS_Store
 Thumbs.db
 *.swp
 *.swo
 *~
-.env
-.env.*
-!.env.example
 *.bak
 *.tmp
 
-# IDE
+# Dépendances / outils
+node_modules/
+vendor/
 .vscode/
 .idea/
 *.sublime-*
-storage/logs/
-public/error_log
-storage/logs/

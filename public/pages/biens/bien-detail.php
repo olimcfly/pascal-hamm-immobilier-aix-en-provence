@@ -73,8 +73,10 @@ $dpe    = strtoupper($b['dpe_classe']    ?? 'D');
 $ges    = strtoupper($b['ges_classe']    ?? 'D');
 
 // ── Formatage prix ────────────────────────────────────────────
-function formatPrice(int $price): string {
-    return number_format($price, 0, ',', ' ') . ' €';
+if (!function_exists('formatPrice')) {
+    function formatPrice(int $price): string {
+        return number_format($price, 0, ',', ' ') . ' €';
+    }
 }
 
 // ── Meta ──────────────────────────────────────────────────────

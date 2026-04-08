@@ -5,103 +5,142 @@ if (!function_exists('isActive')) {
         if ($currentUri === null) {
             $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
-
         return $currentUri === $path || strpos($currentUri, $path) === 0;
+    }
+}
+
+// Fonction url() pour générer les URLs
+if (!function_exists('url')) {
+    function url($path) {
+        return $path;
     }
 }
 
 $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+// Pages non encore disponibles (affichées en grisé, non cliquables)
+$disabledPages = [
+    '/vendre',
+    '/viager',
+    '/acheter',
+    '/faq-acheteurs',
+    '/services',
+    '/secteurs/pays-d-aix',
+];
+
 $navItems = [
     [
-        'path' => '/biens',
-        'href' => url('/biens'),
+        'path'  => '/biens',
+        'href'  => url('/biens'),
         'label' => 'Nos biens',
-        'sub' => [
-            ['path' => '/biens',               'href' => url('/biens'),               'label' => 'Tous les biens'],
-            ['path' => '/biens/maisons',       'href' => url('/biens/maisons'),       'label' => 'Maisons'],
-            ['path' => '/biens/appartements',  'href' => url('/biens/appartements'),  'label' => 'Appartements'],
-            ['path' => '/biens/prestige',      'href' => url('/biens/prestige'),      'label' => 'Prestige'],
-            ['path' => '/biens/vendus',        'href' => url('/biens/vendus'),        'label' => 'Biens vendus'],
+        'sub'   => [
+            ['path' => '/biens',               'href' => url('/biens'),              'label' => 'Tous les biens'],
+            ['path' => '/biens/maisons',       'href' => url('/biens/maisons'),      'label' => 'Maisons'],
+            ['path' => '/biens/appartements',  'href' => url('/biens/appartements'), 'label' => 'Appartements'],
+            ['path' => '/biens/prestige',      'href' => url('/biens/prestige'),     'label' => 'Prestige'],
+            ['path' => '/biens/vendus',        'href' => url('/biens/vendus'),       'label' => 'Biens vendus'],
         ],
     ],
     [
-        'path' => '/secteurs',
-        'href' => url('/secteurs'),
+        'path'  => '/secteurs',
+        'href'  => url('/secteurs'),
         'label' => 'Secteurs',
-        'sub' => [
-            ['path' => '/secteurs/aix-en-provence', 'href' => url('/secteurs/aix-en-provence'), 'label' => 'Aix-en-Provence'],
-            ['path' => '/secteurs/pays-d-aix',      'href' => url('/secteurs/pays-d-aix'),      'label' => 'Pays d’Aix'],
-            ['path' => '/secteurs/luynes',          'href' => url('/secteurs/luynes'),          'label' => 'Luynes'],
-            ['path' => '/secteurs/puyricard',       'href' => url('/secteurs/puyricard'),       'label' => 'Puyricard'],
-            ['path' => '/secteurs/venelles',        'href' => url('/secteurs/venelles'),        'label' => 'Venelles'],
-            ['path' => '/secteurs',                 'href' => url('/secteurs'),                 'label' => 'Tous les secteurs'],
+        'sub'   => [
+            ['path' => '/secteurs/villes/aix-en-provence', 'href' => url('/secteurs/villes/aix-en-provence'), 'label' => 'Aix-en-Provence'],
+            ['path' => '/secteurs/pays-d-aix',             'href' => null,                                   'label' => "Pays d'Aix"],
+            ['path' => '/secteurs/quartiers/luynes',       'href' => url('/secteurs/quartiers/luynes'),      'label' => 'Luynes'],
+            ['path' => '/secteurs/quartiers/puyricard',    'href' => url('/secteurs/quartiers/puyricard'),   'label' => 'Puyricard'],
+            ['path' => '/secteurs/villes/venelles',        'href' => url('/secteurs/villes/venelles'),       'label' => 'Venelles'],
+            ['path' => '/secteurs',                        'href' => url('/secteurs'),                       'label' => 'Tous les secteurs'],
         ],
     ],
     [
-        'path' => '/vendre',
-        'href' => url('/vendre'),
+        'path'  => '/vendre',
+        'href'  => null,
         'label' => 'Vendre',
-        'sub' => [
-            ['path' => '/vendre',               'href' => url('/vendre'),               'label' => 'Vente classique'],
-            ['path' => '/estimation-gratuite',  'href' => url('/estimation-gratuite'),  'label' => 'Estimation immobilière'],
-            ['path' => '/services',             'href' => url('/services'),             'label' => 'Accompagnement vendeur'],
-            ['path' => '/viager',               'href' => url('/viager'),               'label' => 'Viager éthique'],
+        'sub'   => [
+            ['path' => '/vendre',              'href' => null,                          'label' => 'Vente classique'],
+            ['path' => '/estimation-gratuite',  'href' => url('/estimation-gratuite'),   'label' => 'Estimation gratuite'],
+            ['path' => '/avis-de-valeur',      'href' => url('/avis-de-valeur'),        'label' => 'Avis de valeur'],
+            ['path' => '/viager',              'href' => null,                          'label' => 'Vente en viager'],
         ],
     ],
     [
-        'path' => '/acheter',
-        'href' => url('/acheter'),
+        'path'  => '/acheter',
+        'href'  => null,
         'label' => 'Acheter',
-        'sub' => [
-            ['path' => '/acheter',                           'href' => url('/acheter'),                           'label' => 'Acheter un bien'],
-            ['path' => '/financement',                       'href' => url('/financement'),                       'label' => 'Financement'],
-            ['path' => '/financement#acheter-avant-vendre', 'href' => url('/financement#acheter-avant-vendre'), 'label' => 'Acheter avant vendre'],
-            ['path' => '/faq-acheteurs',                     'href' => url('/faq-acheteurs'),                     'label' => 'FAQ acheteurs'],
+        'sub'   => [
+            ['path' => '/acheter',    'href' => null,                   'label' => 'Acheter un bien'],
+            ['path' => '/financement','href' => url('/financement'),    'label' => 'Financement'],
+            ['path' => '/faq-acheteurs', 'href' => null,               'label' => 'FAQ acheteurs'],
         ],
     ],
     [
-        'path' => '/financement',
-        'href' => url('/financement'),
-        'label' => 'Financement',
-        'sub' => [
-            ['path' => '/financement',                      'href' => url('/financement'),                      'label' => 'Vue d’ensemble'],
-            ['path' => '/financement#acheter-avant-vendre', 'href' => url('/financement#acheter-avant-vendre'), 'label' => 'Acheter avant vendre'],
-            ['path' => '/financement#faq-financement',      'href' => url('/financement#faq-financement'),      'label' => 'FAQ financement'],
-        ],
+        'path'  => '/a-propos',
+        'href'  => url('/a-propos'),
+        'label' => 'À propos',
+    ],
+    [
+        'path'  => '/contact',
+        'href'  => url('/contact'),
+        'label' => 'Contact',
     ],
 ];
 ?>
 
-<nav class="site-nav" id="site-nav" role="navigation" aria-label="Navigation principale">
+<nav class="nav" id="nav" aria-label="Menu principal">
     <ul class="nav__list">
         <?php foreach ($navItems as $item): ?>
-        <?php $active = isActive($item['path'], $currentUri); ?>
-        <li class="nav__item <?= !empty($item['sub']) ? 'has-dropdown' : '' ?> <?= $active ? 'active' : '' ?>">
-            <a href="<?= htmlspecialchars($item['href']) ?>" class="nav__link <?= $active ? 'active' : '' ?>"
-               <?= !empty($item['sub']) ? 'aria-haspopup="true" aria-expanded="false"' : '' ?>>
-                <?= htmlspecialchars($item['label']) ?>
-                <?php if (!empty($item['sub'])): ?>
-                    <span class="nav__arrow" aria-hidden="true">▾</span>
-                <?php endif; ?>
-            </a>
-
+        <li class="nav__item <?= !empty($item['sub']) ? 'has-submenu' : '' ?>">
             <?php if (!empty($item['sub'])): ?>
-            <ul class="nav__dropdown" role="menu">
+
+            <?php if ($item['href']): ?>
+                <a href="<?= htmlspecialchars($item['href']) ?>"
+                   class="nav__toggle <?= isActive($item['path'], $currentUri) ? 'active' : '' ?>">
+                    <span><?= htmlspecialchars($item['label']) ?></span>
+                    <span class="nav__caret" aria-hidden="true">▾</span>
+                </a>
+            <?php else: ?>
+                <button class="nav__toggle <?= isActive($item['path'], $currentUri) ? 'active' : '' ?>"
+                        type="button">
+                    <span><?= htmlspecialchars($item['label']) ?></span>
+                    <span class="nav__caret" aria-hidden="true">▾</span>
+                </button>
+            <?php endif; ?>
+
+            <ul class="submenu">
                 <?php foreach ($item['sub'] as $sub): ?>
-                <li role="none">
-                    <a href="<?= htmlspecialchars($sub['href']) ?>" class="dropdown__link <?= isActive($sub['path'], $currentUri) ? 'active' : '' ?>" role="menuitem">
-                        <?= htmlspecialchars($sub['label']) ?>
-                    </a>
+                <li>
+                    <?php if ($sub['href'] === null): ?>
+                        <span class="disabled-link"><?= htmlspecialchars($sub['label']) ?></span>
+                    <?php else: ?>
+                        <a href="<?= htmlspecialchars($sub['href']) ?>"
+                           class="<?= isActive($sub['path'], $currentUri) ? 'active' : '' ?>">
+                            <?= htmlspecialchars($sub['label']) ?>
+                        </a>
+                    <?php endif; ?>
                 </li>
                 <?php endforeach; ?>
             </ul>
+
+            <?php else: ?>
+                <?php if ($item['href'] === null): ?>
+                    <span class="nav__link disabled-link <?= isActive($item['path'], $currentUri) ? 'active' : '' ?>">
+                        <?= htmlspecialchars($item['label']) ?>
+                    </span>
+                <?php else: ?>
+                    <a href="<?= htmlspecialchars($item['href']) ?>"
+                       class="nav__link <?= isActive($item['path'], $currentUri) ? 'active' : '' ?>">
+                        <?= htmlspecialchars($item['label']) ?>
+                    </a>
+                <?php endif; ?>
             <?php endif; ?>
         </li>
         <?php endforeach; ?>
     </ul>
 </nav>
 
+<!-- Navigation mobile -->
 <div class="nav-mobile" id="nav-mobile" aria-hidden="true">
     <button class="nav-mobile__close" id="nav-close" aria-label="Fermer le menu">×</button>
 
@@ -117,35 +156,46 @@ $navItems = [
             </button>
 
             <ul class="mobile-sub" hidden>
-                <li>
-                    <a href="<?= htmlspecialchars($item['href']) ?>" class="<?= isActive($item['path'], $currentUri) ? 'active' : '' ?>">
-                        <?= htmlspecialchars($item['label']) ?>
-                    </a>
-                </li>
                 <?php foreach ($item['sub'] as $sub): ?>
                 <li>
-                    <a href="<?= htmlspecialchars($sub['href']) ?>" class="<?= isActive($sub['path'], $currentUri) ? 'active' : '' ?>">
-                        <?= htmlspecialchars($sub['label']) ?>
-                    </a>
+                    <?php if ($sub['href'] === null): ?>
+                        <span class="disabled-link"><?= htmlspecialchars($sub['label']) ?></span>
+                    <?php else: ?>
+                        <a href="<?= htmlspecialchars($sub['href']) ?>"
+                           class="<?= isActive($sub['path'], $currentUri) ? 'active' : '' ?>">
+                            <?= htmlspecialchars($sub['label']) ?>
+                        </a>
+                    <?php endif; ?>
                 </li>
                 <?php endforeach; ?>
             </ul>
+
             <?php else: ?>
-            <a href="<?= htmlspecialchars($item['href']) ?>" class="nav-mobile__link <?= isActive($item['path'], $currentUri) ? 'active' : '' ?>">
-                <?= htmlspecialchars($item['label']) ?>
-            </a>
+                <?php if ($item['href'] === null): ?>
+                    <span class="nav-mobile__link disabled-link">
+                        <?= htmlspecialchars($item['label']) ?>
+                    </span>
+                <?php else: ?>
+                    <a href="<?= htmlspecialchars($item['href']) ?>"
+                       class="nav-mobile__link <?= isActive($item['path'], $currentUri) ? 'active' : '' ?>">
+                        <?= htmlspecialchars($item['label']) ?>
+                    </a>
+                <?php endif; ?>
             <?php endif; ?>
         </li>
         <?php endforeach; ?>
 
         <li class="nav-mobile__cta-wrap">
-            <a href="<?= htmlspecialchars(url('/estimation-gratuite')) ?>" class="btn btn--primary btn--full">
-                Estimation gratuite
+            <a href="<?= htmlspecialchars(url('/avis-de-valeur')) ?>" class="btn btn--outline btn--full" style="margin-bottom:.5rem">
+                Avis de valeur
+            </a>
+            <a href="<?= htmlspecialchars(url('/prendre-rendez-vous')) ?>" class="btn btn--primary btn--full">
+                Prendre RDV
             </a>
         </li>
 
-        <?php if (APP_PHONE): ?>
-        <li style="margin-bottom:.5rem">
+        <?php if (defined('APP_PHONE') && APP_PHONE): ?>
+        <li style="margin-bottom:.5rem; padding: 0 1rem;">
             <a href="tel:<?= htmlspecialchars(preg_replace('/\s+/', '', APP_PHONE)) ?>" class="btn btn--outline btn--full">
                 📞 <?= htmlspecialchars(APP_PHONE) ?>
             </a>

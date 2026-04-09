@@ -1,3 +1,5 @@
+.gmb-dashboard a { color: inherit; }
+.gmb-dashboard .gmb-google-icon { display:inline-block; margin-right:6px; font-size:.95em; transform:translateY(-1px); }
 .gmb-page-header h1 { margin: 0 0 6px; font-size: 30px; }
 .gmb-page-header p { margin: 0 0 18px; color: #64748b; }
 .gmb-page-header .gmb-version-note { margin: 0 0 8px; color: #1e40af; font-weight: 600; }

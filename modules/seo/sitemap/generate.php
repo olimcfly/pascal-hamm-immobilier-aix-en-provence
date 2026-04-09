@@ -14,13 +14,8 @@ try {
     $userId = (int) (Auth::user()['id'] ?? 0);
     $service = new SitemapService(db());
     $service->ensureSchema();
-    $result = $service->generate($userId);
 
-    if (!empty($_POST['submit_gsc'])) {
-        $service->submitPlaceholder($userId);
-    }
-
-    echo json_encode(['success' => true, 'xml' => $result['xml']]);
+    echo json_encode(['success' => true, 'data' => $service->generate($userId)]);
 } catch (Throwable $e) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);

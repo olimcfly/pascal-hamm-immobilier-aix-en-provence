@@ -3,6 +3,8 @@ $currentModule = $module ?? 'construire';
 
 $menuGroups = [
     'Pilotage' => [
+        ['module' => 'dashboard',   'label' => 'Tableau de bord',   'hint' => 'Vue d\'ensemble',            'icon' => 'fas fa-gauge-high'],
+        ['module' => 'commencer',   'label' => 'Commencer ici',     'hint' => 'Par où démarrer',            'icon' => 'fas fa-rocket'],
         ['module' => 'construire',  'label' => 'Construire',        'hint' => 'Poser les bases',           'icon' => 'fas fa-layer-group'],
         ['module' => 'onboarding',  'label' => 'Onboarding',       'hint' => 'Activation guidée',      'icon' => 'fas fa-route'],
         ['module' => 'attirer',     'label' => 'Attirer',           'hint' => 'Générer des vendeurs',      'icon' => 'fas fa-bullseye'],

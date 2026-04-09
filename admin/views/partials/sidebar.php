@@ -4,6 +4,7 @@ $currentModule = $module ?? 'construire';
 $menuGroups = [
     'Pilotage' => [
         ['module' => 'construire',  'label' => 'Construire',        'hint' => 'Poser les bases',           'icon' => 'fas fa-layer-group'],
+        ['module' => 'onboarding',  'label' => 'Onboarding',       'hint' => 'Activation guidée',      'icon' => 'fas fa-route'],
         ['module' => 'attirer',     'label' => 'Attirer',           'hint' => 'Générer des vendeurs',      'icon' => 'fas fa-bullseye'],
         ['module' => 'capturer',    'label' => 'Capturer',          'hint' => 'Transformer en contacts',   'icon' => 'fas fa-inbox'],
         ['module' => 'convertir',   'label' => 'Convertir',         'hint' => 'Transformer en clients',    'icon' => 'fas fa-arrow-trend-up'],

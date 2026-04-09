@@ -26,6 +26,27 @@ return [
         ],
     ],
 
+    'onboarding' => [
+        'slug' => 'onboarding',
+        'title' => 'MODULE 0 : ONBOARDING',
+        'section' => 'Construire',
+        'route' => '/admin/index.php?module=onboarding',
+        'icon' => 'fa-route',
+        'description' => "Active rapidement votre configuration stratégique en 5 étapes guidées.",
+        'available' => true,
+        'hub_order' => 5,
+        'meta' => [
+            'motivation' => "Clarifier rapidement votre positionnement évite des mois d'actions dispersées.",
+            'explanation' => "Ce module collecte l'essentiel de votre identité, cible, offre, zone et objectif pour alimenter les autres modules.",
+            'recipe' => [
+                'Répondez aux 5 blocs en moins de 10 minutes.',
+                'Validez le récapitulatif et le blueprint JSON.',
+                'Utilisez ce blueprint comme base des modules Construire, SEO, Social et Convertir.',
+            ],
+            'exercise' => "Complétez les 5 étapes puis vérifiez que le blueprint correspond à votre activité locale.",
+        ],
+    ],
+
     // SECTION : Attirer
     'attirer' => [
         'slug' => 'attirer',

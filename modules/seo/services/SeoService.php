@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/KeywordTracker.php';
 require_once __DIR__ . '/SitemapGenerator.php';
 require_once __DIR__ . '/PerformanceAudit.php';
-require_once __DIR__ . '/SeoTechnicalPerformanceService.php';
+require_once __DIR__ . '/SitemapService.php';
 
 class SeoService
 {
@@ -20,38 +20,38 @@ class SeoService
     private function ensureSchema(): void
     {
         $sql = file_get_contents(__DIR__ . '/../sql/seo.sql');
-        if ($sql === false) {
-            return;
-        }
-        // Exécute chaque statement séparément
-        foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
-            if ($stmt !== '') {
+        if ($sql !== false) {
+            foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
+                if ($stmt === '') {
+                    continue;
+                }
                 try {
                     $this->pdo->exec($stmt);
                 } catch (PDOException) {
-                    // Ignore les erreurs non bloquantes (ex: FK déjà existante)
                 }
             }
         }
+
+        (new SitemapService($this->pdo))->ensureSchema();
     }
 
     public function getHubStats(int $userId): array
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM seo_keywords WHERE user_id = ? AND (status IS NULL OR status <> 'archived')");
         $stmt->execute([$userId]);
-        $keywordsCount = (int)$stmt->fetchColumn();
+        $keywordsCount = (int) $stmt->fetchColumn();
 
         $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM seo_city_pages WHERE user_id = ?');
         $stmt->execute([$userId]);
-        $villesCount = (int)$stmt->fetchColumn();
+        $villesCount = (int) $stmt->fetchColumn();
 
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM seo_city_pages WHERE user_id = ? AND status = 'published'");
         $stmt->execute([$userId]);
-        $villesPublished = (int)$stmt->fetchColumn();
+        $villesPublished = (int) $stmt->fetchColumn();
 
-        $stmt = $this->pdo->prepare('SELECT generated_at FROM seo_sitemap_logs WHERE user_id = ? ORDER BY generated_at DESC LIMIT 1');
-        $stmt->execute([$userId]);
-        $sitemapLastGenerated = $stmt->fetchColumn() ?: null;
+        $sitemapService = new SitemapService($this->pdo);
+        $sitemapData = $sitemapService->getDashboard($userId);
+        $sitemap = $sitemapData['sitemap'] ?? [];
 
         $performanceSummary = ['score' => null, 'status' => 'non_audite'];
         try {
@@ -72,9 +72,10 @@ class SeoService
             'top10_count' => $this->countTop10($userId),
             'villes_count' => $villesCount,
             'villes_published' => $villesPublished,
-            'sitemap_last_generated' => $sitemapLastGenerated,
-            'last_audit_score' => $performanceSummary['score'] !== null ? (int)$performanceSummary['score'] : null,
-            'last_audit_status' => (string)$performanceSummary['status'],
+            'sitemap_last_generated' => $sitemap['last_generated_at'] ?? null,
+            'sitemap_status' => $sitemap['status'] ?? 'idle',
+            'sitemap_issues_count' => (int) ($sitemap['issues_count'] ?? 0),
+            'last_audit_score' => $lastAuditScore !== false ? (int) $lastAuditScore : null,
         ];
     }
 

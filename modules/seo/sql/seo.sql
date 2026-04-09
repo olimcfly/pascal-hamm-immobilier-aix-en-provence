@@ -76,16 +76,31 @@ CREATE TABLE IF NOT EXISTS seo_sitemap_urls (
     KEY idx_sitemap_user (user_id, included)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS seo_sitemap_logs (
+CREATE TABLE IF NOT EXISTS seo_sitemaps (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
-    generated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    urls_count INT UNSIGNED NOT NULL DEFAULT 0,
-    ping_status TINYINT(1) NOT NULL DEFAULT 0,
-    submitted_to_gsc TINYINT(1) NOT NULL DEFAULT 0,
-    xml_size INT UNSIGNED NOT NULL DEFAULT 0,
+    sitemap_url VARCHAR(255) NOT NULL,
+    total_urls INT UNSIGNED NOT NULL DEFAULT 0,
+    last_generated_at DATETIME NULL,
+    status ENUM('idle','ok','warning','error') NOT NULL DEFAULT 'idle',
+    issues_count INT UNSIGNED NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    KEY idx_sitemap_logs_user (user_id, generated_at)
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_sitemap_user (user_id),
+    KEY idx_sitemap_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS seo_sitemap_logs (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    sitemap_id BIGINT UNSIGNED NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    action_type ENUM('generate','verify','submit') NOT NULL,
+    status ENUM('ok','warning','error') NOT NULL DEFAULT 'ok',
+    message TEXT NULL,
+    urls_count INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_sitemap_logs_sitemap (sitemap_id, created_at),
+    KEY idx_sitemap_logs_user (user_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS seo_performance_audits (

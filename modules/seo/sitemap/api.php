@@ -12,15 +12,22 @@ try {
     verifyCsrf();
 
     $userId = (int) (Auth::user()['id'] ?? 0);
+    $action = (string) ($_POST['action'] ?? 'verify');
+
     $service = new SitemapService(db());
     $service->ensureSchema();
-    $result = $service->generate($userId);
 
-    if (!empty($_POST['submit_gsc'])) {
-        $service->submitPlaceholder($userId);
+    if ($action === 'verify') {
+        echo json_encode(['success' => true, 'data' => $service->verify($userId)]);
+        exit;
     }
 
-    echo json_encode(['success' => true, 'xml' => $result['xml']]);
+    if ($action === 'submit') {
+        echo json_encode(['success' => true, 'data' => $service->submitPlaceholder($userId)]);
+        exit;
+    }
+
+    throw new InvalidArgumentException('Action sitemap inconnue.');
 } catch (Throwable $e) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);

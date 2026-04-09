@@ -60,6 +60,11 @@ class LeadService
             $params[':pipeline'] = self::sanitizePipeline((string)$filters['pipeline']);
         }
 
+        if (!empty($filters['stage_like'])) {
+            $where[] = 'stage LIKE :stage_like';
+            $params[':stage_like'] = '%' . self::sanitizeStageLike((string)$filters['stage_like']) . '%';
+        }
+
         $sql = 'SELECT * FROM crm_leads';
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
@@ -75,6 +80,65 @@ class LeadService
         }
 
         return $rows;
+    }
+
+    public static function updateRdvStatus(int $leadId, string $action, ?string $scheduledAt = null, string $comment = ''): bool
+    {
+        self::ensureTable();
+
+        $leadId = max(0, $leadId);
+        if ($leadId <= 0) {
+            return false;
+        }
+
+        $action = strtolower(trim($action));
+        if (!in_array($action, ['confirm', 'cancel', 'reschedule'], true)) {
+            return false;
+        }
+
+        $targetStage = match ($action) {
+            'confirm' => 'rdv_planifie',
+            'cancel' => 'perdu',
+            'reschedule' => 'rdv_a_planifier',
+        };
+
+        $stmt = db()->prepare('SELECT metadata_json, notes FROM crm_leads WHERE id = :id LIMIT 1');
+        $stmt->execute([':id' => $leadId]);
+        $lead = $stmt->fetch();
+        if (!$lead) {
+            return false;
+        }
+
+        $metadata = json_decode((string)($lead['metadata_json'] ?? '{}'), true) ?: [];
+        $existingNotes = trim((string)($lead['notes'] ?? ''));
+
+        if ($scheduledAt !== null && $scheduledAt !== '') {
+            $metadata['appointment_at'] = $scheduledAt;
+        }
+        $metadata['appointment_status'] = $action;
+        $metadata['appointment_updated_at'] = date('c');
+
+        $comment = trim($comment);
+        $nextNotes = $existingNotes;
+        if ($comment !== '') {
+            $prefix = '[' . date('d/m/Y H:i') . '] ';
+            $nextNotes = trim($existingNotes . PHP_EOL . $prefix . $comment);
+        }
+
+        $update = db()->prepare('UPDATE crm_leads
+            SET stage = :stage,
+                metadata_json = :metadata_json,
+                notes = :notes,
+                updated_at = NOW()
+            WHERE id = :id
+            LIMIT 1');
+
+        return $update->execute([
+            ':stage' => $targetStage,
+            ':metadata_json' => json_encode($metadata, JSON_UNESCAPED_UNICODE),
+            ':notes' => $nextNotes,
+            ':id' => $leadId,
+        ]);
     }
 
     public static function stageMatrix(): array
@@ -172,6 +236,12 @@ class LeadService
     {
         $stage = strtolower(trim($stage));
         return preg_replace('/[^a-z0-9_\-]/', '', $stage) ?: 'nouveau';
+    }
+
+    private static function sanitizeStageLike(string $stage): string
+    {
+        $stage = strtolower(trim($stage));
+        return preg_replace('/[^a-z0-9_\-]/', '', $stage) ?: 'rdv';
     }
 
     private static function sanitizePriority(string $priority): string

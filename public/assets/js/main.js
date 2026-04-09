@@ -143,3 +143,26 @@ document.querySelectorAll('[data-share]').forEach(btn => {
     }
   });
 });
+
+// ── Accordion (pages villes/quartiers/guides) ─────────────────
+document.querySelectorAll('.accordion__button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item    = btn.closest('.accordion__item');
+    const content = item?.querySelector('.accordion__content');
+    const isOpen  = item?.classList.contains('open');
+
+    // Fermer tous les autres items du même accordion
+    btn.closest('.accordion')?.querySelectorAll('.accordion__item.open').forEach(openItem => {
+      openItem.classList.remove('open');
+      openItem.querySelector('.accordion__button')?.setAttribute('aria-expanded', 'false');
+      openItem.querySelector('.accordion__content').style.display = '';
+    });
+
+    // Ouvrir ou fermer l'item cliqué
+    if (!isOpen && item && content) {
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      content.style.display = 'block';
+    }
+  });
+});

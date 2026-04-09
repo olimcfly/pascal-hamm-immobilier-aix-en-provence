@@ -1,16 +1,2 @@
-User-agent: *
-Allow: /
-
-# Bloquer pages techniques / faible valeur SEO
-Disallow: /admin/
-Disallow: /settings/
-Disallow: /private/
-Disallow: /logs/
-Disallow: /*?*
-Disallow: /merci
-Disallow: /merci-estimation
-Disallow: /tag/
-Disallow: /author/
-Disallow: /wp-
-
-Sitemap: https://pascalhamm.fr/sitemap.xml
+# robots.txt est servi dynamiquement depuis robots.php (APP_URL)
+# via la règle RewriteRule ^robots\.txt$ robots.php.

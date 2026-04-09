@@ -1,11 +1,21 @@
 <?php
+$contactFormError = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrf();
 
-    $email  = trim((string)($_POST['email']  ?? ''));
-    $prenom = trim((string)($_POST['prenom'] ?? ''));
+    $email      = trim((string)($_POST['email'] ?? ''));
+    $prenom     = trim((string)($_POST['prenom'] ?? ''));
+    $message    = trim((string)($_POST['message'] ?? ''));
+    $maxMessage = 2000;
 
-    if ($email !== '' && $prenom !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if (
+        $email !== ''
+        && $prenom !== ''
+        && filter_var($email, FILTER_VALIDATE_EMAIL)
+        && $message !== ''
+        && mb_strlen($message) <= $maxMessage
+    ) {
         LeadService::capture([
             'source_type' => LeadService::SOURCE_CONTACT,
             'pipeline'    => LeadService::SOURCE_CONTACT,
@@ -15,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'email'       => $email,
             'phone'       => trim((string)($_POST['telephone'] ?? '')),
             'intent'      => trim((string)($_POST['sujet']     ?? 'Contact général')),
-            'notes'       => trim((string)($_POST['message']   ?? '')),
+            'notes'       => $message,
             'consent'     => !empty($_POST['rgpd']),
             'metadata'    => [
                 'origin_path' => $_SERVER['REQUEST_URI'] ?? '/contact',
@@ -59,6 +69,12 @@ $contactPhoneHref = preg_replace('/\s+/', '', $contactPhone) ?: '';
             <div class="contact-form-box">
                 <h2><?= e($contactFormTitle !== '' ? $contactFormTitle : 'Envoyez-moi un message') ?></h2>
                 <p>Décrivez votre projet ou posez votre question.</p>
+
+                <?php if ($contactFormError !== ''): ?>
+                    <div style="margin-bottom:1rem;padding:.9rem 1rem;border:1px solid #fda29b;background:#fef3f2;color:#b42318;border-radius:10px;">
+                        <?= e($contactFormError) ?>
+                    </div>
+                <?php endif; ?>
 
                 <form id="contact-form" action="/contact" method="POST" novalidate>
                     <?= csrfField() ?>
@@ -150,6 +166,7 @@ $contactPhoneHref = preg_replace('/\s+/', '', $contactPhone) ?: '';
                             rows="6"
                             placeholder="Décrivez votre projet immobilier..."
                             required
+                            maxlength="2000"
                             aria-describedby="message-err"></textarea>
                         <div class="form-error" id="message-err"></div>
                     </div>

@@ -11,7 +11,8 @@ if (!in_array($action, $allowedActions, true)) {
 $pageTitle = $action === 'rapport-mensuel' ? 'Optimiser — Rapport mensuel' : 'Optimiser';
 $pageDescription = 'Analysez et améliorez en continu vos performances';
 
-function renderContent() {
+function renderContent(): void
+{
     global $action;
 
     if ($action === 'rapport-mensuel') {
@@ -26,15 +27,15 @@ function renderContent() {
 
     <div class="cards-container">
 
-        <div class="card" style="--card-accent:#3498db; --card-icon-bg:#e3f2fd;">
+        <a class="card" href="?module=optimiser&view=analytics" style="--card-accent:#3498db; --card-icon-bg:#e3f2fd; text-decoration:none; color:inherit; display:block;">
             <div class="card-header">
                 <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
                 <h3 class="card-title">Tableau de bord Analytics</h3>
             </div>
-            <p class="card-description">Vue consolidée de vos KPIs : leads, mandats, trafic, conversions.</p>
-            <div class="card-tags"><span class="tag">KPIs</span><span class="tag">Reporting</span></div>
-            <span class="card-soon"><i class="fas fa-clock"></i> Arrivée bientôt</span>
-        </div>
+            <p class="card-description">Vue consolidée de vos KPIs : leads, estimations et trafic pages (si disponible).</p>
+            <div class="card-tags"><span class="tag">KPIs</span><span class="tag">Reporting</span><span class="tag">30 / 90 jours</span></div>
+            <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir le tableau de bord</span>
+        </a>
 
         <div class="card" style="--card-accent:#f39c12; --card-icon-bg:#fef9e7;">
             <div class="card-header">
@@ -66,5 +67,6 @@ function renderContent() {
             <a class="card-action" href="/admin?module=optimiser&action=rapport-mensuel"><i class="fas fa-arrow-right"></i> Ouvrir</a>
         </div>
 
-    require $viewFile;
+    </div>
+    <?php
 }

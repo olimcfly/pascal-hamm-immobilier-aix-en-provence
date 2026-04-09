@@ -1,20 +1,33 @@
 <?php
-require_once __DIR__ . '/services/SeoService.php';
 
-$pageTitle       = 'SEO';
+declare(strict_types=1);
+
+require_once __DIR__ . '/services/SeoService.php';
+require_once __DIR__ . '/services/CityPageService.php';
+
+$allowedActions = ['index', 'villes', 'ville-edit', 'ville-preview', 'keywords', 'sitemap', 'performance'];
+$action = preg_replace('/[^a-z-]/', '', (string)($_GET['action'] ?? 'index'));
+if (!in_array($action, $allowedActions, true)) {
+    $action = 'index';
+}
+
+$pageTitle = match ($action) {
+    'villes' => 'SEO · Fiches villes',
+    'ville-edit' => 'SEO · Éditer une fiche ville',
+    'ville-preview' => 'SEO · Prévisualisation fiche ville',
+    default => 'SEO',
+};
 $pageDescription = 'Pilotez votre référencement local';
 
-$user      = Auth::user();
-$userId    = (int)($user['id'] ?? 0);
+$user = Auth::user();
+$userId = (int)($user['id'] ?? 0);
 $seoService = new SeoService(db());
-$stats     = $seoService->getHubStats($userId);
+$cityPageService = new CityPageService(db());
+$stats = $seoService->getHubStats($userId);
 
-function renderContent(): void
+function renderSeoHub(array $stats): void
 {
-    global $stats;
     ?>
-    <link rel="stylesheet" href="/admin/assets/css/seo.css?v=<?= filemtime($_SERVER['DOCUMENT_ROOT'] . '/admin/assets/css/seo.css') ?>">
-
     <div class="seo-hub">
         <div class="seo-breadcrumb">Accueil › SEO</div>
         <h1>🔍 HUB SEO</h1>
@@ -86,14 +99,38 @@ function renderContent(): void
 
         </div>
     </div>
-
-    <script>
-    function filterModules(q) {
-        q = q.toLowerCase();
-        document.querySelectorAll('#seo-modules-grid .seo-card').forEach(function(card) {
-            card.style.display = card.dataset.module.includes(q) ? '' : 'none';
-        });
-    }
-    </script>
     <?php
+}
+
+function renderContent(): void
+{
+    global $action, $stats;
+
+    echo '<link rel="stylesheet" href="' . e(asset_url('/admin/assets/css/seo.css')) . '">';
+
+    switch ($action) {
+        case 'villes':
+            require __DIR__ . '/fiches-villes/index.php';
+            break;
+        case 'ville-edit':
+            require __DIR__ . '/fiches-villes/edit.php';
+            break;
+        case 'ville-preview':
+            require __DIR__ . '/fiches-villes/preview.php';
+            break;
+        case 'keywords':
+            renderSeoHub($stats);
+            break;
+        case 'sitemap':
+            require __DIR__ . '/sitemap.php';
+            break;
+        case 'performance':
+            require __DIR__ . '/performance.php';
+            break;
+        default:
+            renderSeoHub($stats);
+            break;
+    }
+
+    echo '<script src="' . e(asset_url('/admin/assets/js/seo.js')) . '" defer></script>';
 }

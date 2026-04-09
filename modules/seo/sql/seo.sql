@@ -34,22 +34,26 @@ CREATE TABLE IF NOT EXISTS seo_keyword_history (
 CREATE TABLE IF NOT EXISTS seo_city_pages (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
-    city VARCHAR(160) NOT NULL,
-    postal_code VARCHAR(12) NOT NULL,
+    city_name VARCHAR(160) NOT NULL,
     slug VARCHAR(190) NOT NULL,
-    h1 VARCHAR(190) NOT NULL,
-    seo_title VARCHAR(60) NOT NULL,
-    meta_description VARCHAR(160) NOT NULL,
-    content MEDIUMTEXT NOT NULL,
-    price_m2 DECIMAL(10,2) NULL,
-    population INT UNSIGNED NULL,
-    targeted_keywords JSON NULL,
-    status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+    status ENUM('draft', 'ready', 'published') NOT NULL DEFAULT 'draft',
+    seo_title VARCHAR(70) DEFAULT NULL,
+    meta_description VARCHAR(170) DEFAULT NULL,
+    h1 VARCHAR(190) DEFAULT NULL,
+    intro TEXT NULL,
+    market_block MEDIUMTEXT NULL,
+    faq_json JSON NULL,
+    internal_links_json JSON NULL,
+    canonical_url VARCHAR(255) DEFAULT NULL,
+    seo_score TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    content_score TINYINT UNSIGNED NOT NULL DEFAULT 0,
     published_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uniq_city_slug (user_id, slug),
-    KEY idx_city_status (user_id, status)
+    KEY idx_city_status (user_id, status),
+    KEY idx_city_name (user_id, city_name),
+    KEY idx_city_score (user_id, seo_score)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS seo_sitemap_urls (

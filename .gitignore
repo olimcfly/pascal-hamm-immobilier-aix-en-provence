@@ -42,3 +42,10 @@ vendor/
 .vscode/
 .idea/
 *.sublime-*
+
+
+# Assets build (générés)
+public/assets/build/
+public/admin/assets/build/
+modules/gmb/assets/build/
+storage/cache/assets-manifest.json

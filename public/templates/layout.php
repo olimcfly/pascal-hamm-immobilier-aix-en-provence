@@ -135,9 +135,9 @@ foreach ($noindexPaths as $pathPattern) {
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/main.css')) ?>">
     <?php foreach ($extraCss ?? [] as $css): ?>
-    <link rel="stylesheet" href="<?= e($css) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url($css)) ?>">
     <?php endforeach; ?>
 
     <style>
@@ -193,9 +193,9 @@ window.__APP_SETTINGS__ = {
 </script>
 
 <!-- JS -->
-<script src="/assets/js/main.js" defer></script>
+<script src="<?= e(asset_url('/assets/js/main.js')) ?>" defer></script>
 <?php foreach ($extraJs ?? [] as $js): ?>
-<script src="<?= e($js) ?>" defer></script>
+<script src="<?= e(asset_url($js)) ?>" defer></script>
 <?php endforeach; ?>
 
 </body>

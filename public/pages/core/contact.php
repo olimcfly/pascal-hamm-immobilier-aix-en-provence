@@ -1,28 +1,35 @@
 <?php
+$contactFormError = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrf();
 
-    $email  = trim((string)($_POST['email']  ?? ''));
-    $prenom = trim((string)($_POST['prenom'] ?? ''));
+    $rateLimitKey = 'contact_' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    if (!EstimationTunnelService::checkRateLimit($rateLimitKey, 8)) {
+        $contactFormError = 'Trop de demandes envoyées depuis votre connexion. Merci de réessayer dans une heure.';
+    } else {
+        $email  = trim((string)($_POST['email']  ?? ''));
+        $prenom = trim((string)($_POST['prenom'] ?? ''));
 
-    if ($email !== '' && $prenom !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        LeadService::capture([
-            'source_type' => LeadService::SOURCE_CONTACT,
-            'pipeline'    => LeadService::SOURCE_CONTACT,
-            'stage'       => 'a_traiter',
-            'first_name'  => $prenom,
-            'last_name'   => trim((string)($_POST['nom']       ?? '')),
-            'email'       => $email,
-            'phone'       => trim((string)($_POST['telephone'] ?? '')),
-            'intent'      => trim((string)($_POST['sujet']     ?? 'Contact général')),
-            'notes'       => trim((string)($_POST['message']   ?? '')),
-            'consent'     => !empty($_POST['rgpd']),
-            'metadata'    => [
-                'origin_path' => $_SERVER['REQUEST_URI'] ?? '/contact',
-            ],
-        ]);
+        if ($email !== '' && $prenom !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            LeadService::capture([
+                'source_type' => LeadService::SOURCE_CONTACT,
+                'pipeline'    => LeadService::SOURCE_CONTACT,
+                'stage'       => 'a_traiter',
+                'first_name'  => $prenom,
+                'last_name'   => trim((string)($_POST['nom']       ?? '')),
+                'email'       => $email,
+                'phone'       => trim((string)($_POST['telephone'] ?? '')),
+                'intent'      => trim((string)($_POST['sujet']     ?? 'Contact général')),
+                'notes'       => trim((string)($_POST['message']   ?? '')),
+                'consent'     => !empty($_POST['rgpd']),
+                'metadata'    => [
+                    'origin_path' => $_SERVER['REQUEST_URI'] ?? '/contact',
+                ],
+            ]);
 
-        redirect('/merci');
+            redirect('/merci');
+        }
     }
 }
 
@@ -59,6 +66,12 @@ $contactPhoneHref = preg_replace('/\s+/', '', $contactPhone) ?: '';
             <div class="contact-form-box">
                 <h2><?= e($contactFormTitle !== '' ? $contactFormTitle : 'Envoyez-moi un message') ?></h2>
                 <p>Décrivez votre projet ou posez votre question.</p>
+
+                <?php if ($contactFormError !== ''): ?>
+                    <div style="margin-bottom:1rem;padding:.9rem 1rem;border:1px solid #fda29b;background:#fef3f2;color:#b42318;border-radius:10px;">
+                        <?= e($contactFormError) ?>
+                    </div>
+                <?php endif; ?>
 
                 <form id="contact-form" action="/contact" method="POST" novalidate>
                     <?= csrfField() ?>

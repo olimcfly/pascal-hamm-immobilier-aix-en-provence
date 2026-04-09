@@ -2,7 +2,7 @@
 $pageTitle = 'Biens';
 $pageDescription = 'Gérez votre portefeuille de biens immobiliers';
 
-$allowedViews = ['index', 'photos'];
+$allowedViews = ['index', 'photos', 'catalogue'];
 $view = $_GET['view'] ?? 'index';
 if (!in_array($view, $allowedViews, true)) {
     $view = 'index';
@@ -50,7 +50,7 @@ function renderBiensHubCards(): void
             </div>
             <p class="card-description">Consultez et gérez tous vos biens actifs, en option et vendus.</p>
             <div class="card-tags"><span class="tag">Actifs</span><span class="tag">En option</span><span class="tag">Vendus</span></div>
-            <a href="/admin/biens/catalogue" class="card-action"><i class="fas fa-arrow-right"></i> Consulter</a>
+            <a href="/admin?module=biens&amp;view=catalogue" class="card-action"><i class="fas fa-arrow-right"></i> Consulter</a>
         </div>
 
         <div class="card" style="--card-accent:#27ae60; --card-icon-bg:#eafaf1;">
@@ -85,6 +85,79 @@ function renderBiensHubCards(): void
 
     </div>
     <?php
+}
+
+function biensFetchCatalogue(): array
+{
+    $sql = 'SELECT id, titre, ville, prix, type, statut, created_at FROM biens ORDER BY created_at DESC LIMIT 200';
+    $stmt = db()->query($sql);
+
+    return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+}
+
+function renderBiensCatalogue(): void
+{
+    $biens = biensFetchCatalogue();
+    ?>
+    <style>
+        .catalogue-table-wrap{background:#fff;border:1px solid #e8edf3;border-radius:12px;overflow:auto}
+        .catalogue-table{width:100%;border-collapse:collapse;min-width:820px}
+        .catalogue-table th,.catalogue-table td{padding:12px 14px;border-bottom:1px solid #eef2f7;text-align:left;font-size:14px}
+        .catalogue-table th{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:#5d6b82;background:#f8fafc}
+        .catalogue-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600}
+        .catalogue-badge--disponible{background:#eafaf1;color:#1e7a46}
+        .catalogue-badge--option{background:#fff7e8;color:#9f5a00}
+        .catalogue-badge--vendu{background:#fdecec;color:#a32525}
+        .catalogue-empty{padding:18px;border:1px dashed #d7deea;border-radius:10px;background:#fff;color:#5d6b82}
+        .hub-back{display:inline-flex;gap:8px;align-items:center;margin-bottom:10px}
+    </style>
+
+    <a class="hub-back" href="/admin?module=biens"><i class="fas fa-arrow-left"></i> Retour au hub Biens</a>
+    <div class="page-header">
+        <h1><i class="fas fa-list page-icon"></i> Catalogue des biens</h1>
+        <p>Liste de vos biens pour accéder rapidement aux informations principales.</p>
+    </div>
+
+    <?php if ($biens === []): ?>
+        <div class="catalogue-empty">Aucun bien enregistré pour le moment.</div>
+    <?php else: ?>
+        <div class="catalogue-table-wrap">
+            <table class="catalogue-table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Titre</th>
+                    <th>Ville</th>
+                    <th>Type</th>
+                    <th>Prix</th>
+                    <th>Statut</th>
+                    <th>Ajouté le</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($biens as $bien):
+                    $statut = (string) ($bien['statut'] ?? '');
+                    $badgeClass = match (mb_strtolower($statut, 'UTF-8')) {
+                        'disponible' => 'catalogue-badge catalogue-badge--disponible',
+                        'en option'  => 'catalogue-badge catalogue-badge--option',
+                        'vendu'      => 'catalogue-badge catalogue-badge--vendu',
+                        default      => 'catalogue-badge',
+                    };
+                    ?>
+                    <tr>
+                        <td>#<?= (int) ($bien['id'] ?? 0) ?></td>
+                        <td><?= e((string) ($bien['titre'] ?? 'Sans titre')) ?></td>
+                        <td><?= e((string) ($bien['ville'] ?? '—')) ?></td>
+                        <td><?= e((string) ($bien['type'] ?? '—')) ?></td>
+                        <td><?= isset($bien['prix']) ? number_format((int) $bien['prix'], 0, ',', ' ') . ' €' : '—' ?></td>
+                        <td><span class="<?= e($badgeClass) ?>"><?= e($statut !== '' ? $statut : '—') ?></span></td>
+                        <td><?= !empty($bien['created_at']) ? e(date('d/m/Y', strtotime((string) $bien['created_at']))) : '—' ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif;
 }
 
 function renderBiensPhotosManager(): void
@@ -323,6 +396,11 @@ function renderContent() {
 
     if ($view === 'photos') {
         renderBiensPhotosManager();
+        return;
+    }
+
+    if ($view === 'catalogue') {
+        renderBiensCatalogue();
         return;
     }
 

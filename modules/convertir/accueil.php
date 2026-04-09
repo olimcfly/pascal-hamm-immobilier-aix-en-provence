@@ -496,50 +496,152 @@ function listConvertirPostRdvLog(int $leadId): array
 
 function renderConvertirHubCards(): void
 {
+    $steps = [
+        [
+            'number' => '1',
+            'title' => 'Organiser les contacts',
+            'module' => 'CRM',
+            'description' => 'Centralisez chaque lead, qualifiez rapidement et gardez un historique clair pour ne plus perdre d\'opportunités.',
+            'href' => '/admin?module=convertir&action=crm-contacts',
+            'state' => 'actif',
+            'state_label' => 'Actif',
+            'icon' => 'fa-address-book',
+        ],
+        [
+            'number' => '2',
+            'title' => 'Obtenir un rendez-vous',
+            'module' => 'RDV',
+            'description' => 'Passez des leads qualifiés à des créneaux planifiés avec une vue simple des demandes et des priorités.',
+            'href' => '/admin?module=convertir&action=rdv',
+            'state' => 'actif',
+            'state_label' => 'Actif',
+            'icon' => 'fa-calendar-check',
+        ],
+        [
+            'number' => '3',
+            'title' => 'Convaincre',
+            'module' => 'Argumentaire',
+            'description' => 'Structurez vos scripts de vente pour mieux gérer les objections et augmenter vos signatures en rendez-vous.',
+            'href' => null,
+            'state' => 'soon',
+            'state_label' => 'Bientôt',
+            'icon' => 'fa-file-signature',
+        ],
+        [
+            'number' => '4',
+            'title' => 'Relancer & signer',
+            'module' => 'Suivi',
+            'description' => 'Activez des relances régulières après rendez-vous pour faire progresser vos prospects jusqu\'au mandat.',
+            'href' => '/admin?module=convertir&action=suivi-post-rdv',
+            'state' => 'actif',
+            'state_label' => 'Actif',
+            'icon' => 'fa-handshake',
+        ],
+    ];
     ?>
-    <div class="cards-container">
+    <style>
+        .convertir-sales-flow{display:grid;gap:1.1rem;}
+        .convertir-hero{background:linear-gradient(120deg,#0f172a,#1e293b);color:#fff;padding:1.35rem;border-radius:16px;box-shadow:0 12px 26px rgba(15,23,42,.22);}
+        .convertir-hero h1{margin:0;font-size:1.55rem;line-height:1.2;}
+        .convertir-hero p{margin:.55rem 0 0;color:#cbd5e1;max-width:760px;}
 
-        <div class="card" style="--card-accent:#3498db; --card-icon-bg:#e3f2fd;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-address-book"></i></div>
-                <h3 class="card-title">CRM Contacts</h3>
+        .convertir-core{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1rem 1.05rem;display:grid;gap:.7rem;}
+        .convertir-core h2{margin:0;font-size:1.02rem;color:#0f172a;}
+        .convertir-core-grid{display:grid;gap:.6rem;}
+        .convertir-core-item{border:1px solid #e2e8f0;background:#f8fafc;border-radius:10px;padding:.72rem .78rem;}
+        .convertir-core-label{display:block;font-weight:800;font-size:.78rem;letter-spacing:.02em;text-transform:uppercase;color:#475569;margin-bottom:.25rem;}
+        .convertir-core-item ul{margin:.35rem 0 0 1rem;padding:0;display:grid;gap:.15rem;}
+
+        .convertir-steps{position:relative;display:grid;gap:.8rem;}
+        .convertir-step{position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:.95rem;box-shadow:0 8px 18px rgba(15,23,42,.05);}
+        .convertir-step::after{content:'➜';position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);color:#94a3b8;font-size:1rem;font-weight:700;}
+        .convertir-step:last-child::after{display:none;}
+        .convertir-step-head{display:flex;justify-content:space-between;gap:.8rem;align-items:flex-start;}
+        .convertir-step-kicker{font-size:.76rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:#64748b;}
+        .convertir-step-title{margin:.22rem 0 0;font-size:1.05rem;}
+        .convertir-module{display:inline-flex;align-items:center;gap:.4rem;margin-top:.35rem;font-weight:700;color:#334155;}
+        .convertir-state{display:inline-flex;align-items:center;border-radius:999px;padding:.22rem .55rem;font-size:.76rem;font-weight:800;}
+        .convertir-state.actif{background:#dcfce7;color:#166534;}
+        .convertir-state.soon{background:#ffedd5;color:#9a3412;}
+        .convertir-step p{margin:.58rem 0 0;color:#475569;font-size:.92rem;}
+        .convertir-step-cta{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;margin-top:.75rem;padding:.56rem .82rem;border-radius:10px;text-decoration:none;font-weight:700;background:#0f172a;color:#fff;}
+        .convertir-step-cta.is-disabled{background:#94a3b8;cursor:not-allowed;pointer-events:none;}
+
+        .convertir-final-cta{display:flex;flex-direction:column;align-items:flex-start;gap:.72rem;background:linear-gradient(120deg,#eff6ff,#eef2ff);border:1px solid #c7d2fe;border-radius:14px;padding:1rem;}
+        .convertir-final-cta h2{margin:0;font-size:1.1rem;color:#1e1b4b;}
+        .convertir-final-cta-btn{display:inline-flex;align-items:center;gap:.45rem;background:#1d4ed8;color:#fff;text-decoration:none;padding:.62rem .88rem;border-radius:10px;font-weight:700;}
+
+        @media (min-width: 900px){
+            .convertir-hero{padding:1.8rem;}
+            .convertir-hero h1{font-size:2rem;}
+            .convertir-core-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+            .convertir-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;}
+            .convertir-step::after{content:'➜';left:auto;right:-16px;top:50%;bottom:auto;transform:translateY(-50%);}
+            .convertir-step:nth-child(2)::after{display:none;}
+            .convertir-step:nth-child(3)::after{display:block;}
+            .convertir-step:last-child::after{display:none;}
+        }
+    </style>
+
+    <section class="convertir-sales-flow">
+        <header class="convertir-hero">
+            <h1>Transformer vos contacts en clients</h1>
+            <p>Mettez en place un système simple pour qualifier, relancer et signer vos prospects.</p>
+        </header>
+
+        <section class="convertir-core">
+            <h2>Méthode mère</h2>
+            <div class="convertir-core-grid">
+                <article class="convertir-core-item">
+                    <span class="convertir-core-label">Motivation</span>
+                    <div>Perte de leads sans méthode</div>
+                </article>
+                <article class="convertir-core-item">
+                    <span class="convertir-core-label">Explication</span>
+                    <ul>
+                        <li>CRM</li>
+                        <li>RDV</li>
+                        <li>Argumentaire</li>
+                        <li>Suivi</li>
+                    </ul>
+                </article>
+                <article class="convertir-core-item">
+                    <span class="convertir-core-label">Résultat</span>
+                    <div>Plus de mandats</div>
+                </article>
+                <article class="convertir-core-item">
+                    <span class="convertir-core-label">Action</span>
+                    <div>Suivre les étapes</div>
+                </article>
             </div>
-            <p class="card-description">Gérez, qualifiez et suivez vos leads capturés avec historique complet.</p>
-            <div class="card-tags"><span class="tag">Pipeline</span><span class="tag">Historique</span></div>
-            <a href="/admin?module=convertir&action=crm-contacts" class="crm-link-btn">Ouvrir le module</a>
-        </div>
+        </section>
 
-        <div class="card" style="--card-accent:#e74c3c; --card-icon-bg:#fdedec;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
-                <h3 class="card-title">Prise de RDV</h3>
-            </div>
-            <p class="card-description">Visualisez les demandes de RDV issues des leads et traitez-les depuis un agenda opérationnel.</p>
-            <div class="card-tags"><span class="tag">Agenda</span><span class="tag">Automation</span></div>
-            <a href="/admin?module=convertir&action=rdv" class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</a>
-        </div>
+        <section class="convertir-steps" aria-label="Étapes du processus de conversion">
+            <?php foreach ($steps as $step): ?>
+                <article class="convertir-step">
+                    <div class="convertir-step-head">
+                        <div>
+                            <div class="convertir-step-kicker">Étape <?= e($step['number']) ?></div>
+                            <h3 class="convertir-step-title"><?= e($step['title']) ?></h3>
+                            <div class="convertir-module"><i class="fas <?= e($step['icon']) ?>"></i> Module : <?= e($step['module']) ?></div>
+                        </div>
+                        <span class="convertir-state <?= e($step['state']) ?>"><?= e($step['state_label']) ?></span>
+                    </div>
+                    <p><?= e($step['description']) ?></p>
+                    <?php if (!empty($step['href'])): ?>
+                        <a href="<?= e((string)$step['href']) ?>" class="convertir-step-cta">Commencer <i class="fas fa-arrow-right"></i></a>
+                    <?php else: ?>
+                        <span class="convertir-step-cta is-disabled">Commencer</span>
+                    <?php endif; ?>
+                </article>
+            <?php endforeach; ?>
+        </section>
 
-        <div class="card" style="--card-accent:#27ae60; --card-icon-bg:#eafaf1;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-file-signature"></i></div>
-                <h3 class="card-title">Argumentaire mandat</h3>
-            </div>
-            <p class="card-description">Scripts et supports pour transformer un RDV en mandat exclusif.</p>
-            <div class="card-tags"><span class="tag">Script</span><span class="tag">Exclusivité</span></div>
-            <span class="card-soon"><i class="fas fa-clock"></i> Arrivée bientôt</span>
-        </div>
-
-        <div class="card" style="--card-accent:#8e44ad; --card-icon-bg:#f5eef8;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-handshake"></i></div>
-                <h3 class="card-title">Suivi post-RDV</h3>
-            </div>
-            <p class="card-description">Relances automatiques et séquences de nurturing après le premier contact.</p>
-            <div class="card-tags"><span class="tag">Relance</span><span class="tag">Nurturing</span></div>
-            <a href="/admin?module=convertir&action=suivi-post-rdv" class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</a>
-        </div>
-
-    </div>
+        <section class="convertir-final-cta">
+            <h2>Passez à l’action</h2>
+            <a href="/admin?module=convertir&action=crm-contacts" class="convertir-final-cta-btn">Structurer mon suivi client <i class="fas fa-arrow-right"></i></a>
+        </section>
+    </section>
     <?php
 }
 
@@ -893,14 +995,17 @@ function renderContent(): void
     global $crmContactsView, $crmLeads, $selectedLead, $selectedLeadHistory;
     global $postRdvView, $postRdvLeads, $postRdvSequences, $selectedPostRdvLead, $selectedPostRdvLog;
     ?>
-    <div class="page-header">
-        <h1><i class="fas fa-arrow-trend-up page-icon"></i> HUB <span class="page-title-accent">Convertir</span></h1>
-        <p>Transformez vos contacts en clients signés</p>
-    </div>
-
     <?php if ($crmContactsView): ?>
+        <div class="page-header">
+            <h1><i class="fas fa-arrow-trend-up page-icon"></i> HUB <span class="page-title-accent">Convertir</span></h1>
+            <p>Transformez vos contacts en clients signés</p>
+        </div>
         <?php renderConvertirCrmContacts($crmLeads, $selectedLead, $selectedLeadHistory); ?>
     <?php elseif ($postRdvView): ?>
+        <div class="page-header">
+            <h1><i class="fas fa-arrow-trend-up page-icon"></i> HUB <span class="page-title-accent">Convertir</span></h1>
+            <p>Transformez vos contacts en clients signés</p>
+        </div>
         <?php renderConvertirPostRdv($postRdvLeads, $postRdvSequences, $selectedPostRdvLead, $selectedPostRdvLog); ?>
     <?php else: ?>
         <?php renderConvertirHubCards(); ?>

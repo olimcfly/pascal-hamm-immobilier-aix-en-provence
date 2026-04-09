@@ -11,14 +11,21 @@ const CONVERTIR_CRM_STATUSES = [
 ];
 
 ensureConvertirCrmTables();
+ensureConvertirPostRdvTables();
 handleConvertirCrmPost();
+handleConvertirPostRdvPost();
 
 $action = strtolower((string)($_GET['action'] ?? ''));
 $crmContactsView = $action === 'crm-contacts';
+$postRdvView = $action === 'suivi-post-rdv';
 
 $crmLeads = [];
 $selectedLead = null;
 $selectedLeadHistory = [];
+$postRdvLeads = [];
+$postRdvSequences = [];
+$selectedPostRdvLead = null;
+$selectedPostRdvLog = [];
 
 if ($crmContactsView) {
     $crmLeads = listConvertirCrmLeads();
@@ -32,6 +39,23 @@ if ($crmContactsView) {
         $selectedLead = findConvertirCrmLeadById($leadId);
         if ($selectedLead !== null) {
             $selectedLeadHistory = listConvertirCrmHistory($leadId);
+        }
+    }
+}
+
+if ($postRdvView) {
+    $postRdvLeads = listConvertirPostRdvLeads();
+    $postRdvSequences = listConvertirPostRdvSequences();
+
+    $leadId = (int)($_GET['lead_id'] ?? 0);
+    if ($leadId <= 0 && $postRdvLeads) {
+        $leadId = (int)$postRdvLeads[0]['id'];
+    }
+
+    if ($leadId > 0) {
+        $selectedPostRdvLead = findConvertirPostRdvLeadById($leadId);
+        if ($selectedPostRdvLead !== null) {
+            $selectedPostRdvLog = listConvertirPostRdvLog($leadId);
         }
     }
 }
@@ -95,6 +119,81 @@ function ensureConvertirCrmTables(): void
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_lead_created (lead_id, created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+}
+
+function ensureConvertirPostRdvTables(): void
+{
+    db()->exec('CREATE TABLE IF NOT EXISTS crm_post_rdv_sequences (
+        lead_id INT UNSIGNED NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT "inactif",
+        step_index SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+        next_action_at DATETIME NULL,
+        last_action_at DATETIME NULL,
+        preferred_channel VARCHAR(20) NOT NULL DEFAULT "email",
+        cadence_days SMALLINT UNSIGNED NOT NULL DEFAULT 3,
+        notes TEXT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (lead_id),
+        INDEX idx_status_next (status, next_action_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+    db()->exec('CREATE TABLE IF NOT EXISTS crm_post_rdv_logs (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        lead_id INT UNSIGNED NOT NULL,
+        event_type VARCHAR(30) NOT NULL,
+        channel VARCHAR(20) NOT NULL DEFAULT "email",
+        message TEXT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_lead_created (lead_id, created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+}
+
+function handleConvertirPostRdvPost(): void
+{
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+        return;
+    }
+
+    $intent = (string)($_POST['post_rdv_intent'] ?? '');
+    if (!in_array($intent, ['start_sequence', 'log_followup', 'update_sequence_state'], true)) {
+        return;
+    }
+
+    verifyCsrf();
+
+    $leadId = (int)($_POST['lead_id'] ?? 0);
+    if ($leadId <= 0 || !convertirPostRdvLeadExists($leadId)) {
+        Session::flash('error', 'Lead introuvable pour le suivi post-RDV.');
+        redirect('/admin?module=convertir&action=suivi-post-rdv');
+    }
+
+    if ($intent === 'start_sequence') {
+        $channel = normalizePostRdvChannel((string)($_POST['preferred_channel'] ?? 'email'));
+        $cadence = max(1, min(21, (int)($_POST['cadence_days'] ?? 3)));
+        $notes = trim((string)($_POST['notes'] ?? ''));
+        startConvertirPostRdvSequence($leadId, $channel, $cadence, $notes);
+        Session::flash('success', 'Séquence post-RDV activée.');
+    }
+
+    if ($intent === 'log_followup') {
+        $channel = normalizePostRdvChannel((string)($_POST['channel'] ?? 'email'));
+        $message = trim((string)($_POST['message'] ?? ''));
+        if ($message === '') {
+            Session::flash('error', 'Ajoutez un message de relance avant de valider.');
+        } else {
+            logConvertirPostRdvFollowup($leadId, $channel, $message);
+            Session::flash('success', 'Relance enregistrée et prochaine action recalculée.');
+        }
+    }
+
+    if ($intent === 'update_sequence_state') {
+        $status = normalizePostRdvStatus((string)($_POST['status'] ?? 'actif'));
+        updateConvertirPostRdvSequenceState($leadId, $status);
+        Session::flash('success', 'Statut de la séquence mis à jour.');
+    }
+
+    redirect('/admin?module=convertir&action=suivi-post-rdv&lead_id=' . $leadId);
 }
 
 function normalizeConvertirStatus(string $status): string
@@ -260,6 +359,141 @@ function listConvertirCrmHistory(int $leadId): array
     return $stmt->fetchAll();
 }
 
+function convertirPostRdvLeadExists(int $leadId): bool
+{
+    $stmt = db()->prepare('SELECT id FROM crm_leads WHERE id = :id LIMIT 1');
+    $stmt->execute([':id' => $leadId]);
+    return (bool)$stmt->fetchColumn();
+}
+
+function normalizePostRdvChannel(string $channel): string
+{
+    $channel = strtolower(trim($channel));
+    return in_array($channel, ['email', 'sms', 'appel'], true) ? $channel : 'email';
+}
+
+function normalizePostRdvStatus(string $status): string
+{
+    $status = strtolower(trim($status));
+    return in_array($status, ['actif', 'pause', 'termine', 'inactif'], true) ? $status : 'actif';
+}
+
+function startConvertirPostRdvSequence(int $leadId, string $channel, int $cadenceDays, string $notes = ''): void
+{
+    $stmt = db()->prepare('INSERT INTO crm_post_rdv_sequences
+        (lead_id, status, step_index, next_action_at, last_action_at, preferred_channel, cadence_days, notes, created_at, updated_at)
+        VALUES (:lead_id, "actif", 1, DATE_ADD(NOW(), INTERVAL :cadence DAY), NOW(), :channel, :cadence, :notes, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            status = "actif",
+            preferred_channel = VALUES(preferred_channel),
+            cadence_days = VALUES(cadence_days),
+            notes = VALUES(notes),
+            next_action_at = DATE_ADD(NOW(), INTERVAL VALUES(cadence_days) DAY),
+            updated_at = NOW()');
+    $stmt->execute([
+        ':lead_id' => $leadId,
+        ':channel' => $channel,
+        ':cadence' => $cadenceDays,
+        ':notes' => $notes,
+    ]);
+
+    $log = db()->prepare('INSERT INTO crm_post_rdv_logs (lead_id, event_type, channel, message, created_at)
+        VALUES (:lead_id, "sequence_started", :channel, :message, NOW())');
+    $log->execute([
+        ':lead_id' => $leadId,
+        ':channel' => $channel,
+        ':message' => $notes !== '' ? $notes : 'Séquence post-RDV démarrée.',
+    ]);
+}
+
+function logConvertirPostRdvFollowup(int $leadId, string $channel, string $message): void
+{
+    $log = db()->prepare('INSERT INTO crm_post_rdv_logs (lead_id, event_type, channel, message, created_at)
+        VALUES (:lead_id, "followup_sent", :channel, :message, NOW())');
+    $log->execute([
+        ':lead_id' => $leadId,
+        ':channel' => $channel,
+        ':message' => $message,
+    ]);
+
+    $sequence = db()->prepare('INSERT INTO crm_post_rdv_sequences
+        (lead_id, status, step_index, next_action_at, last_action_at, preferred_channel, cadence_days, created_at, updated_at)
+        VALUES (:lead_id, "actif", 1, DATE_ADD(NOW(), INTERVAL 3 DAY), NOW(), :channel, 3, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            status = IF(status = "termine", "termine", "actif"),
+            step_index = step_index + 1,
+            preferred_channel = VALUES(preferred_channel),
+            last_action_at = NOW(),
+            next_action_at = DATE_ADD(NOW(), INTERVAL cadence_days DAY),
+            updated_at = NOW()');
+    $sequence->execute([
+        ':lead_id' => $leadId,
+        ':channel' => $channel,
+    ]);
+}
+
+function updateConvertirPostRdvSequenceState(int $leadId, string $status): void
+{
+    $stmt = db()->prepare('INSERT INTO crm_post_rdv_sequences
+        (lead_id, status, step_index, preferred_channel, cadence_days, created_at, updated_at)
+        VALUES (:lead_id, :status, 0, "email", 3, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            status = VALUES(status),
+            next_action_at = IF(VALUES(status) = "pause" OR VALUES(status) = "termine", NULL, next_action_at),
+            updated_at = NOW()');
+    $stmt->execute([
+        ':lead_id' => $leadId,
+        ':status' => $status,
+    ]);
+
+    $log = db()->prepare('INSERT INTO crm_post_rdv_logs (lead_id, event_type, channel, message, created_at)
+        VALUES (:lead_id, "sequence_status", "email", :message, NOW())');
+    $log->execute([
+        ':lead_id' => $leadId,
+        ':message' => 'Statut séquence: ' . $status,
+    ]);
+}
+
+function listConvertirPostRdvLeads(): array
+{
+    return LeadService::list();
+}
+
+function listConvertirPostRdvSequences(): array
+{
+    $rows = db()->query('SELECT lead_id, status, step_index, next_action_at, last_action_at, preferred_channel, cadence_days, notes
+        FROM crm_post_rdv_sequences
+        ORDER BY updated_at DESC')->fetchAll();
+
+    $indexed = [];
+    foreach ($rows as $row) {
+        $indexed[(int)$row['lead_id']] = $row;
+    }
+
+    return $indexed;
+}
+
+function findConvertirPostRdvLeadById(int $leadId): ?array
+{
+    foreach (LeadService::list() as $lead) {
+        if ((int)($lead['id'] ?? 0) === $leadId) {
+            return $lead;
+        }
+    }
+    return null;
+}
+
+function listConvertirPostRdvLog(int $leadId): array
+{
+    $stmt = db()->prepare('SELECT event_type, channel, message, created_at
+        FROM crm_post_rdv_logs
+        WHERE lead_id = :lead_id
+        ORDER BY created_at DESC, id DESC
+        LIMIT 100');
+    $stmt->execute([':lead_id' => $leadId]);
+    return $stmt->fetchAll();
+}
+
 function renderConvertirHubCards(): void
 {
     ?>
@@ -302,9 +536,179 @@ function renderConvertirHubCards(): void
             </div>
             <p class="card-description">Relances automatiques et séquences de nurturing après le premier contact.</p>
             <div class="card-tags"><span class="tag">Relance</span><span class="tag">Nurturing</span></div>
-            <span class="card-soon"><i class="fas fa-clock"></i> Arrivée bientôt</span>
+            <a href="/admin?module=convertir&action=suivi-post-rdv" class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</a>
         </div>
 
+    </div>
+    <?php
+}
+
+function renderConvertirPostRdv(array $leads, array $sequences, ?array $selectedLead, array $log): void
+{
+    $flash = Session::getFlash();
+    $leadName = $selectedLead ? trim(((string)($selectedLead['first_name'] ?? '')) . ' ' . ((string)($selectedLead['last_name'] ?? ''))) : '';
+    $leadName = $leadName !== '' ? $leadName : ($selectedLead ? 'Lead #' . (int)$selectedLead['id'] : '');
+    $selectedSequence = $selectedLead ? ($sequences[(int)$selectedLead['id']] ?? null) : null;
+    ?>
+    <style>
+        .postrdv-link{display:inline-flex;margin-top:.85rem;background:#475569;color:#fff;text-decoration:none;padding:.55rem .85rem;border-radius:10px;font-weight:700;}
+        .postrdv-layout{display:grid;grid-template-columns:minmax(500px,1.45fr) minmax(340px,1fr);gap:1rem;align-items:start;}
+        .postrdv-panel{background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 8px 25px rgba(15,23,42,.05);overflow:hidden;}
+        .postrdv-head{padding:1rem 1.1rem;border-bottom:1px solid #eef2f7;display:flex;justify-content:space-between;align-items:center;gap:.6rem;}
+        .postrdv-body{padding:1rem 1.1rem;}
+        .postrdv-table{width:100%;border-collapse:collapse;min-width:680px;}
+        .postrdv-table th,.postrdv-table td{padding:.68rem .65rem;border-bottom:1px solid #f1f5f9;text-align:left;vertical-align:top;font-size:.9rem;}
+        .postrdv-status{display:inline-block;padding:.2rem .55rem;border-radius:999px;background:#e2e8f0;font-size:.78rem;font-weight:700;}
+        .postrdv-status.actif{background:#dcfce7;color:#166534;}
+        .postrdv-status.pause{background:#fde68a;color:#92400e;}
+        .postrdv-status.termine{background:#ddd6fe;color:#5b21b6;}
+        .postrdv-status.inactif{background:#e2e8f0;color:#475569;}
+        .postrdv-form{display:grid;gap:.65rem;margin-top:1rem;}
+        .postrdv-form select,.postrdv-form textarea,.postrdv-form input,.postrdv-form button{width:100%;padding:.62rem .7rem;border-radius:10px;border:1px solid #cbd5e1;font:inherit;}
+        .postrdv-form button{background:#0f172a;color:#fff;font-weight:700;border-color:#0f172a;cursor:pointer;}
+        .postrdv-log{display:grid;gap:.6rem;max-height:320px;overflow:auto;padding-right:.2rem;}
+        .postrdv-log-item{border:1px solid #e2e8f0;background:#f8fafc;border-radius:10px;padding:.65rem .7rem;}
+        .postrdv-muted{color:#64748b;font-size:.84rem;}
+        .postrdv-flash{padding:.75rem .9rem;border-radius:10px;margin-bottom:1rem;font-weight:600;}
+        .postrdv-flash.success{background:#dcfce7;color:#166534;}
+        .postrdv-flash.error{background:#fee2e2;color:#991b1b;}
+        .postrdv-table-wrap{overflow:auto;max-height:70vh;}
+        @media (max-width: 1100px) {.postrdv-layout{grid-template-columns:1fr;}}
+    </style>
+
+    <?php if ($flash): ?>
+        <div class="postrdv-flash <?= e((string)$flash['type']) ?>"><?= e((string)$flash['message']) ?></div>
+    <?php endif; ?>
+
+    <div class="convertir-toolbar">
+        <a href="/admin?module=convertir" class="postrdv-link">← Retour au hub</a>
+        <div class="convertir-count"><?= count($leads) ?> leads disponibles pour la relance post-RDV.</div>
+    </div>
+
+    <div class="postrdv-layout">
+        <section class="postrdv-panel">
+            <div class="postrdv-head"><strong>Relances & nurturing</strong></div>
+            <div class="postrdv-table-wrap">
+                <table class="postrdv-table">
+                    <thead>
+                    <tr>
+                        <th>Lead</th>
+                        <th>Pipeline</th>
+                        <th>Séquence</th>
+                        <th>Prochaine relance</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php if (!$leads): ?>
+                        <tr><td colspan="4">Aucun lead disponible.</td></tr>
+                    <?php endif; ?>
+                    <?php foreach ($leads as $lead): ?>
+                        <?php
+                        $seq = $sequences[(int)$lead['id']] ?? null;
+                        $status = (string)($seq['status'] ?? 'inactif');
+                        $name = trim(((string)($lead['first_name'] ?? '')) . ' ' . ((string)($lead['last_name'] ?? '')));
+                        ?>
+                        <tr>
+                            <td>
+                                <a href="/admin?module=convertir&action=suivi-post-rdv&lead_id=<?= (int)$lead['id'] ?>"><strong><?= e($name !== '' ? $name : ('Lead #' . (int)$lead['id'])) ?></strong></a>
+                                <div class="postrdv-muted"><?= e((string)($lead['email'] ?? '')) ?></div>
+                            </td>
+                            <td><?= e(LeadService::sourceLabel((string)($lead['pipeline'] ?? 'autre'))) ?></td>
+                            <td><span class="postrdv-status <?= e($status) ?>"><?= e(ucfirst($status)) ?></span></td>
+                            <td><?= !empty($seq['next_action_at']) ? e(date('d/m/Y H:i', strtotime((string)$seq['next_action_at']))) : '<span class="postrdv-muted">Non planifiée</span>' ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside class="postrdv-panel">
+            <div class="postrdv-head"><strong>Fiche suivi</strong></div>
+            <div class="postrdv-body">
+                <?php if (!$selectedLead): ?>
+                    <div class="postrdv-muted">Sélectionnez un lead pour lancer une séquence de relance.</div>
+                <?php else: ?>
+                    <h3 style="margin:0"><?= e($leadName) ?></h3>
+                    <div class="postrdv-muted" style="margin-top:.3rem;"><?= e((string)($selectedLead['email'] ?? '')) ?> · <?= e((string)($selectedLead['phone'] ?? '')) ?></div>
+                    <div class="postrdv-muted" style="margin-top:.3rem;">Étape actuelle CRM : <?= e(LeadService::stageLabel((string)($selectedLead['stage'] ?? 'nouveau'))) ?></div>
+
+                    <form method="post" class="postrdv-form">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="post_rdv_intent" value="start_sequence">
+                        <input type="hidden" name="lead_id" value="<?= (int)$selectedLead['id'] ?>">
+                        <label>
+                            <strong>Canal préféré</strong>
+                            <select name="preferred_channel">
+                                <option value="email" <?= (($selectedSequence['preferred_channel'] ?? 'email') === 'email') ? 'selected' : '' ?>>Email</option>
+                                <option value="sms" <?= (($selectedSequence['preferred_channel'] ?? '') === 'sms') ? 'selected' : '' ?>>SMS</option>
+                                <option value="appel" <?= (($selectedSequence['preferred_channel'] ?? '') === 'appel') ? 'selected' : '' ?>>Appel</option>
+                            </select>
+                        </label>
+                        <label>
+                            <strong>Cadence de relance (jours)</strong>
+                            <input type="number" min="1" max="21" name="cadence_days" value="<?= (int)($selectedSequence['cadence_days'] ?? 3) ?>">
+                        </label>
+                        <label>
+                            <strong>Note de nurturing (optionnel)</strong>
+                            <textarea name="notes" rows="2" placeholder="Ex : envoyer étude de marché du quartier, puis rappel J+3."></textarea>
+                        </label>
+                        <button type="submit">Activer / mettre à jour la séquence</button>
+                    </form>
+
+                    <form method="post" class="postrdv-form">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="post_rdv_intent" value="log_followup">
+                        <input type="hidden" name="lead_id" value="<?= (int)$selectedLead['id'] ?>">
+                        <label>
+                            <strong>Canal utilisé</strong>
+                            <select name="channel">
+                                <option value="email">Email</option>
+                                <option value="sms">SMS</option>
+                                <option value="appel">Appel</option>
+                            </select>
+                        </label>
+                        <label>
+                            <strong>Message de relance envoyé</strong>
+                            <textarea name="message" rows="2" required placeholder="Ex : relance J+3 avec comparables du quartier et proposition de créneau."></textarea>
+                        </label>
+                        <button type="submit">Journaliser la relance</button>
+                    </form>
+
+                    <form method="post" class="postrdv-form">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="post_rdv_intent" value="update_sequence_state">
+                        <input type="hidden" name="lead_id" value="<?= (int)$selectedLead['id'] ?>">
+                        <label>
+                            <strong>Statut de séquence</strong>
+                            <select name="status">
+                                <option value="actif">Actif</option>
+                                <option value="pause">Pause</option>
+                                <option value="termine">Terminé</option>
+                            </select>
+                        </label>
+                        <button type="submit">Mettre à jour le statut</button>
+                    </form>
+
+                    <h4 style="margin:1rem 0 .5rem;">Historique des relances</h4>
+                    <?php if (!$log): ?>
+                        <div class="postrdv-muted">Aucune relance enregistrée pour ce lead.</div>
+                    <?php else: ?>
+                        <div class="postrdv-log">
+                            <?php foreach ($log as $event): ?>
+                                <article class="postrdv-log-item">
+                                    <div><strong><?= e((string)$event['event_type']) ?></strong> · <?= e(strtoupper((string)$event['channel'])) ?></div>
+                                    <?php if (!empty($event['message'])): ?>
+                                        <div class="postrdv-muted" style="margin-top:.35rem;"><?= nl2br(e((string)$event['message'])) ?></div>
+                                    <?php endif; ?>
+                                    <div class="postrdv-muted" style="margin-top:.35rem;"><?= e(date('d/m/Y H:i', strtotime((string)$event['created_at']))) ?></div>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        </aside>
     </div>
     <?php
 }
@@ -487,6 +891,7 @@ function renderConvertirCrmContacts(array $crmLeads, ?array $selectedLead, array
 function renderContent(): void
 {
     global $crmContactsView, $crmLeads, $selectedLead, $selectedLeadHistory;
+    global $postRdvView, $postRdvLeads, $postRdvSequences, $selectedPostRdvLead, $selectedPostRdvLog;
     ?>
     <div class="page-header">
         <h1><i class="fas fa-arrow-trend-up page-icon"></i> HUB <span class="page-title-accent">Convertir</span></h1>
@@ -495,6 +900,8 @@ function renderContent(): void
 
     <?php if ($crmContactsView): ?>
         <?php renderConvertirCrmContacts($crmLeads, $selectedLead, $selectedLeadHistory); ?>
+    <?php elseif ($postRdvView): ?>
+        <?php renderConvertirPostRdv($postRdvLeads, $postRdvSequences, $selectedPostRdvLead, $selectedPostRdvLog); ?>
     <?php else: ?>
         <?php renderConvertirHubCards(); ?>
     <?php endif; ?>

@@ -48,10 +48,10 @@ function renderSeoHub(array $stats): void
                      data-module="mots-clés top 10 positions"
                      style="--accent:#3b82f6;--icon-bg:#dbeafe;">
                 <div class="seo-card-head"><span class="icon">🔑</span><h3>Mots-clés</h3></div>
-                <p>Suivez le positionnement de vos mots-clés cibles sur Google.</p>
+                <p>Suivez votre visibilité locale sur les requêtes vendeurs stratégiques.</p>
                 <div class="badges"><span>Top 10</span><span>Positions</span></div>
                 <a href="/admin?module=seo&action=keywords" class="btn btn-sm">Consulter</a>
-                <small><?= (int)$stats['keywords_count'] ?> mots-clés suivis</small>
+                <small><?= (int)$stats['keywords_count'] ?> suivis · <?= (int)$stats['top10_count'] ?> en top 10</small>
             </article>
 
             <article class="seo-card"
@@ -92,7 +92,7 @@ function renderSeoHub(array $stats): void
                 <small>
                     Dernier score :
                     <?= $stats['last_audit_score'] !== null
-                        ? (int)$stats['last_audit_score'] . '/100'
+                        ? (int)$stats['last_audit_score'] . '/100 (' . htmlspecialchars((string)$stats['last_audit_status']) . ')'
                         : 'N/A' ?>
                 </small>
             </article>

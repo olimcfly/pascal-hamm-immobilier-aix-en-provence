@@ -13,18 +13,38 @@ if (!class_exists('ZoneController')) {
 
 $router = new Router();
 
-// ── Helper : charge une page dans le layout ────────────────────
-function servePage(string $file): void {
-    if (!is_file($file)) {
-        http_response_code(404);
-        $pageTitle   = 'Page introuvable';
-        $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>Cette page est introuvable.</p></div></section>';
-        require ROOT_PATH . '/public/templates/layout.php';
-        return;
-    }
-    ob_start();
-    require $file;
-    $pageContent = ob_get_clean();
+$routeToPage = [
+    '/' => 'core/home',
+    '/a-propos' => 'core/a-propos',
+    '/contact' => 'core/contact',
+    '/services' => 'services/services',
+    '/viager' => 'services/services',
+    '/biens' => 'biens/index',
+    '/acheter' => 'ressources/guide-acheteur',
+    '/vendre' => 'ressources/guide-vendeur',
+    '/secteurs' => 'guide-local/index',
+    '/guide-local' => 'guide-local/index',
+    '/ressources' => 'ressources/index',
+    '/ressources/guide-acheteur' => 'ressources/guide-acheteur',
+    '/ressources/guide-vendeur' => 'ressources/guide-vendeur',
+    '/blog' => 'blog/index',
+    '/actualites' => 'actualites/index',
+    '/avis' => 'social-proof/avis',
+    '/avis-clients' => 'social-proof/avis',
+    '/estimation-gratuite' => 'capture/estimation-gratuite',
+    '/financement' => 'financement/financement',
+    '/mentions-legales' => 'legal/mentions-legales',
+    '/politique-confidentialite' => 'legal/politique-confidentialite',
+    '/politique-cookies' => 'legal/politique-cookies',
+    '/cgv' => 'legal/cgv',
+    '/plan-du-site' => 'core/plan-du-site',
+];
+
+$pageKey = $routeToPage[$uri] ?? null;
+if ($pageKey === null) {
+    http_response_code(404);
+    $pageTitle = 'Page introuvable';
+    $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>La page demandée est introuvable.</p></div></section>';
     require ROOT_PATH . '/public/templates/layout.php';
 }
 

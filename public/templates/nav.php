@@ -77,12 +77,35 @@ $navItems = [
         'path'  => '/estimation-gratuite',
         'href'  => false,
         'label' => 'Vendre',
-        'sub'   => [
+        'sub' => [
+            ['path' => '/vendre', 'href' => url('/vendre'), 'label' => 'Vendre mon bien'],
             ['path' => '/estimation-gratuite', 'href' => url('/estimation-gratuite'), 'label' => 'Estimation gratuite'],
-            ['path' => '/avis-de-valeur',      'href' => url('/avis-de-valeur'),      'label' => 'Avis de valeur'],
-            ['path' => '/prendre-rendez-vous', 'href' => url('/prendre-rendez-vous'), 'label' => 'Prendre rendez-vous'],
-            ['type' => 'divider'],
-            ['path' => '/viager', 'href' => null, 'label' => 'Vente en viager'],
+            ['path' => '/services', 'href' => url('/ressources/guide-vendeur'), 'label' => 'Méthode de vente'],
+            ['path' => '/services', 'href' => url('/services'), 'label' => 'Mise en valeur du bien'],
+            ['path' => '/services', 'href' => url('/services#faq-vendeur'), 'label' => 'FAQ vendeur'],
+        ],
+    ],
+    [
+        'path' => '/acheter',
+        'href' => url('/acheter'),
+        'label' => 'Acheter',
+        'sub' => [
+            ['path' => '/acheter', 'href' => url('/acheter'), 'label' => 'Acheter un bien'],
+            ['path' => '/biens', 'href' => url('/biens'), 'label' => 'Nos biens disponibles'],
+            ['path' => '/acheter', 'href' => url('/ressources/guide-acheteur'), 'label' => 'Accompagnement acquéreur'],
+            ['path' => '/acheter', 'href' => url('/contact?sujet=Recherche+personnalisee'), 'label' => 'Recherche personnalisée'],
+            ['path' => '/acheter', 'href' => url('/acheter#faq-acheteur'), 'label' => 'FAQ acheteur'],
+        ],
+    ],
+    [
+        'path' => '/financement',
+        'href' => url('/financement'),
+        'label' => 'Financement',
+        'sub' => [
+            ['path' => '/financement', 'href' => url('/financement'), 'label' => 'Financer mon projet'],
+            ['path' => '/financement', 'href' => url('/financement#formulaire-financement'), 'label' => 'Déposer ma demande'],
+            ['path' => '/financement', 'href' => url('/financement#etapes-financement'), 'label' => 'Comment ça fonctionne'],
+            ['path' => '/financement', 'href' => url('/financement#faq-financement'), 'label' => 'FAQ financement'],
         ],
     ],
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/GmbApiClient.php';
 require_once __DIR__ . '/AvisManager.php';
 require_once __DIR__ . '/DemandeAvisManager.php';
+require_once __DIR__ . '/../../../includes/settings.php';
 
 class GmbService
 {
@@ -176,8 +177,64 @@ class GmbService
     public function createDemandeAvis(array $payload): int
     {
         $demandeId = $this->demandeManager->create($payload);
+        $demande = $this->demandeManager->findById($demandeId);
+
+        $clientEmail = trim((string) ($demande['client_email'] ?? ''));
+        if ($clientEmail === '' || !filter_var($clientEmail, FILTER_VALIDATE_EMAIL)) {
+            $this->demandeManager->trackReviewRequest($demandeId, $clientEmail, 'echec', 'Email client invalide');
+            throw new RuntimeException('Adresse email client invalide.');
+        }
+
+        $reviewLink = $this->buildGoogleReviewLink();
+        $template = !empty($demande['template_id'])
+            ? $this->demandeManager->findTemplateById((int) $demande['template_id'], 'email')
+            : [];
+
+        $subject = trim((string) ($template['sujet'] ?? 'Votre avis Google compte beaucoup pour nous'));
+        $content = trim((string) ($template['contenu'] ?? "Bonjour {client_nom},
+
+Merci pour votre confiance.
+Pouvez-vous laisser un avis sur notre fiche Google ?
+
+{lien_avis}
+
+Merci infiniment."));
+
+        $replacements = [
+            '{client_nom}' => (string) ($demande['client_nom'] ?? 'Client'),
+            '{bien_adresse}' => (string) ($demande['bien_adresse'] ?? ''),
+            '{lien_avis}' => $reviewLink,
+            '{advisor_firstname}' => (string) setting('advisor_firstname', '', $this->userId),
+            '{advisor_lastname}' => (string) setting('advisor_lastname', '', $this->userId),
+            '{advisor_phone}' => (string) setting('advisor_phone', '', $this->userId),
+        ];
+
+        $subject = strtr($subject, $replacements);
+        $textBody = strtr($content, $replacements);
+        $htmlBody = nl2br(htmlspecialchars($textBody, ENT_QUOTES, 'UTF-8'));
+
+        $sent = MailService::send($clientEmail, $subject, $textBody, $htmlBody);
+        if (!$sent) {
+            $this->demandeManager->trackReviewRequest($demandeId, $clientEmail, 'echec', 'Envoi email échoué');
+            throw new RuntimeException("Impossible d'envoyer l'email de demande d'avis.");
+        }
+
         $this->demandeManager->markSent($demandeId);
+        $this->demandeManager->trackReviewRequest($demandeId, $clientEmail, 'envoye');
+
         return $demandeId;
+    }
+
+    private function buildGoogleReviewLink(): string
+    {
+        $fiche = $this->getFiche();
+        $placeQuery = trim((string) ($fiche['nom_etablissement'] ?? '') . ' ' . (string) ($fiche['adresse'] ?? '') . ' ' . (string) ($fiche['ville'] ?? ''));
+
+        if ($placeQuery === '') {
+            $placeQuery = (string) setting('agency_name', 'Agence immobilière', $this->userId);
+        }
+
+        return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($placeQuery);
     }
 
     public function saveTemplate(array $payload): bool

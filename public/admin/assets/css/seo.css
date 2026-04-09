@@ -35,3 +35,14 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 .fiche-ville-module .fv-preview section{border-top:1px solid #e2e8f0;padding-top:10px}
 .fiche-ville-module .fv-preview details{padding:8px 0}
 @media (max-width:860px){.fiche-ville-module .actions{flex-direction:column;align-items:stretch}.fiche-ville-module .actions .btn,.fiche-ville-module .actions button{width:100%;text-align:center}}
+
+
+.seo-mother-block{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 16px}
+.seo-mother-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px;display:grid;gap:8px}
+.mother-label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#64748b;font-weight:700}
+.seo-card-priority{grid-column:span 2;border-left-width:6px;box-shadow:0 8px 22px rgba(16,185,129,.18)}
+.badges span:first-child{background:#fef3c7;color:#92400e;font-weight:700}
+.seo-cta-final{margin-top:18px;background:#0f172a;color:#fff;border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.seo-cta-final h2{margin:0;color:#fff}
+.seo-cta-final .btn{background:#22c55e;border:none;color:#062b13;font-weight:700}
+@media (max-width: 860px){.seo-mother-block{grid-template-columns:1fr}.seo-card-priority{grid-column:span 1}.seo-cta-final{align-items:flex-start}}

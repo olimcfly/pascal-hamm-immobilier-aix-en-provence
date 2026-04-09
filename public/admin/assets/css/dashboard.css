@@ -1047,33 +1047,7 @@ body {
     .footer-left { flex-direction: column; gap: 4px; }
 }
 
-@media (min-width: 768px) {
-    .optimiser-mere-card {
-        padding: 22px;
-    }
-
-    .optimiser-cycle {
-        flex-direction: row;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .optimiser-cycle-step {
-        min-width: 170px;
-    }
-
-    .optimiser-cycle-arrow {
-        width: 22px;
-    }
-
-    .optimiser-cycle-loop {
-        margin-left: 2px;
-    }
-
-    .optimiser-final-cta {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
+/* ============================================================
+   CAPTURE HUB
     }
 }

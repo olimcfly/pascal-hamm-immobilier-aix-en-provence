@@ -14,20 +14,64 @@ try {
 
 // ✅ RÉCUPÉRATION DES BIENS
 $biens = [];
+$searchQuery = trim((string) ($_GET['query'] ?? ''));
+$searchType = strtolower(trim((string) ($_GET['type'] ?? '')));
+$searchBudget = trim((string) ($_GET['budget'] ?? ''));
+$filtersApplied = $searchQuery !== '' || $searchType !== '' || $searchBudget !== '';
+
+$allowedTypes = [
+    'bastide' => 'bastide',
+    'villa' => 'villa',
+    'viager' => 'viager',
+];
+$normalizedType = $allowedTypes[$searchType] ?? '';
+
+$minBudget = null;
+$maxBudget = null;
+if (preg_match('/^\d+\-\d+$/', $searchBudget) === 1) {
+    [$minBudget, $maxBudget] = array_map('intval', explode('-', $searchBudget, 2));
+    if ($minBudget > $maxBudget) {
+        [$minBudget, $maxBudget] = [$maxBudget, $minBudget];
+    }
+}
 
 try {
-    $stmt = $db->query("
-        SELECT *
-        FROM biens
-        WHERE statut IN ('Disponible', 'Sous offre')
-        ORDER BY
-            CASE WHEN transaction_type = 'Vente' THEN 1 ELSE 2 END,
-            created_at DESC
-    ");
+    $sql = "SELECT id, slug, titre, type_bien, prix, surface, pieces, chambres, ville, secteur, photo_principale, statut
+            FROM biens
+            WHERE statut <> 'archive'";
 
-    $biens = $stmt->fetchAll();
-} catch (PDOException $e) {
-    error_log($e->getMessage());
+    $params = [];
+    if ($searchQuery !== '') {
+        $sql .= " AND (
+            titre LIKE :query
+            OR ville LIKE :query
+            OR secteur LIKE :query
+            OR description LIKE :query
+        )";
+        $params[':query'] = '%' . $searchQuery . '%';
+    }
+
+    if ($normalizedType !== '') {
+        $sql .= " AND LOWER(type_bien) LIKE :type";
+        $params[':type'] = '%' . $normalizedType . '%';
+    }
+
+    if ($minBudget !== null && $maxBudget !== null) {
+        $sql .= " AND prix BETWEEN :min_budget AND :max_budget";
+        $params[':min_budget'] = $minBudget;
+        $params[':max_budget'] = $maxBudget;
+    }
+
+    $sql .= " ORDER BY created_at DESC LIMIT 50";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+
+    if ($stmt !== false) {
+        $biens = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+} catch (Throwable $e) {
+    $biens = [];
 }
 
 $nbBiensTotal = count($biens);
@@ -62,6 +106,11 @@ $nbBiensTotal = count($biens);
 <!-- GRID -->
 <section class="section">
     <div class="container">
+        <h1>Nos biens immobiliers</h1>
+        <?php if ($filtersApplied): ?>
+            <p>Résultats de votre recherche.</p>
+        <?php endif; ?>
+        <p class="biens-count"><?= count($biens) ?> bien(s) disponible(s)</p>
 
         <div class="biens-grid">
             <?php if (!empty($biens)): ?>

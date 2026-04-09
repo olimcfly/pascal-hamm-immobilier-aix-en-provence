@@ -145,6 +145,26 @@ if ($advisorDisplayName === '') {
             </div>
         </main>
 
+        <?php
+        $aiHelpWidgetPath = ROOT_PATH . '/modules/ai-help-chat/widget.php';
+        $aiHelpServicePath = ROOT_PATH . '/modules/ai-help-chat/service.php';
+        $aiHelpPermissionsPath = ROOT_PATH . '/modules/ai-help-chat/permissions.php';
+        if (is_file($aiHelpWidgetPath) && is_file($aiHelpServicePath) && is_file($aiHelpPermissionsPath)) {
+            require_once $aiHelpPermissionsPath;
+            require_once $aiHelpServicePath;
+            require_once $aiHelpWidgetPath;
+
+            if (function_exists('renderAiHelpChatWidget')) {
+                $aiHelpContext = [
+                    'module' => (string) ($module ?? 'dashboard'),
+                    'page' => (string) ($_SERVER['REQUEST_URI'] ?? ''),
+                ];
+                $aiHelpService = new AiHelpChatService(db());
+                renderAiHelpChatWidget($aiHelpService, $aiHelpContext);
+            }
+        }
+        ?>
+
         <!-- FOOTER -->
         <?php require_once __DIR__ . '/partials/footer.php'; ?>
 

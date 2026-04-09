@@ -40,6 +40,7 @@ $menuGroups = [
         ['module' => 'biens',       'label' => 'Biens',             'hint' => 'Catalogue & mandats',        'icon' => 'fas fa-house'],
         ['module' => 'assistant',   'label' => 'Assistant IA',      'hint' => 'IA à votre service',         'icon' => 'fas fa-robot'],
         ['module' => 'aide',        'label' => 'Centre d\'aide',   'hint' => 'Guides par module',         'icon' => 'fas fa-circle-question'],
+        ['module' => 'ai-help-chat','label' => 'Chat d\'aide IA',  'hint' => 'Assistant contextuel',       'icon' => 'fas fa-comments'],
     ],
     'Compte' => [
         ['module' => 'parametres',  'label' => 'Paramètres',        'hint' => 'Compte et préférences',      'icon' => 'fas fa-gear'],

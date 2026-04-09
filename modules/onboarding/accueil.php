@@ -8,7 +8,7 @@ require_once __DIR__ . '/services/OnboardingService.php';
 require_once __DIR__ . '/controllers/OnboardingController.php';
 
 $pageTitle = 'Onboarding';
-$pageDescription = 'Activez votre système immobilier en 5 étapes guidées';
+$pageDescription = 'Collectez les informations essentielles et définissez vos objectifs';
 
 $onboardingController = new OnboardingController(
     new OnboardingService(
@@ -18,14 +18,6 @@ $onboardingController = new OnboardingController(
 );
 
 $onboardingViewData = $onboardingController->handle();
-
-// Charge les modules stratégiques pour l'écran post-onboarding
-$_stratModules = require __DIR__ . '/../../admin/data/modules.php';
-$_stratKeys    = ['construire', 'attirer', 'capturer', 'convertir', 'optimiser'];
-$onboardingViewData['stratModules'] = array_map(
-    static fn(string $k) => $_stratModules[$k] ?? [],
-    array_combine($_stratKeys, $_stratKeys)
-);
 
 function renderContent(): void
 {

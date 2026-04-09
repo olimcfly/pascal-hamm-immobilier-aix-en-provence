@@ -6,11 +6,11 @@ final class OnboardingController
 {
     private const STEP_LABELS = [
         1 => 'Qui tu es',
-        2 => 'Pour qui tu travailles',
-        3 => 'Ton offre',
-        4 => 'Ta zone',
-        5 => 'Ton objectif prioritaire',
-        6 => 'Récapitulatif',
+        2 => 'Cible',
+        3 => 'Offre actuelle',
+        4 => 'Zone',
+        5 => 'Objectifs',
+        6 => 'Synthèse',
     ];
 
     private const STEP_KEYS = [
@@ -19,44 +19,6 @@ final class OnboardingController
         3 => 'offer',
         4 => 'territory',
         5 => 'goal',
-    ];
-
-    private const DASHBOARD_STEPS = [
-        [
-            'title' => 'Persona & Positionnement',
-            'description' => 'Clarifiez votre cible prioritaire et votre angle différenciant.',
-            'step' => 2,
-            'step_key' => 'target',
-            'route' => '/admin?module=onboarding&step=2',
-        ],
-        [
-            'title' => 'Offre',
-            'description' => 'Formalisez une promesse lisible, une offre claire et son bénéfice.',
-            'step' => 3,
-            'step_key' => 'offer',
-            'route' => '/admin?module=onboarding&step=3',
-        ],
-        [
-            'title' => 'Tunnel & Pages',
-            'description' => 'Préparez les pages et livrables à activer sur le parcours client.',
-            'step' => 5,
-            'step_key' => 'goal',
-            'route' => '/admin?module=onboarding&step=5',
-        ],
-        [
-            'title' => 'Trafic',
-            'description' => 'Priorisez le canal d’acquisition pour générer des opportunités qualifiées.',
-            'step' => 5,
-            'step_key' => 'goal',
-            'route' => '/admin?module=onboarding&step=5',
-        ],
-        [
-            'title' => 'Système & Automatisation CRM',
-            'description' => 'Structurez le suivi et l’automatisation pour convertir sans perte.',
-            'step' => 5,
-            'step_key' => 'goal',
-            'route' => '/admin?module=onboarding&step=5',
-        ],
     ];
 
     public function __construct(private OnboardingService $service)
@@ -93,7 +55,7 @@ final class OnboardingController
 
             if ($intent === 'complete') {
                 $this->service->completeSession($sessionId);
-                Session::flash('success', 'Onboarding finalisé. Votre blueprint est prêt pour le Sprint 2.');
+                Session::flash('success', 'Onboarding finalisé. Vos données sont prêtes pour le module Construire.');
                 redirect('/admin?module=onboarding&step=6');
             }
 
@@ -110,7 +72,7 @@ final class OnboardingController
                     $this->service->saveStep($sessionId, $stepKey, $payload, min(5, max(1, $nextStep)));
 
                     if ($navigation === 'save') {
-                        Session::flash('success', 'Étape enregistrée. Vous pourrez reprendre plus tard.');
+                        Session::flash('success', 'Étape enregistrée automatiquement.');
                         redirect('/admin?module=onboarding&step=' . $postedStep);
                     }
 
@@ -133,8 +95,6 @@ final class OnboardingController
 
         $inProgress = ((string) ($session['status'] ?? 'draft')) !== 'completed';
         $canResume = $inProgress && ((int) ($session['current_step'] ?? 1) > 1);
-        $onboardingDashboard = $this->buildDashboard($answersByStep, (string) ($session['status'] ?? 'draft'));
-        $methodCards = $this->methodCards();
 
         return [
             'step' => $step,
@@ -146,102 +106,6 @@ final class OnboardingController
             'blueprint' => $blueprint,
             'canResume' => $canResume,
             'resumeStep' => (int) ($session['current_step'] ?? 1),
-            'dashboard' => $onboardingDashboard,
-            'methodCards' => $methodCards,
-        ];
-    }
-
-    private function buildDashboard(array $answersByStep, string $status): array
-    {
-        $completedCount = 0;
-        $items = [];
-
-        foreach (self::DASHBOARD_STEPS as $item) {
-            $stepKey = (string) $item['step_key'];
-            $answers = $answersByStep[$stepKey] ?? [];
-            $completion = $this->completionForStep($stepKey, $answers);
-
-            $state = 'non_commence';
-            if ($completion >= 100 || $status === 'completed') {
-                $state = 'complete';
-                $completedCount++;
-            } elseif ($completion > 0) {
-                $state = 'en_cours';
-            }
-
-            $item['state'] = $state;
-            $item['completion'] = $completion;
-            $items[] = $item;
-        }
-
-        $total = count($items);
-        $globalProgress = $total > 0 ? (int) round(($completedCount / $total) * 100) : 0;
-
-        return [
-            'items' => $items,
-            'completed' => $completedCount,
-            'total' => $total,
-            'global_progress' => $globalProgress,
-        ];
-    }
-
-    private function completionForStep(string $stepKey, array $answers): int
-    {
-        if ($stepKey === 'target') {
-            $required = ['persona', 'pain'];
-            return $this->completionPercentage($required, $answers);
-        }
-
-        if ($stepKey === 'offer') {
-            $required = ['type', 'promise'];
-            return $this->completionPercentage($required, $answers);
-        }
-
-        if ($stepKey === 'goal') {
-            $required = ['primary_goal', 'primary_channel'];
-            return $this->completionPercentage($required, $answers);
-        }
-
-        return 0;
-    }
-
-    private function completionPercentage(array $requiredKeys, array $answers): int
-    {
-        $total = count($requiredKeys);
-        if ($total === 0) {
-            return 0;
-        }
-
-        $filled = 0;
-        foreach ($requiredKeys as $key) {
-            $value = trim((string) ($answers[$key] ?? ''));
-            if ($value !== '') {
-                $filled++;
-            }
-        }
-
-        return (int) round(($filled / $total) * 100);
-    }
-
-    private function methodCards(): array
-    {
-        return [
-            [
-                'title' => '1. Persona & positionnement',
-                'text' => 'On définit d’abord la cible, ses douleurs et votre différence. Sans ce cadrage, le reste du système perd en impact.',
-            ],
-            [
-                'title' => '2. Offre claire',
-                'text' => 'Ensuite on structure une offre compréhensible, avec promesse et résultat attendu. L’objectif : faciliter la décision.',
-            ],
-            [
-                'title' => '3. Trafic ciblé',
-                'text' => 'Puis on choisit les bons canaux pour attirer la bonne audience vers vos pages. Vous privilégiez la qualité du flux.',
-            ],
-            [
-                'title' => '4. Système & automatisation',
-                'text' => 'Enfin on orchestre le suivi (tunnel, CRM, relances) pour convertir régulièrement sans dépendre d’actions manuelles permanentes.',
-            ],
         ];
     }
 
@@ -276,44 +140,38 @@ final class OnboardingController
         if ($step === 1) {
             return [
                 'name' => trim((string) ($input['name'] ?? '')),
-                'brand' => trim((string) ($input['brand'] ?? '')),
-                'role' => trim((string) ($input['role'] ?? '')),
-                'tone' => trim((string) ($input['tone'] ?? '')),
+                'city' => trim((string) ($input['city'] ?? '')),
+                'status' => trim((string) ($input['status'] ?? '')),
+                'experience' => trim((string) ($input['experience'] ?? '')),
             ];
         }
 
         if ($step === 2) {
             return [
-                'persona' => trim((string) ($input['persona'] ?? '')),
-                'pain' => trim((string) ($input['pain'] ?? '')),
-                'desire' => trim((string) ($input['desire'] ?? '')),
+                'client_types' => trim((string) ($input['client_types'] ?? '')),
+                'main_situations' => trim((string) ($input['main_situations'] ?? '')),
             ];
         }
 
         if ($step === 3) {
             return [
-                'type' => trim((string) ($input['type'] ?? '')),
-                'promise' => trim((string) ($input['promise'] ?? '')),
-                'differentiator' => trim((string) ($input['differentiator'] ?? '')),
-                'timeline' => trim((string) ($input['timeline'] ?? '')),
+                'description' => trim((string) ($input['description'] ?? '')),
+                'methods' => trim((string) ($input['methods'] ?? '')),
             ];
         }
 
         if ($step === 4) {
             return [
-                'city' => trim((string) ($input['city'] ?? '')),
-                'districts' => trim((string) ($input['districts'] ?? '')),
-                'radius_km' => (int) ($input['radius_km'] ?? 0),
-                'market_type' => trim((string) ($input['market_type'] ?? '')),
+                'primary_city' => trim((string) ($input['primary_city'] ?? '')),
+                'secondary_zones' => trim((string) ($input['secondary_zones'] ?? '')),
             ];
         }
 
         if ($step === 5) {
             return [
-                'primary_goal' => trim((string) ($input['primary_goal'] ?? '')),
-                'primary_channel' => trim((string) ($input['primary_channel'] ?? '')),
-                'budget_monthly' => trim((string) ($input['budget_monthly'] ?? '')),
-                'outputs' => array_values(array_filter(array_map('strval', (array) ($input['outputs'] ?? [])))),
+                'leads_per_month' => trim((string) ($input['leads_per_month'] ?? '')),
+                'appointments_target' => trim((string) ($input['appointments_target'] ?? '')),
+                'revenue_target' => trim((string) ($input['revenue_target'] ?? '')),
             ];
         }
 
@@ -326,38 +184,37 @@ final class OnboardingController
 
         if ($step === 1) {
             if ($payload['name'] === '') {
-                $errors[] = 'Le nom professionnel est requis.';
+                $errors[] = 'Le nom est requis.';
             }
-            if ($payload['role'] === '') {
-                $errors[] = 'Le rôle métier est requis.';
+            if ($payload['city'] === '') {
+                $errors[] = 'La ville est requise.';
             }
-        }
-
-        if ($step === 2) {
-            if ($payload['persona'] === '') {
-                $errors[] = 'Le persona principal est requis.';
-            }
-            if ($payload['pain'] === '') {
-                $errors[] = 'Le problème principal est requis.';
+            if ($payload['status'] === '') {
+                $errors[] = 'Le statut est requis.';
             }
         }
 
-        if ($step === 3) {
-            if ($payload['type'] === '' || $payload['promise'] === '') {
-                $errors[] = 'Le type d\'offre et la promesse sont requis.';
-            }
+        if ($step === 2 && $payload['client_types'] === '') {
+            $errors[] = 'Le type de clients est requis.';
         }
 
-        if ($step === 4 && $payload['city'] === '') {
+        if ($step === 3 && $payload['description'] === '') {
+            $errors[] = 'La description de l’offre actuelle est requise.';
+        }
+
+        if ($step === 4 && $payload['primary_city'] === '') {
             $errors[] = 'La ville principale est requise.';
         }
 
         if ($step === 5) {
-            if ($payload['primary_goal'] === '') {
-                $errors[] = 'L\'objectif prioritaire est requis.';
+            if ($payload['leads_per_month'] === '') {
+                $errors[] = 'Le nombre de leads visés est requis.';
             }
-            if ($payload['primary_channel'] === '') {
-                $errors[] = 'Le canal d\'acquisition prioritaire est requis.';
+            if ($payload['appointments_target'] === '') {
+                $errors[] = 'Le nombre de RDV souhaités est requis.';
+            }
+            if ($payload['revenue_target'] === '') {
+                $errors[] = 'Le revenu cible est requis.';
             }
         }
 

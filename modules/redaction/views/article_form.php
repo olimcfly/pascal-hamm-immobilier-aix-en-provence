@@ -87,6 +87,19 @@
                    padding:6px 14px; border-radius:6px; font-size:.8rem; font-weight:600;
                    border:none; cursor:pointer; background:var(--af-navy); color:#fff; }
 .af-generate-btn:hover { background:#0f2237; }
+.af-btn-social-seq { background:#7c3aed; color:#fff; }
+.af-btn-social-seq:hover { background:#6d28d9; }
+.af-modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; z-index:9000; }
+.af-modal-backdrop.open { display:flex; align-items:center; justify-content:center; padding:16px; }
+.af-modal { width:min(720px, 100%); background:#fff; border-radius:14px; box-shadow:0 25px 70px rgba(2,6,23,.35); }
+.af-modal-head { padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; }
+.af-modal-title { margin:0; font-size:1.05rem; }
+.af-modal-close { background:none; border:none; font-size:1.4rem; cursor:pointer; color:#64748b; }
+.af-modal-body { padding:18px 20px; }
+.af-check-row { display:flex; gap:14px; flex-wrap:wrap; }
+.af-check-row label { display:flex; align-items:center; gap:6px; font-size:.9rem; cursor:pointer; }
+.af-modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+.af-seq-help { margin-top:8px; font-size:.78rem; color:#64748b; }
 
 /* Publish section */
 .af-publish-row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
@@ -156,6 +169,9 @@ $niveaux  = [1=>'Inconscient',2=>'Douleur',3=>'Solution',4=>'Produit',5=>'Plus c
        onclick="return confirm('Supprimer cet article ?')">
       <i class="fas fa-trash"></i> Supprimer
     </a>
+    <button type="button" class="af-btn af-btn-social-seq" id="open-social-sequence-modal">
+      <i class="fas fa-share-nodes"></i> Créer une séquence social
+    </button>
     <?php endif; ?>
   </div>
 
@@ -469,6 +485,70 @@ $niveaux  = [1=>'Inconscient',2=>'Douleur',3=>'Solution',4=>'Produit',5=>'Plus c
   </form>
 </div>
 
+<?php if ($isEdit): ?>
+<div class="af-modal-backdrop" id="social-seq-modal">
+  <div class="af-modal">
+    <div class="af-modal-head">
+      <h3 class="af-modal-title">Créer une séquence social</h3>
+      <button type="button" class="af-modal-close" id="close-social-seq-modal" aria-label="Fermer">×</button>
+    </div>
+    <div class="af-modal-body">
+      <div class="af-grid">
+        <div class="af-group">
+          <label class="af-label">Persona</label>
+          <select class="af-select" id="seq-persona">
+            <?php if (!empty($personas)): ?>
+              <?php foreach ($personas as $persona): ?>
+                <option value="<?= htmlspecialchars((string)$persona['name']) ?>" <?= (string)($article['persona_id'] ?? '') === (string)$persona['id'] ? 'selected' : '' ?>>
+                  <?= htmlspecialchars((string)$persona['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <option value="Persona libre">Persona libre</option>
+            <?php endif; ?>
+          </select>
+        </div>
+        <div class="af-group">
+          <label class="af-label">Objectif</label>
+          <select class="af-select" id="seq-objectif">
+            <option value="trafic">Trafic</option>
+            <option value="leads">Leads</option>
+            <option value="autorite">Autorité</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="af-group" style="margin-top:12px">
+        <label class="af-label">Réseaux</label>
+        <div class="af-check-row">
+          <label><input type="checkbox" name="seq_reseaux[]" value="facebook" checked> Facebook</label>
+          <label><input type="checkbox" name="seq_reseaux[]" value="instagram"> Instagram</label>
+          <label><input type="checkbox" name="seq_reseaux[]" value="gmb"> GMB</label>
+        </div>
+      </div>
+
+      <div class="af-group" style="margin-top:12px">
+        <label class="af-label">Nombre de posts</label>
+        <select class="af-select" id="seq-nb-posts">
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+          <option value="7">7</option>
+          <option value="10">10</option>
+        </select>
+        <div class="af-seq-help">La séquence couvre toujours N1 → N5 (minimum 5 posts) avec CTA progressif.</div>
+      </div>
+
+      <div class="af-modal-actions">
+        <button type="button" class="af-btn af-btn-outline" id="cancel-social-seq-btn">Annuler</button>
+        <button type="button" class="af-btn af-btn-social-seq" id="create-social-seq-btn">
+          <i class="fas fa-bolt"></i> Générer la séquence
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
 <script>
 // Tab switching
 document.querySelectorAll('.af-tab').forEach(function(tab) {
@@ -666,4 +746,64 @@ function generatePost(reseau) {
 function escHtml(str) {
     return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+<?php if ($isEdit): ?>
+var socialModal = document.getElementById('social-seq-modal');
+function openSocialModal() {
+    if (socialModal) socialModal.classList.add('open');
+}
+function closeSocialModal() {
+    if (socialModal) socialModal.classList.remove('open');
+}
+
+document.getElementById('open-social-sequence-modal')?.addEventListener('click', openSocialModal);
+document.getElementById('close-social-seq-modal')?.addEventListener('click', closeSocialModal);
+document.getElementById('cancel-social-seq-btn')?.addEventListener('click', closeSocialModal);
+socialModal?.addEventListener('click', function(e) {
+    if (e.target === socialModal) closeSocialModal();
+});
+
+document.getElementById('create-social-seq-btn')?.addEventListener('click', function() {
+    var persona = document.getElementById('seq-persona')?.value || 'Persona libre';
+    var objectif = document.getElementById('seq-objectif')?.value || 'trafic';
+    var nbPosts = document.getElementById('seq-nb-posts')?.value || '5';
+    var reseaux = Array.from(document.querySelectorAll('input[name="seq_reseaux[]"]:checked')).map(function(el) {
+        return el.value;
+    });
+
+    if (reseaux.length === 0) {
+        alert('Sélectionnez au moins un réseau.');
+        return;
+    }
+
+    var btn = this;
+    var oldHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération...';
+
+    fetch('/admin?module=redaction&action=api_create_social_sequence', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'article_id=<?= $artId ?>' +
+              '&persona=' + encodeURIComponent(persona) +
+              '&objectif=' + encodeURIComponent(objectif) +
+              '&nombre_posts=' + encodeURIComponent(nbPosts) +
+              reseaux.map(function(n) { return '&reseaux[]=' + encodeURIComponent(n); }).join('')
+    }).then(function(r) { return r.json(); })
+      .then(function(data) {
+          if (!data || !data.ok) {
+              throw new Error((data && data.message) ? data.message : 'Erreur de génération');
+          }
+          closeSocialModal();
+          window.location.href = '/admin?module=social&action=sequences';
+      })
+      .catch(function(err) {
+          alert(err.message || 'Impossible de créer la séquence.');
+      })
+      .finally(function() {
+          btn.disabled = false;
+          btn.innerHTML = oldHtml;
+      });
+});
+<?php endif; ?>
 </script>

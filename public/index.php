@@ -11,6 +11,60 @@ if (!class_exists('ZoneController')) {
     die('La classe ZoneController n\'est pas définie.');
 }
 
+$maintenanceFlag = STORAGE_PATH . '/cache/maintenance.flag';
+$requestPath = parse_url((string)($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/';
+$isMaintenanceBypass = isset($_GET['preview']) && $_GET['preview'] === '1';
+$isHealthcheck = in_array($requestPath, ['/health', '/healthz'], true);
+
+if (is_file($maintenanceFlag) && !$isMaintenanceBypass && !$isHealthcheck) {
+    http_response_code(503);
+    header('Retry-After: 3600');
+    header('Content-Type: text/html; charset=UTF-8');
+
+    $siteName = htmlspecialchars(APP_NAME ?: 'Site immobilier');
+    echo <<<HTML
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Maintenance — {$siteName}</title>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f7fb;
+      color: #0f172a;
+      padding: 24px;
+    }
+    .card {
+      max-width: 620px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
+      padding: 32px;
+      text-align: center;
+    }
+    h1 { margin: 0 0 12px; font-size: 1.8rem; }
+    p { margin: 0; line-height: 1.6; color: #334155; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Le site est temporairement en maintenance</h1>
+    <p>Nous effectuons une intervention technique pour améliorer votre expérience.<br>Merci de revenir dans quelques instants.</p>
+  </main>
+</body>
+</html>
+HTML;
+    exit;
+}
+
 $router = new Router();
 
 $routeToPage = [

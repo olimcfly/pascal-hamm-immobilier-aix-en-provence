@@ -39,6 +39,7 @@ $menuGroups = [
         ['module' => 'financement', 'label' => 'Demandes de financement', 'hint' => 'Leads financement',  'icon' => 'fas fa-hand-holding-dollar'],
         ['module' => 'biens',       'label' => 'Biens',             'hint' => 'Catalogue & mandats',        'icon' => 'fas fa-house'],
         ['module' => 'assistant',   'label' => 'Assistant IA',      'hint' => 'IA à votre service',         'icon' => 'fas fa-robot'],
+        ['module' => 'aide',        'label' => 'Centre d\'aide',   'hint' => 'Guides par module',         'icon' => 'fas fa-circle-question'],
     ],
     'Compte' => [
         ['module' => 'parametres',  'label' => 'Paramètres',        'hint' => 'Compte et préférences',      'icon' => 'fas fa-gear'],

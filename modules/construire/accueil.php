@@ -281,15 +281,15 @@ function renderContent()
 
         <section class="build-mere" aria-label="Structure MERE">
             <article class="mere-card motivation">
-                <div class="mere-card-head"><i class="fas fa-bolt"></i> M — MOTIVATION</div>
+                <div class="mere-card-head"><i class="fas fa-bolt"></i> Le constat</div>
                 <p>Aujourd’hui, la plupart des conseillers font tous la même chose :
 ils parlent à tout le monde, proposent la même chose et copient ce qu’ils voient.
 
-Résultat : personne ne les remarque et ils dépendent du hasard.</p>
+Au final, personne ne les remarque et ils dépendent du hasard.</p>
             </article>
 
             <article class="mere-card explanation">
-                <div class="mere-card-head"><i class="fas fa-lightbulb"></i> E — EXPLICATION</div>
+                <div class="mere-card-head"><i class="fas fa-lightbulb"></i> La base à poser</div>
                 <p>Avant de chercher des leads, vous devez poser une base claire :
 à qui vous parlez, ce que vous proposez, où vous intervenez et comment vous vous différenciez.
 
@@ -297,13 +297,13 @@ Sans ça, aucun marketing ne fonctionne correctement.</p>
             </article>
 
             <article class="mere-card resultat">
-                <div class="mere-card-head"><i class="fas fa-chart-line"></i> R — RÉSULTAT</div>
+                <div class="mere-card-head"><i class="fas fa-chart-line"></i> Vos bénéfices</div>
                 <p>Une fois cette étape complétée :
 vous avez un message clair, vous attirez les bons prospects et votre activité devient plus simple et plus efficace.</p>
             </article>
 
             <article class="mere-card exercice">
-                <div class="mere-card-head"><i class="fas fa-list-check"></i> E — EXERCICE</div>
+                <div class="mere-card-head"><i class="fas fa-list-check"></i> Passez à l’action</div>
                 <p>Complétez les modules ci-dessous dans l’ordre pour construire votre système.</p>
             </article>
         </section>

@@ -11,15 +11,15 @@ function renderContent() {
 
     <section class="capture-hub-mere" aria-label="Pourquoi structurer votre capture">
         <article class="capture-mere-card capture-mere-card--motivation">
-            <h2>MOTIVATION</h2>
-            <p>Sans système clair, une partie de vos visiteurs repart sans laisser ses coordonnées. Résultat&nbsp;: des opportunités perdues chaque semaine.</p>
+            <h2>Ce qui se passe aujourd’hui</h2>
+            <p>Sans système clair, une partie de vos visiteurs repart sans laisser ses coordonnées. Vous perdez des opportunités chaque semaine.</p>
         </article>
         <article class="capture-mere-card capture-mere-card--explanation">
-            <h2>EXPLICATION</h2>
+            <h2>Le parcours à suivre</h2>
             <p>Un tunnel simple guide le prospect en 3 étapes&nbsp;: <strong>landing page</strong>, <strong>formulaire</strong>, puis <strong>confirmation</strong>.</p>
         </article>
         <article class="capture-mere-card capture-mere-card--resultat">
-            <h2>RÉSULTAT</h2>
+            <h2>Ce que vous obtenez</h2>
             <p>Vos leads sont capturés automatiquement, avec un parcours lisible et mesurable de bout en bout.</p>
         </article>
         <a href="?module=funnels" class="btn btn-primary capture-mere-cta">

@@ -25,7 +25,14 @@ public/error_log
 # Uploads / fichiers générés
 uploads/*
 !uploads/.gitkeep
-/storage/
+# Storage - structure versionnée, contenu ignoré
+/storage/*
+!/storage/uploads/
+!/storage/logs/
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
 
 # Temp / système
 .DS_Store

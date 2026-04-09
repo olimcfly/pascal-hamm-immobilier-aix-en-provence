@@ -25,7 +25,7 @@ $postController = new PostController($postRepository, $strategyService);
 $socialController = new SocialController($sequenceRepository, $postRepository, $strategyService);
 
 $action = preg_replace('/[^a-z-]/', '', (string) ($_GET['action'] ?? 'sequences'));
-$allowedActions = ['index', 'sequences', 'journal', 'post', 'post-form', 'save-sequence', 'save-post', 'delete-post', 'toggle-sequence', 'duplicate-sequence'];
+$allowedActions = ['index', 'sequences', 'journal', 'post', 'post-form', 'kit', 'save-sequence', 'save-post', 'delete-post', 'toggle-sequence', 'duplicate-sequence'];
 if (!in_array($action, $allowedActions, true)) {
     $action = 'sequences';
 }
@@ -63,6 +63,9 @@ function renderContent(): void
             break;
         case 'post-form':
             $socialController->postForm((int) ($_GET['id'] ?? 0));
+            break;
+        case 'kit':
+            require __DIR__ . '/views/kit.php';
             break;
         default:
             $socialController->sequences();

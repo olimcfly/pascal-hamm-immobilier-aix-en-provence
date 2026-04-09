@@ -1,5 +1,7 @@
 <?php
 $advisorDisplayName = trim((string) setting('advisor_firstname', '') . ' ' . (string) setting('advisor_lastname', ''));
+$helpContext = preg_replace('/[^a-z0-9_-]/', '', (string) ($module ?? 'dashboard'));
+$helpLink = '/admin?module=aide&context=' . rawurlencode($helpContext);
 if ($advisorDisplayName === '') {
     $advisorDisplayName = ADVISOR_NAME ?: APP_NAME;
 }
@@ -87,9 +89,9 @@ if ($advisorDisplayName === '') {
                 <a href="/" target="_blank" class="topbar-btn" title="Voir le site public">
                     <i class="fas fa-arrow-up-right-from-square"></i>
                 </a>
-                <button class="topbar-btn" title="Aide & documentation" aria-label="Aide et documentation">
+                <a href="<?= htmlspecialchars($helpLink) ?>" class="topbar-btn" title="Comprendre ce module" aria-label="Comprendre ce module">
                     <i class="fas fa-circle-question"></i>
-                </button>
+                </a>
                 <button class="topbar-btn" title="Notifications" id="notif-btn" aria-label="Notifications">
                     <i class="fas fa-bell"></i>
                     <span class="notif-badge">2</span>

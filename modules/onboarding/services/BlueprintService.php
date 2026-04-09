@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 final class BlueprintService
 {
-    public const VERSION = '1.0';
+    public const VERSION = '2.0';
 
     public function compile(array $answersByStep): array
     {
@@ -14,36 +14,79 @@ final class BlueprintService
         $territory = $answersByStep['territory'] ?? [];
         $goal = $answersByStep['goal'] ?? [];
 
+        $name = $this->cleanText($identity['name'] ?? '');
+        $city = $this->cleanText($identity['city'] ?? ($territory['primary_city'] ?? ''));
+        $status = $this->cleanText($identity['status'] ?? '');
+        $experience = $this->cleanText($identity['experience'] ?? '');
+        $clientTypes = $this->cleanText($target['client_types'] ?? '');
+        $situations = $this->cleanText($target['main_situations'] ?? '');
+        $offerDescription = $this->cleanText($offer['description'] ?? '');
+        $methods = $this->cleanText($offer['methods'] ?? '');
+
         return [
             'version' => self::VERSION,
             'identity' => [
-                'name' => $this->cleanText($identity['name'] ?? ''),
-                'brand' => $this->cleanText($identity['brand'] ?? ''),
-                'role' => $this->cleanText($identity['role'] ?? ''),
+                'name' => $name,
+                'city' => $city,
+                'status' => $status,
+                'experience' => $experience,
             ],
-            'persona' => [
-                'primary' => $this->cleanText($target['persona'] ?? ''),
-                'pain' => $this->cleanText($target['pain'] ?? ''),
-                'desire' => $this->cleanText($target['desire'] ?? ''),
+            'target' => [
+                'client_types' => $clientTypes,
+                'main_situations' => $situations,
             ],
             'offer' => [
-                'type' => $this->cleanText($offer['type'] ?? ''),
-                'promise' => $this->cleanText($offer['promise'] ?? ''),
-                'differentiator' => $this->cleanText($offer['differentiator'] ?? ''),
-                'timeline' => $this->cleanText($offer['timeline'] ?? ''),
+                'description' => $offerDescription,
+                'methods' => $methods,
             ],
-            'territory' => [
-                'city' => $this->cleanText($territory['city'] ?? ''),
-                'districts' => $this->toList($territory['districts'] ?? ''),
-                'radius_km' => $this->toPositiveInt($territory['radius_km'] ?? 0),
+            'zone' => [
+                'primary_city' => $this->cleanText($territory['primary_city'] ?? ''),
+                'secondary_zones' => $this->toList($territory['secondary_zones'] ?? ''),
             ],
-            'acquisition' => [
-                'primary_goal' => $this->cleanText($goal['primary_goal'] ?? ''),
-                'primary_channel' => $this->cleanText($goal['primary_channel'] ?? ''),
-                'budget_monthly' => $this->toNullableFloat($goal['budget_monthly'] ?? null),
+            'goals' => [
+                'leads_per_month' => $this->toPositiveInt($goal['leads_per_month'] ?? 0),
+                'appointments_target' => $this->toPositiveInt($goal['appointments_target'] ?? 0),
+                'revenue_target' => $this->toNullableFloat($goal['revenue_target'] ?? null),
             ],
-            'outputs' => $this->outputsFromSelection($goal['outputs'] ?? []),
+            'auto_generation' => [
+                'persona' => $this->buildPersona($clientTypes, $situations, $city),
+                'positioning' => $this->buildPositioning($status, $experience, $city, $clientTypes),
+                'offer' => $this->buildOffer($offerDescription, $methods, $goal),
+            ],
         ];
+    }
+
+    private function buildPersona(string $clientTypes, string $situations, string $city): string
+    {
+        $persona = $clientTypes !== '' ? $clientTypes : 'clients immobiliers';
+        $pain = $situations !== '' ? $situations : 'avec un besoin de conseil clair et rassurant';
+        $zone = $city !== '' ? ' à ' . $city : '';
+
+        return sprintf('%s%s, principalement %s.', ucfirst($persona), $zone, $pain);
+    }
+
+    private function buildPositioning(string $status, string $experience, string $city, string $clientTypes): string
+    {
+        $role = $status !== '' ? $status : 'professionnel immobilier';
+        $xp = $experience !== '' ? $experience : 'expérience non précisée';
+        $zone = $city !== '' ? 'sur ' . $city : 'sur votre secteur';
+        $target = $clientTypes !== '' ? $clientTypes : 'une cible locale';
+
+        return sprintf('Positionnement : %s %s, spécialisé %s pour %s.', $role, $xp, $zone, $target);
+    }
+
+    private function buildOffer(string $description, string $methods, array $goal): string
+    {
+        $base = $description !== '' ? $description : 'Offre immobilière personnalisée';
+        $approach = $methods !== '' ? $methods : 'accompagnement structuré de la prise de contact à la signature';
+
+        $leads = $this->toPositiveInt($goal['leads_per_month'] ?? 0);
+        $rdv = $this->toPositiveInt($goal['appointments_target'] ?? 0);
+        $targetPart = ($leads > 0 || $rdv > 0)
+            ? sprintf(' Objectif opérationnel : %d leads/mois et %d RDV.', $leads, $rdv)
+            : '';
+
+        return sprintf('%s. Méthodes actuelles : %s.%s', $base, $approach, $targetPart);
     }
 
     private function cleanText(mixed $value): string
@@ -82,26 +125,12 @@ final class BlueprintService
             return null;
         }
 
-        $normalized = str_replace(',', '.', trim((string) $value));
+        $normalized = str_replace([',', ' '], ['.', ''], trim((string) $value));
         if ($normalized === '' || !is_numeric($normalized)) {
             return null;
         }
 
         $amount = (float) $normalized;
         return $amount >= 0 ? $amount : null;
-    }
-
-    private function outputsFromSelection(mixed $selected): array
-    {
-        $values = is_array($selected) ? $selected : [];
-        $lookup = array_fill_keys(array_map(static fn ($item): string => (string) $item, $values), true);
-
-        return [
-            'site' => isset($lookup['site']),
-            'funnel' => isset($lookup['funnel']),
-            'seo' => isset($lookup['seo']),
-            'content' => isset($lookup['content']),
-            'crm' => isset($lookup['crm']),
-        ];
     }
 }

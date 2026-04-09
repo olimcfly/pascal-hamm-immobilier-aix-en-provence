@@ -49,7 +49,10 @@ function renderContent(): void
 {
     global $socialController, $action;
 
-    echo '<link rel="stylesheet" href="/modules/social/assets/social.css?v=' . (int) @filemtime(__DIR__ . '/assets/social.css') . '">';
+    $cssPath = __DIR__ . '/assets/social.css';
+    if (is_file($cssPath)) {
+        echo '<style data-social-inline="1">' . file_get_contents($cssPath) . '</style>';
+    }
 
     switch ($action) {
         case 'journal':
@@ -66,5 +69,8 @@ function renderContent(): void
             break;
     }
 
-    echo '<script src="/modules/social/assets/social.js?v=' . (int) @filemtime(__DIR__ . '/assets/social.js') . '"></script>';
+    $jsPath = __DIR__ . '/assets/social.js';
+    if (is_file($jsPath)) {
+        echo '<script>' . file_get_contents($jsPath) . '</script>';
+    }
 }

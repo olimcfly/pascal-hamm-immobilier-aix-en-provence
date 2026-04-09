@@ -62,6 +62,25 @@ class ImapService
         return '{' . $host . ':' . $port . $flags . '}INBOX';
     }
 
+    // ── TEST ─────────────────────────────────────────────────────
+
+    public function testConnection(): int
+    {
+        $mailbox = imap_open(
+            $this->buildMailbox(),
+            $this->getUser(),
+            $this->getPass(),
+            0, 1,
+            ['DISABLE_AUTHENTICATOR' => 'GSSAPI']
+        );
+        if ($mailbox === false) {
+            throw new RuntimeException('Connexion IMAP échouée : ' . imap_last_error());
+        }
+        $count = imap_num_msg($mailbox);
+        imap_close($mailbox);
+        return $count;
+    }
+
     // ── SYNC ─────────────────────────────────────────────────────
 
     /**

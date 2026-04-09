@@ -1,5 +1,5 @@
 -- ============================================================
--- MODULE MESSAGERIE — Gmail intégré
+-- MODULE MESSAGERIE — IMAP + Templates + IA
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS `message_threads` (
@@ -39,4 +39,18 @@ CREATE TABLE IF NOT EXISTS `messages` (
   INDEX `idx_thread` (`thread_id`),
   INDEX `idx_user_direction` (`user_id`, `direction`),
   CONSTRAINT `fk_msg_thread` FOREIGN KEY (`thread_id`) REFERENCES `message_threads`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `email_templates` (
+  `id`          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `user_id`     INT UNSIGNED NOT NULL DEFAULT 1,
+  `name`        VARCHAR(255) NOT NULL,
+  `category`    VARCHAR(100) NOT NULL DEFAULT 'general',
+  `subject`     VARCHAR(500) NOT NULL DEFAULT '',
+  `body_html`   LONGTEXT NOT NULL,
+  `usage_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `is_default`  TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at`  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX `idx_user_cat` (`user_id`, `category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -56,6 +56,9 @@ $currentStatus  = (string) ($_GET['status'] ?? '');
             <i class="fas fa-plus"></i>
             <?= $isJournal ? 'Nouvelle publication' : 'Nouvelle séquence' ?>
         </a>
+        <a href="/admin?module=social&action=kit" class="s-btn-new" style="background:#1e293b;">
+            <i class="fas fa-wand-magic-sparkles"></i> Kit publications
+        </a>
     </div>
 </div>
 

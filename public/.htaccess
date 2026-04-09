@@ -29,11 +29,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Marque les assets versionnés (query string v= ou hash dans le nom)
-    RewriteCond %{REQUEST_URI} \.(?:css|js|mjs|gif|jpe?g|png|svg|webp|avif|ico|woff2?|ttf|otf)$ [NC]
-    RewriteCond %{QUERY_STRING} (^|&)v= [NC,OR]
-    RewriteCond %{REQUEST_URI} \.[0-9a-f]{8,}\.(?:css|js|mjs|gif|jpe?g|png|svg|webp|avif|ico|woff2?|ttf|otf)$ [NC]
-    RewriteRule ^ - [E=VERSIONED_ASSET:1]
+    # Sitemap dynamique
+    RewriteRule ^sitemap\.xml$ sitemap.php [L,QSA]
 
     # Si le fichier ou le dossier existe physiquement, on le charge normalement
     RewriteCond %{REQUEST_FILENAME} -f [OR]

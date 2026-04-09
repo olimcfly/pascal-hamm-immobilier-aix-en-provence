@@ -168,3 +168,37 @@ function generateRef(string $type, int $id): string
     $prefix = strtoupper(substr($type, 0, 3));
     return $prefix . '-' . str_pad($id, 5, '0', STR_PAD_LEFT);
 }
+
+function get_ia_status(?int $userId = null): string
+{
+    $resolvedUserId = $userId ?? (int) ($_SESSION['user_id'] ?? 0);
+    if ($resolvedUserId <= 0) {
+        return 'disconnected';
+    }
+
+    try {
+        $stmt = db()->prepare(
+            'SELECT provider, api_key, model
+             FROM ia_configurations
+             WHERE user_id = :user_id AND is_active = 1
+             ORDER BY updated_at DESC, id DESC
+             LIMIT 1'
+        );
+        $stmt->execute(['user_id' => $resolvedUserId]);
+        $config = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Throwable $e) {
+        return 'disconnected';
+    }
+
+    if (!is_array($config)) {
+        return 'disconnected';
+    }
+
+    $provider = trim((string) ($config['provider'] ?? ''));
+    $apiKey = trim((string) ($config['api_key'] ?? ''));
+    $model = trim((string) ($config['model'] ?? ''));
+
+    return ($provider !== '' && $apiKey !== '' && $model !== '')
+        ? 'connected'
+        : 'disconnected';
+}

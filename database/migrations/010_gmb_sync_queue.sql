@@ -1,31 +1,18 @@
--- Queue + logs de synchronisation Google Business Profile (admin hub)
+-- Queue + suivi d'état de synchronisation Google Business Profile (admin hub)
 
 CREATE TABLE IF NOT EXISTS gmb_sync_jobs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    job_type VARCHAR(64) NOT NULL,
-    payload_json JSON DEFAULT NULL,
-    status ENUM('queued','running','done','failed') NOT NULL DEFAULT 'queued',
+    status ENUM('pending','running','done','error') NOT NULL DEFAULT 'pending',
+    source VARCHAR(50) NOT NULL DEFAULT 'manual',
     attempts SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-    available_at DATETIME NOT NULL,
+    payload JSON DEFAULT NULL,
+    result JSON DEFAULT NULL,
+    error_message TEXT DEFAULT NULL,
     started_at DATETIME DEFAULT NULL,
     finished_at DATETIME DEFAULT NULL,
-    last_error VARCHAR(1000) DEFAULT NULL,
-    result_json JSON DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_status_available (status, available_at),
-    INDEX idx_user (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS gmb_sync_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    job_type VARCHAR(64) NOT NULL,
-    status ENUM('done','failed') NOT NULL,
-    message VARCHAR(1000) DEFAULT NULL,
-    crawl_score TINYINT UNSIGNED DEFAULT NULL,
-    reviews_synced INT UNSIGNED DEFAULT NULL,
-    synced_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_synced (user_id, synced_at)
+    INDEX idx_user_created (user_id, created_at),
+    INDEX idx_status_created (status, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

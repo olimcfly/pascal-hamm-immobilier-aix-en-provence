@@ -7,6 +7,8 @@ $advisorPhoneDisplay = '06 67 19 83 66';
 $advisorEmail        = defined('APP_EMAIL') ? APP_EMAIL : '';
 $appUrl              = defined('APP_URL')   ? APP_URL   : 'https://pascalhamm.fr';
 $appName             = 'Pascal Hamm | Expert Immobilier 360°';
+$contactAddress      = trim((string) setting('contact_address', defined('APP_ADDRESS') ? APP_ADDRESS : ''));
+$contactPhone        = trim((string) setting('contact_phone', defined('APP_PHONE') ? APP_PHONE : ''));
 $requestUri          = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
 $gaMeasurementId     = trim((string) setting('google_analytics_id', ''));
 
@@ -86,6 +88,45 @@ foreach ($noindexPaths as $pathPattern) {
         }
         <?php if (!empty($jsonLd)): ?>,<?= $jsonLd ?><?php endif; ?>
     }
+    </script>
+
+    <!-- JSON-LD : LocalBusiness -->
+    <script type="application/ld+json">
+    <?= json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'LocalBusiness',
+        'name' => $advisorName,
+        'description' => $siteMetaDescription,
+        'url' => $appUrl,
+        'telephone' => $contactPhone !== '' ? $contactPhone : $advisorPhone,
+        'email' => $advisorEmail,
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => $contactAddress !== '' ? $contactAddress : 'Aix-en-Provence, France',
+            'addressLocality' => $zoneCity,
+            'postalCode' => '13100',
+            'addressRegion' => 'Provence-Alpes-Côte d’Azur',
+            'addressCountry' => 'FR',
+        ],
+        'openingHoursSpecification' => [
+            [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                'opens' => '09:00',
+                'closes' => '19:00',
+            ],
+            [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => 'Saturday',
+                'opens' => '10:00',
+                'closes' => '17:00',
+            ],
+        ],
+        'areaServed' => [
+            '@type' => 'AdministrativeArea',
+            'name' => 'Aix-en-Provence',
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
     </script>
 
     <!-- Fonts -->

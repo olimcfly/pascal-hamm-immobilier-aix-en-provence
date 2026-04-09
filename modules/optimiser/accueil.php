@@ -9,7 +9,7 @@ if (!in_array($action, $allowedActions, true)) {
 }
 
 $pageTitle = $action === 'rapport-mensuel' ? 'Optimiser — Rapport mensuel' : 'Optimiser';
-$pageDescription = 'Analysez et améliorez en continu vos performances';
+$pageDescription = 'Améliorez vos résultats avec des décisions simples';
 
 function renderContent(): void
 {
@@ -21,90 +21,83 @@ function renderContent(): void
     }
     ?>
     <div class="page-header">
-        <h1><i class="fas fa-chart-line page-icon"></i> HUB <span class="page-title-accent">Optimiser</span></h1>
-        <p>Piloter et améliorer vos résultats</p>
-        <p class="optimiser-hero-subtitle">Analysez vos performances et améliorez votre système en continu.</p>
+        <h1><i class="fas fa-chart-line page-icon"></i> Gagnez en résultats chaque semaine</h1>
+        <p>Voyez ce qui marche, corrigez vite, avancez en continu.</p>
     </div>
 
-    <section class="optimiser-mere-card" aria-label="Cycle d'amélioration continue">
+    <section class="optimiser-mere-card" aria-label="Méthode d'amélioration">
         <div class="optimiser-mere-header">
-            <span class="optimiser-mere-kicker">POINT DE DÉPART</span>
-            <h2>Travailler sans données = perte</h2>
+            <h2>Méthode simple en 4 points</h2>
         </div>
-        <p class="optimiser-mere-explanation">
-            Pour progresser, il faut piloter un cycle court et régulier : analyser, corriger, tester.
-        </p>
-        <div class="optimiser-cycle" role="list" aria-label="Cycle analyser corriger tester">
+        <div class="optimiser-cycle" role="list" aria-label="Méthode">
             <div class="optimiser-cycle-step" role="listitem">
                 <span class="optimiser-cycle-badge">1</span>
-                <strong>Analyser</strong>
+                <strong>Problème utilisateur</strong>
+                <small>Vous agissez sans repère clair.</small>
             </div>
-            <div class="optimiser-cycle-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></div>
             <div class="optimiser-cycle-step" role="listitem">
                 <span class="optimiser-cycle-badge">2</span>
-                <strong>Corriger</strong>
+                <strong>Logique simple</strong>
+                <small>Mesurer, ajuster, vérifier.</small>
             </div>
-            <div class="optimiser-cycle-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></div>
             <div class="optimiser-cycle-step" role="listitem">
                 <span class="optimiser-cycle-badge">3</span>
-                <strong>Tester</strong>
+                <strong>Bénéfice clair</strong>
+                <small>Chaque action devient plus rentable.</small>
             </div>
-            <div class="optimiser-cycle-loop" aria-hidden="true"><i class="fas fa-rotate-right"></i></div>
+            <div class="optimiser-cycle-step" role="listitem">
+                <span class="optimiser-cycle-badge">4</span>
+                <strong>Action</strong>
+                <small>Commencez par un seul levier.</small>
+            </div>
         </div>
         <div class="optimiser-mere-footer">
-            <p><strong>Impact :</strong> progression continue.</p>
-            <p><strong>Étape suivante :</strong> faire 1 amélioration maintenant.</p>
+            <a href="?module=optimiser&view=analytics" class="btn btn-primary"><i class="fas fa-bolt"></i> Commencer</a>
         </div>
     </section>
 
     <div class="cards-container">
-
         <a class="card" href="?module=optimiser&view=analytics" style="--card-accent:#3498db; --card-icon-bg:#e3f2fd; text-decoration:none; color:inherit; display:block;">
             <div class="card-header">
                 <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-                <h3 class="card-title">Comprendre vos performances</h3>
+                <h3 class="card-title">Lire les résultats</h3>
             </div>
-            <p class="card-description">Module Analytics pour visualiser vos KPIs : leads, estimations et trafic pages.</p>
-            <div class="card-tags"><span class="tag">Analytics</span><span class="tag">KPIs</span><span class="tag">30 / 90 jours</span></div>
-            <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir Analytics</span>
+            <p class="card-description">Comprenez en un coup d'œil ce qui monte ou baisse.</p>
+            <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
         </a>
 
         <div class="card" style="--card-accent:#f39c12; --card-icon-bg:#fef9e7;">
             <div class="card-header">
                 <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
-                <h3 class="card-title">Identifier les problèmes</h3>
+                <h3 class="card-title">Trouver le frein principal</h3>
             </div>
-            <p class="card-description">Module IA / insights pour détecter les frictions et prioriser les corrections.</p>
-            <div class="card-tags"><span class="tag">IA</span><span class="tag">Insights</span></div>
-            <span class="card-soon"><i class="fas fa-clock"></i> Arrivée bientôt</span>
+            <p class="card-description">Identifiez le point qui bloque votre progression.</p>
+            <span class="card-soon"><i class="fas fa-clock"></i> Bientôt</span>
         </div>
 
         <div class="card" style="--card-accent:#27ae60; --card-icon-bg:#eafaf1;">
             <div class="card-header">
                 <div class="card-icon"><i class="fas fa-vials"></i></div>
-                <h3 class="card-title">Tester des améliorations</h3>
+                <h3 class="card-title">Tester une amélioration</h3>
             </div>
-            <p class="card-description">Module A/B testing pour comparer vos variantes de pages, emails et messages.</p>
-            <div class="card-tags"><span class="tag">A/B testing</span><span class="tag">Expérimentation</span></div>
-            <span class="card-soon"><i class="fas fa-clock"></i> Arrivée bientôt</span>
+            <p class="card-description">Comparez deux versions et gardez la meilleure.</p>
+            <span class="card-soon"><i class="fas fa-clock"></i> Bientôt</span>
         </div>
 
-        <div class="card" style="--card-accent:#e74c3c; --card-icon-bg:#fdedec;">
+        <a class="card" href="/admin?module=optimiser&action=rapport-mensuel" style="--card-accent:#e74c3c; --card-icon-bg:#fdedec; text-decoration:none; color:inherit; display:block;">
             <div class="card-header">
                 <div class="card-icon"><i class="fas fa-file-chart-line"></i></div>
-                <h3 class="card-title">Suivre & ajuster</h3>
+                <h3 class="card-title">Partager le bilan mensuel</h3>
             </div>
-            <p class="card-description">Module rapports pour suivre les résultats, ajuster vos actions et automatiser le suivi mensuel.</p>
-            <div class="card-tags"><span class="tag">Rapports</span><span class="tag">Export PDF/HTML</span><span class="tag">Email auto</span></div>
-            <a class="card-action" href="/admin?module=optimiser&action=rapport-mensuel"><i class="fas fa-arrow-right"></i> Ouvrir les rapports</a>
-        </div>
-
+            <p class="card-description">Gardez une vision claire et prenez vos décisions plus vite.</p>
+            <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+        </a>
     </div>
 
-    <section class="optimiser-final-cta" aria-label="Appel à l'action final">
-        <h2>Améliorez vos résultats</h2>
+    <section class="optimiser-final-cta" aria-label="Progression optimiser">
+        <h2>Progression : Mesurer → Corriger → Vérifier → Répéter</h2>
         <a href="?module=optimiser&view=analytics" class="btn btn-primary">
-            <i class="fas fa-rocket"></i> Lancer une optimisation
+            <i class="fas fa-rocket"></i> Lancer ma première amélioration
         </a>
     </section>
     <?php

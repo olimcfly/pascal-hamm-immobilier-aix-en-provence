@@ -37,53 +37,79 @@ function renderBiensHubCards(): void
 {
     ?>
     <div class="page-header">
-        <h1><i class="fas fa-house page-icon"></i> HUB <span class="page-title-accent">Biens</span></h1>
-        <p>Gérez votre portefeuille de biens immobiliers</p>
+        <h1><i class="fas fa-house page-icon"></i> Vendez plus vite avec des fiches claires</h1>
+        <p>Centralisez vos annonces pour gagner du temps à chaque étape.</p>
     </div>
+
+    <section class="optimiser-mere-card" aria-label="Méthode biens">
+        <div class="optimiser-cycle" role="list" aria-label="Méthode en quatre points">
+            <div class="optimiser-cycle-step" role="listitem">
+                <span class="optimiser-cycle-badge">1</span>
+                <strong>Problème utilisateur</strong>
+                <small>Les infos sont dispersées et lentes à retrouver.</small>
+            </div>
+            <div class="optimiser-cycle-step" role="listitem">
+                <span class="optimiser-cycle-badge">2</span>
+                <strong>Logique simple</strong>
+                <small>Une fiche unique, des photos rangées, un suivi clair.</small>
+            </div>
+            <div class="optimiser-cycle-step" role="listitem">
+                <span class="optimiser-cycle-badge">3</span>
+                <strong>Bénéfice clair</strong>
+                <small>Vous répondez plus vite et inspirez confiance.</small>
+            </div>
+            <div class="optimiser-cycle-step" role="listitem">
+                <span class="optimiser-cycle-badge">4</span>
+                <strong>Action</strong>
+                <small>Créez une nouvelle fiche dès maintenant.</small>
+            </div>
+        </div>
+    </section>
 
     <div class="cards-container">
 
-        <div class="card" style="--card-accent:#3498db; --card-icon-bg:#e3f2fd;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-list"></i></div>
-                <h3 class="card-title">Catalogue des biens</h3>
-            </div>
-            <p class="card-description">Consultez et gérez tous vos biens actifs, en option et vendus.</p>
-            <div class="card-tags"><span class="tag">Actifs</span><span class="tag">En option</span><span class="tag">Vendus</span></div>
-            <a href="/admin?module=biens&amp;view=catalogue" class="card-action"><i class="fas fa-arrow-right"></i> Consulter</a>
-        </div>
-
-        <div class="card" style="--card-accent:#27ae60; --card-icon-bg:#eafaf1;">
+        <a class="card" href="/admin/biens/nouveau" style="--card-accent:#27ae60; --card-icon-bg:#eafaf1; text-decoration:none; color:inherit; display:block;">
             <div class="card-header">
                 <div class="card-icon"><i class="fas fa-plus-circle"></i></div>
-                <h3 class="card-title">Ajouter un bien</h3>
+                <h3 class="card-title">Ajouter une fiche</h3>
             </div>
-            <p class="card-description">Créez une nouvelle fiche bien avec photos, description et caractéristiques.</p>
-            <div class="card-tags"><span class="tag">Nouveau mandat</span></div>
-            <a href="/admin/biens/nouveau" class="card-action"><i class="fas fa-plus"></i> Créer</a>
-        </div>
+            <p class="card-description">Créez rapidement une annonce complète.</p>
+            <span class="card-action"><i class="fas fa-arrow-right"></i> Créer</span>
+        </a>
 
-        <div class="card" style="--card-accent:#f39c12; --card-icon-bg:#fef9e7;">
+        <a class="card" href="/admin?module=biens&amp;view=catalogue" style="--card-accent:#3498db; --card-icon-bg:#e3f2fd; text-decoration:none; color:inherit; display:block;">
+            <div class="card-header">
+                <div class="card-icon"><i class="fas fa-list"></i></div>
+                <h3 class="card-title">Suivre le portefeuille</h3>
+            </div>
+            <p class="card-description">Retrouvez chaque annonce en quelques secondes.</p>
+            <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+        </a>
+
+        <a class="card" href="/admin?module=biens&amp;view=photos" style="--card-accent:#f39c12; --card-icon-bg:#fef9e7; text-decoration:none; color:inherit; display:block;">
             <div class="card-header">
                 <div class="card-icon"><i class="fas fa-images"></i></div>
-                <h3 class="card-title">Médias & photos</h3>
+                <h3 class="card-title">Organiser les photos</h3>
             </div>
-            <p class="card-description">Gérez les photos de vos biens : upload multiple, tri et suppression.</p>
-            <div class="card-tags"><span class="tag">Photos</span><span class="tag">Tri</span><span class="tag">Suppression</span></div>
-            <a href="/admin?module=biens&amp;view=photos" class="card-action"><i class="fas fa-image"></i> Gérer</a>
-        </div>
+            <p class="card-description">Mettez en avant les meilleurs visuels.</p>
+            <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+        </a>
 
         <div class="card" style="--card-accent:#e74c3c; --card-icon-bg:#fdedec;">
             <div class="card-header">
                 <div class="card-icon"><i class="fas fa-tags"></i></div>
-                <h3 class="card-title">Diffusion annonces</h3>
+                <h3 class="card-title">Diffuser plus largement</h3>
             </div>
-            <p class="card-description">Publiez vos biens sur les portails immobiliers en un clic.</p>
-            <div class="card-tags"><span class="tag">SeLoger</span><span class="tag">LeBonCoin</span></div>
-            <span class="card-soon"><i class="fas fa-clock"></i> Arrivée bientôt</span>
+            <p class="card-description">Préparez la diffusion de vos annonces sur d'autres canaux.</p>
+            <span class="card-soon"><i class="fas fa-clock"></i> Bientôt</span>
         </div>
 
     </div>
+
+    <section class="optimiser-final-cta" aria-label="Progression biens">
+        <h2>Progression : Créer → Compléter → Illustrer → Diffuser</h2>
+        <a href="/admin/biens/nouveau" class="btn btn-primary"><i class="fas fa-rocket"></i> Démarrer</a>
+    </section>
     <?php
 }
 

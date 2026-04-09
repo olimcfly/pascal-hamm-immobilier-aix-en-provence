@@ -1,5 +1,5 @@
 <?php
-$activeAction = (string) ($_GET['action'] ?? 'sequences');
+$activeAction = isset($_GET['action']) ? (string) $_GET['action'] : 'sequences';
 $isJournal    = $activeAction === 'journal';
 
 $advisorCity = setting('zone_city', 'Aix-en-Provence');
@@ -14,8 +14,8 @@ $personaFilters = [
     'expatrie'     => '✈️ Expatrié',
 ];
 
-$currentPersona = (string) ($_GET['persona'] ?? '');
-$currentStatus  = (string) ($_GET['status'] ?? '');
+$currentPersona = isset($_GET['persona']) ? (string) $_GET['persona'] : '';
+$currentStatus  = isset($_GET['status']) ? (string) $_GET['status'] : '';
 ?>
 <div class="social-wrap">
 

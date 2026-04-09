@@ -58,12 +58,12 @@ INSERT INTO settings (user_id, `key`, `value`, `group`) VALUES
 (1, 'notif_email_dest',      '',                                        'notif'),
 
 -- SMTP
-(1, 'smtp_host',             '',                                        'smtp'),
-(1, 'smtp_port',             '587',                                     'smtp'),
-(1, 'smtp_user',             '',                                        'smtp'),
+(1, 'smtp_host',             'mail.pascal-hamm-immobilier-aix-en-provence.fr', 'smtp'),
+(1, 'smtp_port',             '465',                                     'smtp'),
+(1, 'smtp_user',             'contact@pascal-hamm-immobilier-aix-en-provence.fr', 'smtp'),
 (1, 'smtp_pass',             '',                                        'smtp'),
 (1, 'smtp_from_name',        '',                                        'smtp'),
-(1, 'smtp_secure',           'tls',                                     'smtp'),
+(1, 'smtp_secure',           'ssl',                                     'smtp'),
 
 -- Sécurité
 (1, 'sec_2fa_active',        '0',                                       'securite'),

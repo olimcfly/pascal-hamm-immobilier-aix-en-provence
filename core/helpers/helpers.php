@@ -113,6 +113,56 @@ function paginate(int $total, int $perPage, int $current): array
     ];
 }
 
+
+
+function asset_url(string $path): string
+{
+    if ($path === '' || preg_match('#^https?://#i', $path)) {
+        return $path;
+    }
+
+    $normalizedPath = '/' . ltrim($path, '/');
+
+    static $manifest = null;
+    if ($manifest === null) {
+        $manifestPath = ROOT_PATH . '/storage/cache/assets-manifest.json';
+        if (is_file($manifestPath)) {
+            $decoded = json_decode((string) file_get_contents($manifestPath), true);
+            $manifest = is_array($decoded) ? $decoded : [];
+        } else {
+            $manifest = [];
+        }
+    }
+
+    if (isset($manifest[$normalizedPath])) {
+        return (string) $manifest[$normalizedPath];
+    }
+
+    $localPath = asset_local_path($normalizedPath);
+    if ($localPath !== null && is_file($localPath)) {
+        return $normalizedPath . '?v=' . filemtime($localPath);
+    }
+
+    return $normalizedPath;
+}
+
+function asset_local_path(string $normalizedPath): ?string
+{
+    if (str_starts_with($normalizedPath, '/assets/')) {
+        return ROOT_PATH . '/public' . $normalizedPath;
+    }
+
+    if (str_starts_with($normalizedPath, '/admin/assets/')) {
+        return ROOT_PATH . '/public' . $normalizedPath;
+    }
+
+    if (str_starts_with($normalizedPath, '/modules/')) {
+        return ROOT_PATH . $normalizedPath;
+    }
+
+    return null;
+}
+
 function generateRef(string $type, int $id): string
 {
     $prefix = strtoupper(substr($type, 0, 3));

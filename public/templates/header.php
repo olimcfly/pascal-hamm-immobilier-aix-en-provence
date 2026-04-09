@@ -48,14 +48,14 @@ if (empty($advisorPhoto)) {
 
     <!-- Inclure les styles -->
 
-<link rel="stylesheet" href="/assets/css/nav.css">  <?php foreach ($stylesToInclude as $cssFile): ?>
-        <link rel="stylesheet" href="<?= htmlspecialchars($cssFile) ?>">
+<link rel="stylesheet" href="<?= e(asset_url('/assets/css/nav.css')) ?>">  <?php foreach ($stylesToInclude as $cssFile): ?>
+        <link rel="stylesheet" href="<?= htmlspecialchars(asset_url($cssFile)) ?>">
     <?php endforeach; ?>
 
     <!-- Inclure les scripts JavaScript -->
     <?php if (!empty($extraJs)): ?>
         <?php foreach ($extraJs as $jsFile): ?>
-            <script src="<?= htmlspecialchars($jsFile) ?>" defer></script>
+            <script src="<?= htmlspecialchars(asset_url($jsFile)) ?>" defer></script>
         <?php endforeach; ?>
     <?php endif; ?>
     

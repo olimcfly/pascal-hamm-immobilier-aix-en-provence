@@ -35,6 +35,9 @@
     RewriteCond %{REQUEST_URI} \.[0-9a-f]{8,}\.(?:css|js|mjs|gif|jpe?g|png|svg|webp|avif|ico|woff2?|ttf|otf)$ [NC]
     RewriteRule ^ - [E=VERSIONED_ASSET:1]
 
+    # Landing pages Google Ads (/lp/slug)
+    RewriteRule ^lp/[a-z0-9-]+/?$ index.php [QSA,L]
+
     # Si le fichier ou le dossier existe physiquement, on le charge normalement
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

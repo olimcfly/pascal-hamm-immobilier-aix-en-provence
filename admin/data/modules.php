@@ -165,6 +165,28 @@ return [
     ],
 
 
+
+    'landing-pages' => [
+        'slug' => 'landing-pages',
+        'title' => 'MODULE LP : GOOGLE ADS',
+        'section' => 'Outils',
+        'route' => '/admin/index.php?module=landing-pages',
+        'icon' => 'fa-window-maximize',
+        'description' => "Crée et pilote des landing pages Ads conformes (estimation / financement).",
+        'available' => true,
+        'hub_order' => 78,
+        'meta' => [
+            'motivation' => "Créer rapidement des pages de conversion conformes aux exigences Google Ads.",
+            'explanation' => "Le module centralise la création de LP par ville, type de service et preuves sociales.",
+            'recipe' => [
+                'Créer un slug par intention (estimation / financement).',
+                'Renseigner un H1 aligné avec le mot-clé publicitaire.',
+                'Activer le tracking UTM pour suivre les leads CRM.',
+            ],
+            'exercise' => "Créez 1 LP estimation et 1 LP financement pour votre zone principale.",
+        ],
+    ],
+
     // MODULE : Estimation DVF (production)
     'estimation' => [
         'slug' => 'estimation',

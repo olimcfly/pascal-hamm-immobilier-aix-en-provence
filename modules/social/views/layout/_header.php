@@ -1,6 +1,10 @@
 <?php
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 $activeAction = (string) ($_GET['action'] ?? 'sequences');
+=======
+$activeAction = isset($_GET['action']) ? (string) $_GET['action'] : 'sequences';
+>>>>>>> 75fa36ef774fcc8396c746e9683cf6fab941b202
 $isJournal    = $activeAction === 'journal';
 
 $advisorCity = setting('zone_city', 'Aix-en-Provence');
@@ -15,8 +19,8 @@ $personaFilters = [
     'expatrie'     => '✈️ Expatrié',
 ];
 
-$currentPersona = (string) ($_GET['persona'] ?? '');
-$currentStatus  = (string) ($_GET['status'] ?? '');
+$currentPersona = isset($_GET['persona']) ? (string) $_GET['persona'] : '';
+$currentStatus  = isset($_GET['status']) ? (string) $_GET['status'] : '';
 ?>
 <div class="social-wrap">
 
@@ -113,6 +117,9 @@ try {
         <a href="/admin?module=social&action=post-form" class="s-btn-new">
             <i class="fas fa-plus"></i>
             <?= $isJournal ? 'Nouvelle publication' : 'Nouvelle séquence' ?>
+        </a>
+        <a href="/admin?module=social&action=kit" class="s-btn-new" style="background:#1e293b;">
+            <i class="fas fa-wand-magic-sparkles"></i> Kit publications
         </a>
     </div>
 </div>

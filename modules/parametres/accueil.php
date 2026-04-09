@@ -9,6 +9,7 @@ $pageDescription = 'Compte et préférences';
 
 function renderContent(): void
 {
+    $profil_prenom = setting('profil_prenom', '');
     $profil_nom    = setting('profil_nom', 'Pascal Hamm');
     $profil_email  = setting('profil_email', '');
     $profil_ville  = setting('profil_ville', 'Aix-en-Provence');
@@ -21,6 +22,7 @@ function renderContent(): void
         'gmb'         => (bool) setting('api_gmb_client_id'),
         'facebook'    => (bool) setting('api_fb_access_token'),
         'cloudinary'  => (bool) setting('api_cloudinary_key'),
+        'gsc'         => (bool) setting('api_gsc_refresh_token'),
     ];
     $apis_ok    = array_sum($apis);
     $apis_total = count($apis);
@@ -45,7 +47,7 @@ function renderContent(): void
             <?php endif; ?>
         </div>
         <div class="spb-info">
-            <div class="spb-name"><?= htmlspecialchars($profil_nom) ?></div>
+            <div class="spb-name"><?= htmlspecialchars(trim($profil_prenom . ' ' . $profil_nom)) ?></div>
             <div class="spb-email"><?= htmlspecialchars($profil_email) ?></div>
             <div class="spb-location"><i class="fas fa-location-dot"></i> <?= htmlspecialchars($profil_ville) ?></div>
         </div>

@@ -14,7 +14,7 @@ if ($advisorDisplayName === '') {
     <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/dashboard.css')) ?>">
     <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/settings.css')) ?>">
 </head>
-<body data-current-module="<?= htmlspecialchars($module ?? 'construire') ?>">
+<body data-current-module="<?= htmlspecialchars($module ?? 'dashboard') ?>">
 <div class="dashboard-container" id="dashboard-container">
 
     <aside class="sidebar" id="sidebar">
@@ -57,7 +57,7 @@ if ($advisorDisplayName === '') {
                     <i class="fas fa-bars"></i>
                 </button>
                 <nav class="topbar-breadcrumb" aria-label="Fil d'Ariane">
-                    <a href="/admin?module=construire" class="breadcrumb-home" data-module="construire" title="Accueil">
+                    <a href="/admin?module=dashboard" class="breadcrumb-home" data-module="dashboard" title="Accueil">
                         <i class="fas fa-house"></i>
                     </a>
                     <i class="fas fa-chevron-right breadcrumb-sep"></i>

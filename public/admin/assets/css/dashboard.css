@@ -939,3 +939,153 @@ body {
     .user-menu-info { display: none; }
     .footer-left { flex-direction: column; gap: 4px; }
 }
+
+/* ============================================================
+   CAPTURE HUB
+============================================================ */
+.capture-hub-hero {
+    margin-bottom: 18px;
+}
+
+.capture-hub-mere {
+    background: linear-gradient(135deg, #f8fbff, #f2f8ff);
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.capture-mere-card {
+    background: #fff;
+    border: 1px solid #e5eef8;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.capture-mere-card h2 {
+    margin: 0 0 8px;
+    font-size: 12px;
+    letter-spacing: .08em;
+    color: #2563eb;
+}
+
+.capture-mere-card p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.capture-mere-cta {
+    justify-content: center;
+    width: 100%;
+}
+
+.capture-hub-block {
+    margin-bottom: 20px;
+}
+
+.capture-hub-block__header h2 {
+    margin: 0;
+    font-size: 19px;
+    color: #1f2937;
+}
+
+.capture-hub-block__header p {
+    margin: 6px 0 14px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.capture-step-flow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.capture-step-card {
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.capture-step-card .card-action {
+    margin-top: auto;
+}
+
+.capture-step-card:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -13px;
+    width: 2px;
+    height: 14px;
+    transform: translateX(-50%);
+    background: linear-gradient(to bottom, var(--card-accent, #3498db), rgba(52,152,219,.15));
+}
+
+.capture-secondary-grid {
+    margin-top: 4px;
+    margin-bottom: 20px;
+}
+
+.capture-module-card {
+    min-height: 100%;
+}
+
+.capture-module-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+}
+
+.capture-final-cta {
+    background: #0f172a;
+    border-radius: 14px;
+    padding: 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.capture-final-cta h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+@media (min-width: 980px) {
+    .capture-hub-mere {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .capture-mere-cta {
+        grid-column: 1 / -1;
+        justify-self: start;
+        width: auto;
+        padding-inline: 20px;
+    }
+
+    .capture-step-flow {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .capture-step-card:not(:last-child)::after {
+        top: 50%;
+        right: -10px;
+        left: auto;
+        bottom: auto;
+        width: 10px;
+        height: 2px;
+        transform: translateY(-50%);
+        background: linear-gradient(to right, var(--card-accent, #3498db), rgba(52,152,219,.15));
+    }
+}

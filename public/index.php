@@ -127,6 +127,23 @@ $router->get('/merci', function() {
     servePage(ROOT_PATH . '/public/pages/conversion/merci.php');
 });
 
+
+$router->get('/fr/estimation-immobiliere-aix-en-provence', function() {
+    $GLOBALS['landingLocale'] = 'fr';
+    servePage(ROOT_PATH . '/public/pages/conversion/international-valuation.php');
+});
+
+$router->get('/en/property-valuation-aix-en-provence', function() {
+    $GLOBALS['landingLocale'] = 'en';
+    servePage(ROOT_PATH . '/public/pages/conversion/international-valuation.php');
+});
+
+$router->get('/es/valoracion-inmobiliaria-aix-en-provence', function() {
+    $GLOBALS['landingLocale'] = 'es';
+    servePage(ROOT_PATH . '/public/pages/conversion/international-valuation.php');
+});
+
+
 // ══════════════════════════════════════════════════════════════
 //  SECTEURS GÉOGRAPHIQUES
 // ══════════════════════════════════════════════════════════════

@@ -39,7 +39,7 @@ $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <article class="card property-card-premium">
 
                         <?php
-                            $ph_prestige = '/assets/images/placeholder.php?type=bien&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
+                            $ph_prestige = '/assets/images/placeholder.svg';
                             $src_prestige = (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false)
                                 ? e($bien['photo_principale'])
                                 : ((!empty($bien['image'])) ? '/uploads/' . e($bien['image']) : $ph_prestige);

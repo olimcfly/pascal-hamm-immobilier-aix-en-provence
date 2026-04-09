@@ -79,7 +79,7 @@ try {
                 <?php foreach ($articles as $article):
                     $imgSrc = !empty($article['image'])
                         ? e($article['image'])
-                        : '/assets/images/placeholder.php?type=article&label=' . rawurlencode($article['title']);
+                        : '/assets/images/placeholder.svg';
                     $dateLabel = !empty($article['date']) ? date('d/m/Y', strtotime($article['date'])) : '';
                 ?>
                 <article class="card" style="display:flex;flex-direction:column;overflow:hidden">

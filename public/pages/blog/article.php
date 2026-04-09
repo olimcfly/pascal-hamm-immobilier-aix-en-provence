@@ -24,7 +24,7 @@ $dateFormat = $dateRaw ? date('d F Y', strtotime($dateRaw)) : '';
 $mots       = (int) ($row['mots'] ?? 0);
 $lecture    = $mots > 0 ? ceil($mots / 200) . ' min' : null;
 $image      = !empty($row['image']) ? $row['image'] : null;
-$imageUrl   = $image ? e($image) : '/assets/images/placeholder.php?type=article&label=' . rawurlencode($row['titre']);
+$imageUrl   = $image ? e($image) : '/assets/images/placeholder.svg';
 ?>
 
 <div class="page-header" style="padding-bottom:2rem">

@@ -147,7 +147,7 @@ $extraJs  = ['/assets/js/bien-detail.js'];
                             class="bien-gallery__main-img"
                             id="galleryMainImg"
                             loading="eager"
-                            onerror="this.onerror=null;this.src='/assets/images/placeholder.php?type=<?= urlencode($b['type_bien'] ?? 'bien') ?>&surface=<?= (int)($b['surface'] ?? 0) ?>&pieces=<?= (int)($b['pieces'] ?? 0) ?>'">
+                            onerror="this.onerror=null;this.src='/assets/images/placeholder.svg'">
 
                         <!-- Badges sur la photo -->
                         <div class="bien-gallery__badges">
@@ -761,11 +761,11 @@ $extraJs  = ['/assets/js/bien-detail.js'];
                     <a href="/biens/<?= htmlspecialchars($s['slug']) ?>"
                        class="bien-card__img-link">
                         <img
-                            src="<?= !empty($s['photo_principale']) ? htmlspecialchars($s['photo_principale']) : '/assets/images/placeholder.php?type=' . urlencode($s['type_bien'] ?? 'bien') . '&surface=' . (int)($s['surface'] ?? 0) . '&pieces=' . (int)($s['pieces'] ?? 0) ?>"
+                            src="<?= !empty($s['photo_principale']) ? htmlspecialchars($s['photo_principale']) : '/assets/images/placeholder.svg' ?>"
                             alt="<?= htmlspecialchars($s['titre']) ?>"
                             loading="lazy"
                             class="bien-card__img"
-                            onerror="this.onerror=null;this.src='/assets/images/placeholder.php?type=<?= urlencode($s['type_bien'] ?? 'bien') ?>'">
+                            onerror="this.onerror=null;this.src='/assets/images/placeholder.svg'">
                         <span class="bien-card__type">
                             <?= htmlspecialchars(ucfirst($s['type_bien'] ?? 'Bien')) ?>
                         </span>

@@ -3,6 +3,21 @@ $pageTitle = 'Avis clients — Pascal Hamm | Expert Immobilier 360° Aix-en-Prov
 $metaDesc = 'Découvrez les avis vérifiés de nos clients satisfaits. Pascal Hamm, expert immobilier 360° à Aix-en-Provence, noté 4.9/5 pour son accompagnement clef en main.';
 ?>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "name": "Pascal Hamm",
+  "url": "https://www.pascal-hamm.com/social-proof/avis",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "bestRating": "5",
+    "ratingCount": "124"
+  }
+}
+</script>
+
 <div class="page-header">
     <div class="container">
         <nav class="breadcrumb"><a href="/">Accueil</a><span>Avis clients</span></nav>

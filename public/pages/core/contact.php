@@ -1,4 +1,6 @@
 <?php
+$contactFormError = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrf();
 
@@ -67,6 +69,12 @@ $contactPhoneHref = preg_replace('/\s+/', '', $contactPhone) ?: '';
             <div class="contact-form-box">
                 <h2><?= e($contactFormTitle !== '' ? $contactFormTitle : 'Envoyez-moi un message') ?></h2>
                 <p>Décrivez votre projet ou posez votre question.</p>
+
+                <?php if ($contactFormError !== ''): ?>
+                    <div style="margin-bottom:1rem;padding:.9rem 1rem;border:1px solid #fda29b;background:#fef3f2;color:#b42318;border-radius:10px;">
+                        <?= e($contactFormError) ?>
+                    </div>
+                <?php endif; ?>
 
                 <form id="contact-form" action="/contact" method="POST" novalidate>
                     <?= csrfField() ?>

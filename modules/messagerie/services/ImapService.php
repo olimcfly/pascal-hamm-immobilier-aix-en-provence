@@ -161,7 +161,7 @@ class ImapService
 
     // ── PRIVATE — PARSING ────────────────────────────────────────
 
-    private function parseMessage(\IMAP\Connection|resource $mailbox, int $msgNum, object $ov): ?array
+    private function parseMessage(\IMAP\Connection $mailbox, int $msgNum, object $ov): ?array
     {
         try {
             $header  = imap_headerinfo($mailbox, $msgNum);
@@ -228,7 +228,7 @@ class ImapService
         }
     }
 
-    private function extractBody(\IMAP\Connection|resource $mailbox, int $msgNum, object $structure): array
+    private function extractBody(\IMAP\Connection $mailbox, int $msgNum, object $structure): array
     {
         $html = '';
         $text = '';
@@ -239,7 +239,7 @@ class ImapService
         return [$html, $text];
     }
 
-    private function walkStructure(\IMAP\Connection|resource $mailbox, int $msgNum, object $part, string &$html, string &$text, string $partNum): void
+    private function walkStructure(\IMAP\Connection $mailbox, int $msgNum, object $part, string &$html, string &$text, string $partNum): void
     {
         $type    = $part->type ?? 0;
         $subtype = strtolower($part->subtype ?? '');

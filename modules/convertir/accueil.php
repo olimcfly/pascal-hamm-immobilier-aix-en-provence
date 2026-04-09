@@ -2,8 +2,16 @@
 $pageTitle = "Convertir";
 $pageDescription = "Transformez vos contacts en clients signés";
 
+$action = isset($_GET['action']) ? strtolower((string)$_GET['action']) : '';
 
 function renderContent() {
+    global $action;
+
+    if ($action === 'rdv') {
+        require __DIR__ . '/rdv.php';
+        return;
+    }
+
     ?>
     <div class="page-header">
         <h1><i class="fas fa-arrow-trend-up page-icon"></i> HUB <span class="page-title-accent">Convertir</span></h1>
@@ -27,9 +35,9 @@ function renderContent() {
                 <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
                 <h3 class="card-title">Prise de RDV</h3>
             </div>
-            <p class="card-description">Automatisez la prise de rendez-vous vendeurs avec un agenda en ligne.</p>
+            <p class="card-description">Visualisez les demandes de RDV issues des leads et traitez-les depuis un agenda opérationnel.</p>
             <div class="card-tags"><span class="tag">Agenda</span><span class="tag">Automation</span></div>
-            <span class="card-soon"><i class="fas fa-clock"></i> Arrivée bientôt</span>
+            <a href="/admin?module=convertir&action=rdv" class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</a>
         </div>
 
         <div class="card" style="--card-accent:#27ae60; --card-icon-bg:#eafaf1;">

@@ -122,13 +122,8 @@ final class GmbService
 
         $this->hydrateFromGoogleIfStale($userId);
 
-        $listingStmt = $this->pdo->prepare('SELECT id, last_sync FROM gmb_fiche WHERE user_id = ? LIMIT 1');
-        $listingStmt->execute([$userId]);
-        $listing = $listingStmt->fetch(PDO::FETCH_ASSOC) ?: null;
-
-        $reviewsStmt = $this->pdo->prepare('SELECT COUNT(*) AS reviews_count, AVG(note) AS reviews_rating FROM gmb_avis WHERE user_id = ?');
-        $reviewsStmt->execute([$userId]);
-        $reviews = $reviewsStmt->fetch(PDO::FETCH_ASSOC) ?: ['reviews_count' => 0, 'reviews_rating' => null];
+        $listing = $this->getListing($userId);
+        $reviewsSummary = $this->getReviewsSummary($userId);
 
         $syncStmt = $this->pdo->prepare('SELECT synced_at, crawl_score FROM gmb_sync_logs WHERE user_id = ? ORDER BY synced_at DESC LIMIT 1');
         $syncStmt->execute([$userId]);
@@ -136,11 +131,93 @@ final class GmbService
 
         return [
             'listing_exists' => $listing !== null,
-            'reviews_count' => (int) ($reviews['reviews_count'] ?? 0),
-            'reviews_rating' => round((float) ($reviews['reviews_rating'] ?? 0), 1),
+            'reviews_count' => (int) ($reviewsSummary['reviews_count'] ?? 0),
+            'reviews_rating' => round((float) ($reviewsSummary['reviews_rating'] ?? 0), 1),
             'last_sync' => $sync['synced_at'] ?? ($listing['last_sync'] ?? null),
             'last_crawl_score' => isset($sync['crawl_score']) ? (int) $sync['crawl_score'] : null,
         ];
+    }
+
+    /**
+     * Point 1 TODO: lit la fiche GMB depuis la base.
+     */
+    public function getListing(int $userId): ?array
+    {
+        if ($userId <= 0) {
+            return null;
+        }
+
+        $stmt = $this->pdo->prepare('SELECT
+                id,
+                user_id,
+                gmb_location_id,
+                gmb_account_id,
+                nom_etablissement,
+                categorie,
+                adresse,
+                ville,
+                code_postal,
+                telephone,
+                site_web,
+                description,
+                horaires,
+                photos,
+                statut,
+                last_sync,
+                created_at
+            FROM gmb_fiche
+            WHERE user_id = ?
+            LIMIT 1');
+        $stmt->execute([$userId]);
+        $listing = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!is_array($listing)) {
+            return null;
+        }
+
+        $listing['horaires'] = $this->decodeJsonField($listing['horaires'] ?? null);
+        $listing['photos'] = $this->decodeJsonField($listing['photos'] ?? null);
+
+        return $listing;
+    }
+
+    /**
+     * Point 2 TODO: lit les avis GMB depuis la base.
+     */
+    public function getReviews(int $userId, int $limit = 50, int $offset = 0): array
+    {
+        if ($userId <= 0) {
+            return [];
+        }
+
+        $limit = max(1, min(200, $limit));
+        $offset = max(0, $offset);
+
+        $sql = 'SELECT
+                id,
+                user_id,
+                gmb_review_id,
+                auteur,
+                photo_auteur,
+                note,
+                commentaire,
+                reponse,
+                reponse_at,
+                avis_at,
+                statut,
+                sentiment,
+                created_at
+            FROM gmb_avis
+            WHERE user_id = :user_id
+            ORDER BY avis_at DESC, id DESC
+            LIMIT ' . (int) $limit . ' OFFSET ' . (int) $offset;
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return is_array($rows) ? $rows : [];
     }
 
     /**
@@ -449,6 +526,25 @@ final class GmbService
     {
         return $note >= 4 ? 'positif' : ($note === 3 ? 'neutre' : 'negatif');
     }
+
+    private function getReviewsSummary(int $userId): array
+    {
+        $reviewsStmt = $this->pdo->prepare('SELECT COUNT(*) AS reviews_count, AVG(note) AS reviews_rating FROM gmb_avis WHERE user_id = ?');
+        $reviewsStmt->execute([$userId]);
+
+        return $reviewsStmt->fetch(PDO::FETCH_ASSOC) ?: ['reviews_count' => 0, 'reviews_rating' => null];
+    }
+
+    private function decodeJsonField(mixed $raw): array
+    {
+        if (!is_string($raw) || trim($raw) === '') {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+        return is_array($decoded) ? $decoded : [];
+    }
+
 
     private function computeAverageRating(array $reviews): float
     {

@@ -66,6 +66,5 @@ function renderContent() {
             <a class="card-action" href="/admin?module=optimiser&action=rapport-mensuel"><i class="fas fa-arrow-right"></i> Ouvrir</a>
         </div>
 
-    </div>
-    <?php
+    require $viewFile;
 }

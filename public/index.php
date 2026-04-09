@@ -124,6 +124,18 @@ $router->get('/secteurs/{slug}', function(string $slug) {
     (new ZoneController())->show('', $slug);
 });
 
+
+// ══════════════════════════════════════════════════════════════
+//  LANDING PAGES ADS
+// ══════════════════════════════════════════════════════════════
+$router->get('/lp/{slug}', function(string $slug) {
+    (new LandingPageController())->show($slug);
+});
+
+$router->post('/lp/{slug}', function(string $slug) {
+    (new LandingPageController())->submit($slug);
+});
+
 // ══════════════════════════════════════════════════════════════
 //  FINANCEMENT
 // ══════════════════════════════════════════════════════════════

@@ -58,6 +58,7 @@ require_once __DIR__ . '/services/LeadService.php';
 require_once __DIR__ . '/services/InstantEstimationService.php';
 require_once __DIR__ . '/services/EstimationTunnelService.php';
 require_once __DIR__ . '/controllers/ZoneController.php';
+require_once __DIR__ . '/controllers/LandingPageController.php';
 
 
 // ── Session ──────────────────────────────────────────────────

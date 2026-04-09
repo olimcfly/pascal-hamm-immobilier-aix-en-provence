@@ -5,6 +5,7 @@ class LeadService
     public const SOURCE_ESTIMATION = 'estimation';
     public const SOURCE_RESSOURCE = 'telechargement';
     public const SOURCE_CONTACT = 'contact';
+    public const SOURCE_FINANCEMENT = 'financement';
     public const SOURCE_AUTRE = 'autre';
 
     private static bool $tableReady = false;
@@ -82,6 +83,7 @@ class LeadService
             self::SOURCE_ESTIMATION => ['nouveau', 'a_qualifier', 'rdv_a_planifier', 'rdv_planifie', 'converti', 'perdu'],
             self::SOURCE_RESSOURCE => ['nouveau', 'nurturing', 'a_relancer', 'rdv_propose', 'converti', 'inactif'],
             self::SOURCE_CONTACT => ['nouveau', 'a_traiter', 'en_discussion', 'rdv_planifie', 'converti', 'archive'],
+            self::SOURCE_FINANCEMENT => ['nouveau', 'en_cours', 'traite'],
             self::SOURCE_AUTRE => ['nouveau', 'a_qualifier', 'en_cours', 'converti', 'archive'],
         ];
     }
@@ -103,6 +105,7 @@ class LeadService
             'en_discussion' => 'En discussion',
             'archive' => 'Archivé',
             'en_cours' => 'En cours',
+            'traite' => 'Traité',
         ];
 
         return $labels[$stage] ?? ucfirst(str_replace('_', ' ', $stage));
@@ -114,6 +117,7 @@ class LeadService
             self::SOURCE_ESTIMATION => 'Estimation',
             self::SOURCE_RESSOURCE => 'Téléchargement',
             self::SOURCE_CONTACT => 'Contact',
+            self::SOURCE_FINANCEMENT => 'Demandes de financement',
             self::SOURCE_AUTRE => 'Autre',
         ][$source] ?? ucfirst($source);
     }
@@ -154,7 +158,7 @@ class LeadService
     private static function sanitizeSource(string $source): string
     {
         $source = strtolower(trim($source));
-        $allowed = [self::SOURCE_ESTIMATION, self::SOURCE_RESSOURCE, self::SOURCE_CONTACT, self::SOURCE_AUTRE];
+        $allowed = [self::SOURCE_ESTIMATION, self::SOURCE_RESSOURCE, self::SOURCE_CONTACT, self::SOURCE_FINANCEMENT, self::SOURCE_AUTRE];
         return in_array($source, $allowed, true) ? $source : self::SOURCE_AUTRE;
     }
 

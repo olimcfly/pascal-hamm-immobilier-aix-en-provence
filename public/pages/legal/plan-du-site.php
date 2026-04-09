@@ -19,6 +19,7 @@ $metaRobots = 'noindex, follow';
                 <li><a href="/vendre">Vendre</a></li>
                 <li><a href="/acheter">Acheter</a></li>
                 <li><a href="/financement">Financement</a></li>
+                <li><a href="/financement/acheter-avant-vendre">Acheter avant vendre</a></li>
                 <li><a href="/estimation-gratuite">Estimation gratuite</a></li>
             </ul>
 

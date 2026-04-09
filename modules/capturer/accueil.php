@@ -18,6 +18,7 @@ $stats = [
     'estimation' => 0,
     'telechargement' => 0,
     'contact' => 0,
+    'financement' => 0,
     'rdv' => 0,
 ];
 
@@ -67,6 +68,7 @@ function renderContent(): void
         <div class="crm-stat"><strong><?= $stats['estimation'] ?></strong><div>Estimations</div></div>
         <div class="crm-stat"><strong><?= $stats['telechargement'] ?></strong><div>Téléchargements</div></div>
         <div class="crm-stat"><strong><?= $stats['contact'] ?></strong><div>Contacts généraux</div></div>
+        <div class="crm-stat"><strong><?= $stats['financement'] ?></strong><div>Demandes de financement</div></div>
         <div class="crm-stat"><strong><?= $stats['rdv'] ?></strong><div>Demandes RDV</div></div>
     </div>
 

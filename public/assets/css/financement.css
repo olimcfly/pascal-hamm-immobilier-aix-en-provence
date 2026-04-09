@@ -1,0 +1,44 @@
+.financement-hero {
+    background: linear-gradient(140deg, rgba(9,30,56,.95), rgba(27,53,88,.88));
+    color: #fff;
+}
+.financement-hero h1,
+.financement-hero p,
+.financement-hero .breadcrumb a,
+.financement-hero .breadcrumb span { color: #fff; }
+.hero-actions { display: flex; gap: .85rem; flex-wrap: wrap; margin-top: 1.35rem; }
+.hero-reassurance { opacity: .9; font-size: .95rem; margin-top: 1rem; }
+.narrow { max-width: 920px; }
+.premium-card {
+    background: var(--clr-white);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    padding: 1.35rem;
+    box-shadow: 0 8px 28px rgba(15,23,42,.05);
+}
+.premium-card h3 { margin-bottom: .5rem; font-size: 1.08rem; }
+.premium-card p { margin: 0; color: var(--clr-text-muted); }
+.check-list { margin-top: 1rem; display: grid; gap: .65rem; padding-left: 1.1rem; }
+.check-grid { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.check-item {
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    padding: .9rem 1rem;
+    font-weight: 500;
+}
+.steps-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.steps-grid article { background: #fff; border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 1.15rem; }
+.benefits { display: grid; gap: .65rem; max-width: 760px; }
+.benefits p { margin: 0; background: #fff; border: 1px solid var(--clr-border); border-radius: var(--radius-md); padding: .85rem 1rem; }
+.process-list { display: grid; gap: .65rem; padding-left: 1.2rem; }
+.form-wrap { display: grid; gap: 1.5rem; }
+.premium-form { background: #fff; border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 1.5rem; }
+.faq-list { display: grid; gap: .75rem; }
+.faq-item { background: #fff; border: 1px solid var(--clr-border); border-radius: var(--radius-md); padding: 1rem 1.1rem; }
+.faq-item h3 { margin-bottom: .45rem; font-size: 1.05rem; }
+.faq-item p { margin: 0; color: var(--clr-text-muted); }
+@media (max-width: 768px) {
+    .hero-actions .btn { width: 100%; }
+    .premium-form { padding: 1rem; }
+}

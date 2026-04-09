@@ -117,7 +117,8 @@ $router->get('/quartier/{quartier}', function($quartier) {
 }, 'zone.quartier');
 
 // Financement
-$router->get('/financement', fn() => page('pages/services/financement'), 'financement');
+$router->get('/financement', fn() => page('financement/financement'), 'financement');
+$router->get('/financement/acheter-avant-vendre', fn() => page('financement/financement'), 'financement.acheter-avant-vendre');
 $router->get('/viager', fn() => page('pages/services/viager'), 'viager');
 
 // Ressources

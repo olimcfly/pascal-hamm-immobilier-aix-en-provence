@@ -58,7 +58,7 @@ $navItems = [
         'sub' => [
             ['path' => '/financement', 'href' => url('/financement'), 'label' => 'Financer mon projet'],
             ['path' => '/financement', 'href' => url('/financement#simulateur'), 'label' => 'Simuler mon budget'],
-            ['path' => '/financement', 'href' => url('/financement#acheter-avant-vendre'), 'label' => 'Acheter avant de vendre'],
+            ['path' => '/financement', 'href' => url('/financement/acheter-avant-vendre'), 'label' => 'Acheter avant de vendre'],
             ['path' => '/financement', 'href' => url('/financement#faq-financement'), 'label' => 'FAQ financement'],
         ],
     ],

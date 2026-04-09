@@ -45,38 +45,38 @@ $defaultPost = $allPosts[0] ?? null;
 
 <section class="social-premium-intro">
     <div class="premium-card">
-        <span class="premium-kicker">PHASE 1 · MERE</span>
-        <h2>MOTIVATION</h2>
-        <p>Poster régulièrement maintient votre présence mentale, construit la confiance locale et réduit les cycles de décision de vos prospects.</p>
+        <span class="premium-kicker">Méthode</span>
+        <h2>Problème utilisateur</h2>
+        <p>Publier au hasard prend du temps et rapporte peu de contacts.</p>
     </div>
     <div class="premium-card">
-        <span class="premium-kicker">PHASE 1 · MERE</span>
-        <h2>EXPLICATION</h2>
-        <p>Chaque contenu nourrit l'algorithme, augmente votre visibilité puis transforme l'audience chaude en conversations qualifiées.</p>
+        <span class="premium-kicker">Méthode</span>
+        <h2>Logique simple</h2>
+        <p>Un plan clair, des messages réguliers, puis un suivi des retours.</p>
     </div>
     <div class="premium-card">
-        <span class="premium-kicker">PHASE 1 · MERE</span>
-        <h2>RÉSULTAT</h2>
-        <p>Vous installez un flux constant de prospects entrants, au lieu d'une prospection manuelle irrégulière.</p>
+        <span class="premium-kicker">Méthode</span>
+        <h2>Bénéfice clair</h2>
+        <p>Vous créez une présence stable qui génère des conversations qualifiées.</p>
     </div>
     <div class="premium-card premium-card-action">
-        <span class="premium-kicker">PHASE 1 · MERE</span>
-        <h2>ACTION</h2>
-        <p>Lancez maintenant votre première séquence stratégique multi-niveaux de conscience.</p>
-        <a href="/admin?module=social&action=post-form" class="s-btn-new"><i class="fas fa-bolt"></i> Créer une première séquence</a>
+        <span class="premium-kicker">Méthode</span>
+        <h2>Action</h2>
+        <p>Lancez votre prochain message en quelques minutes.</p>
+        <a href="/admin?module=social&action=post-form" class="s-btn-new"><i class="fas fa-bolt"></i> Créer maintenant</a>
     </div>
 </section>
 
 <section class="social-premium-production" id="socialPremiumProduction">
     <header class="premium-production-head">
-        <h2>PHASE 2 · Interface de production avancée</h2>
-        <p>Journal + IA + séquences pour transformer votre publication en système stratégique automatisé.</p>
+        <h2>Zone action</h2>
+        <p>Choisissez une carte, agissez, puis passez à la suivante.</p>
     </header>
 
     <div class="premium-grid-3">
         <article class="premium-panel" id="premiumJournalPanel">
             <div class="premium-panel-head">
-                <h3>BLOC A — Journal</h3>
+                <h3>1. Planifier vos messages</h3>
             </div>
 
             <div class="journal-filters">
@@ -136,7 +136,7 @@ $defaultPost = $allPosts[0] ?? null;
 
         <article class="premium-panel">
             <div class="premium-panel-head">
-                <h3>BLOC B — Éditeur</h3>
+                <h3>2. Rédiger plus vite</h3>
             </div>
             <div class="editor-preview-switch">
                 <span class="is-active" data-preview-target="facebook">FB</span>
@@ -151,32 +151,32 @@ $defaultPost = $allPosts[0] ?? null;
             <label class="premium-editor-label" for="premiumEditorText">Texte éditable</label>
             <textarea id="premiumEditorText" class="premium-editor-text" rows="8"><?= $defaultPost ? htmlspecialchars((string) ($defaultPost['contenu'] ?? '')) : '' ?></textarea>
             <button class="s-btn-new" type="button" data-ai-rewrite>
-                <i class="fas fa-robot"></i> Réécrire avec IA
+                <i class="fas fa-robot"></i> Réécrire le texte
             </button>
         </article>
 
         <article class="premium-panel">
             <div class="premium-panel-head">
-                <h3>BLOC C — Analyse IA</h3>
+                <h3>3. Clarifier le message</h3>
             </div>
 
             <div class="ia-score" data-analysis-score>74</div>
             <ul class="ia-list" data-analysis-list>
                 <li><strong>Persona ciblé :</strong> <span data-analysis-persona><?= $defaultPost ? htmlspecialchars((string) ($defaultPost['persona'] ?? 'Vendeur local')) : 'Vendeur local' ?></span></li>
-                <li><strong>Niveau de conscience :</strong> <span data-analysis-awareness><?= $defaultPost ? htmlspecialchars((string) ($defaultPost['objectif'] ?? 'N2 - Problème')) : 'N2 - Problème' ?></span></li>
-                <li><strong>Objectif tunnel :</strong> <span data-analysis-funnel>Prise de rendez-vous estimation</span></li>
-                <li><strong>Mots puissants :</strong> <span data-analysis-words>exclusif, confiance, opportunité</span></li>
+                <li><strong>Niveau de maturité :</strong> <span data-analysis-awareness><?= $defaultPost ? htmlspecialchars((string) ($defaultPost['objectif'] ?? 'N2 - Problème')) : 'N2 - Problème' ?></span></li>
+                <li><strong>Objectif :</strong> <span data-analysis-funnel>Prise de rendez-vous estimation</span></li>
+                <li><strong>Mots à garder :</strong> <span data-analysis-words>exclusif, confiance, opportunité</span></li>
             </ul>
 
             <div class="ia-suggestions" data-analysis-suggestions>
-                Ajoutez une preuve locale chiffrée, un CTA explicite et une contrainte temporelle douce pour améliorer la conversion.
+                Ajoutez une preuve locale, une action claire et un délai simple pour obtenir plus de réponses.
             </div>
         </article>
     </div>
 
     <article class="premium-panel premium-sequences-panel">
         <div class="premium-panel-head">
-            <h3>BLOC D — Séquences</h3>
+            <h3>4. Suivre vos séries</h3>
         </div>
 
         <?php if ($sequences === []): ?>
@@ -205,7 +205,7 @@ $defaultPost = $allPosts[0] ?? null;
                     </div>
 
                     <div class="premium-seq-stats">
-                        <strong>Leads générés : <?= (int) $meta['leads'] ?></strong>
+                        <strong>Contacts obtenus : <?= (int) $meta['leads'] ?></strong>
                         <strong>Portée : <?= number_format((int) $meta['reach'], 0, ',', ' ') ?></strong>
                     </div>
 
@@ -228,6 +228,8 @@ $defaultPost = $allPosts[0] ?? null;
         <?php endif; ?>
     </article>
 </section>
+
+<section class="optimiser-final-cta" aria-label="Progression social"><h2>Progression : Planifier → Rédiger → Améliorer → Suivre</h2><a href="/admin?module=social&action=post-form" class="btn btn-primary">Passer à l'action</a></section>
 
 <div class="social-sequences-list">
     <?php if ($sequences === []): ?>

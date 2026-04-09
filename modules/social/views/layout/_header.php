@@ -21,8 +21,8 @@ $currentStatus  = isset($_GET['status']) ? (string) $_GET['status'] : '';
 <div class="social-header">
     <div class="social-header-left">
         <div>
-            <h1 class="social-header-title"><?= $isJournal ? 'Journal des publications' : 'Séquences de posts' ?></h1>
-            <div class="social-header-sub"><?= htmlspecialchars($advisorCity) ?> Métropole</div>
+            <h1 class="social-header-title"><?= $isJournal ? 'Suivez vos publications en temps réel' : 'Obtenez plus de prises de contact via vos réseaux' ?></h1>
+            <div class="social-header-sub">Plan simple, action rapide · <?= htmlspecialchars($advisorCity) ?></div>
         </div>
 
         <div class="social-view-toggle">

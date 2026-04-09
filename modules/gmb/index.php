@@ -4,66 +4,65 @@ require_once __DIR__ . '/../../core/bootstrap.php';
 
 <div class="gmb-dashboard gmb-hub">
     <header class="gmb-hero">
-        <p class="gmb-hero-kicker">Hub Google</p>
-        <h1>Générer des contacts avec Google</h1>
-        <p class="gmb-hero-subtitle">Optimisez votre fiche Google pour recevoir des appels et des demandes automatiquement.</p>
+        <h1>Recevez plus d'appels depuis Google</h1>
+        <p class="gmb-hero-subtitle">Activez votre présence locale pour convertir les recherches en rendez-vous.</p>
     </header>
 
     <section class="gmb-panel gmb-mere-block" aria-labelledby="mere-title">
-        <h2 id="mere-title">Votre cap local</h2>
+        <h2 id="mere-title">Méthode</h2>
         <div class="gmb-mere-grid">
             <article class="gmb-mere-item">
-                <h3>Ce qui bloque</h3>
-                <p>Sans présence locale, vous manquez des demandes chaque semaine.</p>
+                <h3>Problème utilisateur</h3>
+                <p>Votre fiche locale ne transforme pas assez de vues en contacts.</p>
             </article>
             <article class="gmb-mere-item">
-                <h3>La logique</h3>
-                <p>Fiche claire, avis réguliers et contenus actifs travaillent ensemble.</p>
+                <h3>Logique simple</h3>
+                <p>Profil complet, avis réguliers, publications utiles.</p>
             </article>
             <article class="gmb-mere-item">
-                <h3>Ce que vous gagnez</h3>
-                <p>Plus d’appels qualifiés et plus de prises de contact.</p>
+                <h3>Bénéfice clair</h3>
+                <p>Vous gagnez en confiance locale et en demandes entrantes.</p>
             </article>
             <article class="gmb-mere-item">
-                <h3>Commencer</h3>
-                <p>Activez votre fiche puis enchaînez les modules.</p>
+                <h3>Action</h3>
+                <p><a class="btn-gmb" href="/admin?module=gmb&view=fiche">Commencer</a></p>
             </article>
         </div>
     </section>
 
     <section aria-labelledby="gmb-modules-title">
-        <h2 id="gmb-modules-title" class="gmb-section-title">Les 5 leviers à activer</h2>
+        <h2 id="gmb-modules-title" class="gmb-section-title">Zone action</h2>
         <div class="gmb-cards-grid">
             <a class="gmb-card" href="/admin?module=gmb&view=fiche">
                 <p class="gmb-card-index">1</p>
-                <h3>Optimiser votre fiche</h3>
-                <p class="gmb-card-module">Module : fiche GMB</p>
+                <h3>Compléter la fiche</h3>
+                <p class="gmb-card-module">Renseignez les infos essentielles</p>
             </a>
             <a class="gmb-card" href="/admin?module=gmb&view=avis">
                 <p class="gmb-card-index">2</p>
-                <h3>Gérer vos avis</h3>
-                <p class="gmb-card-module">Module : avis clients</p>
+                <h3>Répondre aux avis</h3>
+                <p class="gmb-card-module">Montrez votre réactivité</p>
             </a>
             <a class="gmb-card" href="/admin?module=gmb&view=demande-avis">
                 <p class="gmb-card-index">3</p>
                 <h3>Demander des avis</h3>
-                <p class="gmb-card-module">Module : automatisation</p>
+                <p class="gmb-card-module">Augmentez les retours clients</p>
             </a>
             <a class="gmb-card" href="/admin?module=redaction&action=pool_gmb">
                 <p class="gmb-card-index">4</p>
-                <h3>Publier du contenu</h3>
-                <p class="gmb-card-module">Module : posts GMB</p>
+                <h3>Publier chaque semaine</h3>
+                <p class="gmb-card-module">Restez visible localement</p>
             </a>
             <a class="gmb-card" href="/admin?module=gmb&view=statistiques">
                 <p class="gmb-card-index">5</p>
-                <h3>Suivre vos performances</h3>
-                <p class="gmb-card-module">Module : stats</p>
+                <h3>Suivre les résultats</h3>
+                <p class="gmb-card-module">Mesurez les appels et clics</p>
             </a>
         </div>
     </section>
 
     <section class="gmb-panel gmb-final-cta" aria-labelledby="gmb-cta-title">
-        <h2 id="gmb-cta-title">Améliorez votre visibilité locale</h2>
-        <a class="btn-gmb" href="/admin?module=gmb&view=fiche">Optimiser ma fiche Google</a>
+        <h2 id="gmb-cta-title">Progression : Fiche → Avis → Demandes → Publications → Résultats</h2>
+        <a class="btn-gmb" href="/admin?module=gmb&view=fiche">Lancer la première étape</a>
     </section>
 </div>

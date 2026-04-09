@@ -19,16 +19,51 @@ $activeKey = $stepKeys[$step] ?? '';
 $activeAnswers = $activeKey !== '' ? ($answers[$activeKey] ?? []) : [];
 
 $selectedOutputs = array_map('strval', (array) ($answers['goal']['outputs'] ?? []));
+$dashboard = is_array($viewData['dashboard'] ?? null) ? $viewData['dashboard'] : [];
+$dashboardItems = (array) ($dashboard['items'] ?? []);
+$dashboardCompleted = (int) ($dashboard['completed'] ?? 0);
+$dashboardTotal = (int) ($dashboard['total'] ?? count($dashboardItems));
+$dashboardProgress = (int) ($dashboard['global_progress'] ?? 0);
+$methodCards = (array) ($viewData['methodCards'] ?? []);
 ?>
 <style>
-    .onboarding-shell { max-width: 980px; margin: 0 auto; display:grid; gap:1rem; }
+    .onboarding-shell { max-width: 1080px; margin: 0 auto; display:grid; gap:1rem; }
     .onboarding-card { background:#fff; border:1px solid #e7ecf3; border-radius:18px; padding:1.1rem 1.2rem; box-shadow:0 8px 30px rgba(17,24,39,.05); }
-    .onboarding-header h1 { margin:0; font-size:1.5rem; }
+    .onboarding-header {
+        background: radial-gradient(circle at top right, rgba(37, 99, 235, .12), rgba(15, 23, 42, .02) 35%), #fff;
+    }
+    .onboarding-header h1 { margin:0; font-size:1.55rem; color:#0f172a; }
     .onboarding-header p { margin:.35rem 0 0; color:#64748b; }
+    .onboarding-summary-line { margin:.75rem 0 0; color:#334155; font-weight:600; }
+    .onboarding-progress-wrap { margin-top:.85rem; }
+    .onboarding-progress-meta { display:flex; justify-content:space-between; font-size:.8rem; color:#64748b; margin-bottom:.35rem; }
+    .onboarding-progress-track { height:10px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
+    .onboarding-progress-bar { height:100%; border-radius:999px; background:linear-gradient(90deg,#2563eb,#0ea5e9); }
     .onboarding-stepper { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.5rem; }
     .onboarding-step { border:1px solid #dbe4ef; border-radius:999px; padding:.42rem .6rem; font-size:.78rem; text-align:center; color:#64748b; }
     .onboarding-step.active { border-color:#2563eb; background:#eff6ff; color:#1e40af; font-weight:600; }
     .onboarding-step.done { border-color:#22c55e; color:#166534; }
+    .onboarding-dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:.75rem; }
+    .onboarding-phase-card { border:1px solid #dbe4ef; border-radius:14px; padding:.8rem; background:#fff; display:flex; flex-direction:column; gap:.55rem; box-shadow:0 4px 14px rgba(15,23,42,.03); }
+    .onboarding-phase-top { display:flex; justify-content:space-between; gap:.5rem; align-items:flex-start; }
+    .onboarding-phase-title { font-weight:700; color:#0f172a; font-size:.95rem; }
+    .onboarding-phase-desc { font-size:.82rem; color:#64748b; line-height:1.45; min-height:2.3rem; }
+    .onboarding-status-badge { display:inline-flex; align-items:center; gap:.25rem; border-radius:999px; font-size:.72rem; padding:.2rem .55rem; border:1px solid transparent; font-weight:700; white-space:nowrap; }
+    .onboarding-status-badge.non_commence { border-color:#cbd5e1; color:#475569; background:#f8fafc; }
+    .onboarding-status-badge.en_cours { border-color:#bfdbfe; color:#1d4ed8; background:#eff6ff; }
+    .onboarding-status-badge.complete { border-color:#bbf7d0; color:#166534; background:#ecfdf3; }
+    .onboarding-phase-progress { display:flex; align-items:center; justify-content:space-between; font-size:.75rem; color:#64748b; }
+    .onboarding-phase-track { height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-top:.28rem; }
+    .onboarding-phase-fill { height:100%; background:linear-gradient(90deg,#2563eb,#0ea5e9); border-radius:999px; }
+    .onboarding-phase-action { margin-top:auto; }
+    .onboarding-phase-action a { display:inline-flex; align-items:center; gap:.35rem; text-decoration:none; font-weight:700; font-size:.78rem; color:#1d4ed8; }
+    .onboarding-phase-action a:hover { text-decoration:underline; }
+    .onboarding-method-title { margin:0 0 .2rem; font-size:1.15rem; color:#0f172a; }
+    .onboarding-method-subtitle { margin:0 0 .7rem; font-size:.88rem; color:#64748b; }
+    .onboarding-method-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:.7rem; }
+    .onboarding-method-card { border:1px solid #dbe4ef; border-radius:14px; padding:.85rem; background:#fcfdff; }
+    .onboarding-method-card h3 { margin:0 0 .35rem; font-size:.9rem; color:#0f172a; }
+    .onboarding-method-card p { margin:0; font-size:.82rem; color:#64748b; line-height:1.45; }
     .onboarding-grid { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
     .onboarding-field label { display:block; font-weight:600; margin-bottom:.26rem; font-size:.9rem; }
     .onboarding-field input,.onboarding-field select,.onboarding-field textarea { width:100%; border:1px solid #cfd8e3; border-radius:12px; padding:.63rem .72rem; font:inherit; }
@@ -60,6 +95,17 @@ $selectedOutputs = array_map('strval', (array) ($answers['goal']['outputs'] ?? [
             <p><a href="/admin?module=onboarding&amp;step=<?= (int) $resumeStep ?>">Reprendre votre session en cours (étape <?= (int) $resumeStep ?>/5)</a></p>
         <?php endif; ?>
 
+        <p class="onboarding-summary-line">Complétez les étapes pour activer votre système de croissance.</p>
+        <div class="onboarding-progress-wrap">
+            <div class="onboarding-progress-meta">
+                <span>Progression globale</span>
+                <span><?= (int) $dashboardCompleted ?>/<?= (int) $dashboardTotal ?> étapes complétées (<?= (int) $dashboardProgress ?>%)</span>
+            </div>
+            <div class="onboarding-progress-track">
+                <div class="onboarding-progress-bar" style="width: <?= (int) max(0, min(100, $dashboardProgress)) ?>%"></div>
+            </div>
+        </div>
+
         <div class="onboarding-stepper" aria-label="Progression onboarding">
             <?php foreach ($labels as $stepIndex => $stepLabel): ?>
                 <?php
@@ -71,6 +117,52 @@ $selectedOutputs = array_map('strval', (array) ($answers['goal']['outputs'] ?? [
                 }
                 ?>
                 <div class="<?= e($class) ?>"><?= (int) $stepIndex ?>/<?= $stepIndex < 6 ? '5' : '5+' ?> — <?= e((string) $stepLabel) ?></div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+
+    <section class="onboarding-card">
+        <h2 style="margin:0 0 .65rem;font-size:1.2rem;color:#0f172a;">Dashboard onboarding premium</h2>
+        <div class="onboarding-dashboard-grid">
+            <?php foreach ($dashboardItems as $item): ?>
+                <?php
+                $status = (string) ($item['state'] ?? 'non_commence');
+                $statusText = $status === 'complete' ? 'Complété' : ($status === 'en_cours' ? 'En cours' : 'Non commencé');
+                $completion = (int) ($item['completion'] ?? 0);
+                ?>
+                <article class="onboarding-phase-card">
+                    <div class="onboarding-phase-top">
+                        <div class="onboarding-phase-title"><?= e((string) ($item['title'] ?? 'Étape')) ?></div>
+                        <span class="onboarding-status-badge <?= e($status) ?>"><?= e($statusText) ?></span>
+                    </div>
+                    <p class="onboarding-phase-desc"><?= e((string) ($item['description'] ?? '')) ?></p>
+                    <div class="onboarding-phase-progress">
+                        <span>Progression</span>
+                        <span><?= (int) max(0, min(100, $completion)) ?>%</span>
+                    </div>
+                    <div class="onboarding-phase-track">
+                        <div class="onboarding-phase-fill" style="width: <?= (int) max(0, min(100, $completion)) ?>%"></div>
+                    </div>
+                    <div class="onboarding-phase-action">
+                        <a href="<?= e((string) ($item['route'] ?? '/admin?module=onboarding')) ?>">
+                            <?= $status === 'complete' ? 'Revoir' : ($status === 'en_cours' ? 'Continuer' : 'Commencer') ?>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+    </section>
+
+    <section class="onboarding-card">
+        <h2 class="onboarding-method-title">Méthode / Stratégie</h2>
+        <p class="onboarding-method-subtitle">Une logique simple pour savoir quoi faire, dans quel ordre, et pourquoi chaque étape compte.</p>
+        <div class="onboarding-method-grid">
+            <?php foreach ($methodCards as $card): ?>
+                <article class="onboarding-method-card">
+                    <h3><?= e((string) ($card['title'] ?? 'Étape')) ?></h3>
+                    <p><?= e((string) ($card['text'] ?? '')) ?></p>
+                </article>
             <?php endforeach; ?>
         </div>
     </section>

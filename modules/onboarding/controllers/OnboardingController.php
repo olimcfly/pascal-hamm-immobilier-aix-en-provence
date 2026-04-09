@@ -21,6 +21,44 @@ final class OnboardingController
         5 => 'goal',
     ];
 
+    private const DASHBOARD_STEPS = [
+        [
+            'title' => 'Persona & Positionnement',
+            'description' => 'Clarifiez votre cible prioritaire et votre angle différenciant.',
+            'step' => 2,
+            'step_key' => 'target',
+            'route' => '/admin?module=onboarding&step=2',
+        ],
+        [
+            'title' => 'Offre',
+            'description' => 'Formalisez une promesse lisible, une offre claire et son bénéfice.',
+            'step' => 3,
+            'step_key' => 'offer',
+            'route' => '/admin?module=onboarding&step=3',
+        ],
+        [
+            'title' => 'Tunnel & Pages',
+            'description' => 'Préparez les pages et livrables à activer sur le parcours client.',
+            'step' => 5,
+            'step_key' => 'goal',
+            'route' => '/admin?module=onboarding&step=5',
+        ],
+        [
+            'title' => 'Trafic',
+            'description' => 'Priorisez le canal d’acquisition pour générer des opportunités qualifiées.',
+            'step' => 5,
+            'step_key' => 'goal',
+            'route' => '/admin?module=onboarding&step=5',
+        ],
+        [
+            'title' => 'Système & Automatisation CRM',
+            'description' => 'Structurez le suivi et l’automatisation pour convertir sans perte.',
+            'step' => 5,
+            'step_key' => 'goal',
+            'route' => '/admin?module=onboarding&step=5',
+        ],
+    ];
+
     public function __construct(private OnboardingService $service)
     {
     }
@@ -95,6 +133,8 @@ final class OnboardingController
 
         $inProgress = ((string) ($session['status'] ?? 'draft')) !== 'completed';
         $canResume = $inProgress && ((int) ($session['current_step'] ?? 1) > 1);
+        $onboardingDashboard = $this->buildDashboard($answersByStep, (string) ($session['status'] ?? 'draft'));
+        $methodCards = $this->methodCards();
 
         return [
             'step' => $step,
@@ -106,6 +146,102 @@ final class OnboardingController
             'blueprint' => $blueprint,
             'canResume' => $canResume,
             'resumeStep' => (int) ($session['current_step'] ?? 1),
+            'dashboard' => $onboardingDashboard,
+            'methodCards' => $methodCards,
+        ];
+    }
+
+    private function buildDashboard(array $answersByStep, string $status): array
+    {
+        $completedCount = 0;
+        $items = [];
+
+        foreach (self::DASHBOARD_STEPS as $item) {
+            $stepKey = (string) $item['step_key'];
+            $answers = $answersByStep[$stepKey] ?? [];
+            $completion = $this->completionForStep($stepKey, $answers);
+
+            $state = 'non_commence';
+            if ($completion >= 100 || $status === 'completed') {
+                $state = 'complete';
+                $completedCount++;
+            } elseif ($completion > 0) {
+                $state = 'en_cours';
+            }
+
+            $item['state'] = $state;
+            $item['completion'] = $completion;
+            $items[] = $item;
+        }
+
+        $total = count($items);
+        $globalProgress = $total > 0 ? (int) round(($completedCount / $total) * 100) : 0;
+
+        return [
+            'items' => $items,
+            'completed' => $completedCount,
+            'total' => $total,
+            'global_progress' => $globalProgress,
+        ];
+    }
+
+    private function completionForStep(string $stepKey, array $answers): int
+    {
+        if ($stepKey === 'target') {
+            $required = ['persona', 'pain'];
+            return $this->completionPercentage($required, $answers);
+        }
+
+        if ($stepKey === 'offer') {
+            $required = ['type', 'promise'];
+            return $this->completionPercentage($required, $answers);
+        }
+
+        if ($stepKey === 'goal') {
+            $required = ['primary_goal', 'primary_channel'];
+            return $this->completionPercentage($required, $answers);
+        }
+
+        return 0;
+    }
+
+    private function completionPercentage(array $requiredKeys, array $answers): int
+    {
+        $total = count($requiredKeys);
+        if ($total === 0) {
+            return 0;
+        }
+
+        $filled = 0;
+        foreach ($requiredKeys as $key) {
+            $value = trim((string) ($answers[$key] ?? ''));
+            if ($value !== '') {
+                $filled++;
+            }
+        }
+
+        return (int) round(($filled / $total) * 100);
+    }
+
+    private function methodCards(): array
+    {
+        return [
+            [
+                'title' => '1. Persona & positionnement',
+                'text' => 'On définit d’abord la cible, ses douleurs et votre différence. Sans ce cadrage, le reste du système perd en impact.',
+            ],
+            [
+                'title' => '2. Offre claire',
+                'text' => 'Ensuite on structure une offre compréhensible, avec promesse et résultat attendu. L’objectif : faciliter la décision.',
+            ],
+            [
+                'title' => '3. Trafic ciblé',
+                'text' => 'Puis on choisit les bons canaux pour attirer la bonne audience vers vos pages. Vous privilégiez la qualité du flux.',
+            ],
+            [
+                'title' => '4. Système & automatisation',
+                'text' => 'Enfin on orchestre le suivi (tunnel, CRM, relances) pour convertir régulièrement sans dépendre d’actions manuelles permanentes.',
+            ],
         ];
     }
 

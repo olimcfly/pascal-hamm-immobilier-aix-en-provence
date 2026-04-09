@@ -8,28 +8,36 @@ $moduleExists = static function (string $moduleName): bool {
 };
 
 $menuGroups = [
-    'Pilotage' => [
+    'Tableau de bord' => [
         ['module' => 'dashboard',   'label' => 'Tableau de bord',   'hint' => 'Vue d\'ensemble',            'icon' => 'fas fa-gauge-high'],
-        ['module' => 'commencer',   'label' => 'Commencer ici',     'hint' => 'Par où démarrer',            'icon' => 'fas fa-rocket'],
-        ['module' => 'construire',  'label' => 'Construire',        'hint' => 'Poser les bases',            'icon' => 'fas fa-layer-group'],
-        ['module' => 'onboarding',  'label' => 'Onboarding',        'hint' => 'Activation guidée',          'icon' => 'fas fa-route'],
-        ['module' => 'attirer',     'label' => 'Attirer',           'hint' => 'Générer des vendeurs',       'icon' => 'fas fa-bullseye'],
-        ['module' => 'capture',     'label' => 'Capture',           'hint' => 'Transformer en contacts',    'icon' => 'fas fa-magnet', 'aliases' => ['capturer']],
-        ['module' => 'convertir',   'label' => 'Convertir',         'hint' => 'Transformer en clients',     'icon' => 'fas fa-arrow-trend-up'],
-        ['module' => 'optimiser',   'label' => 'Optimiser',         'hint' => 'Améliorer les résultats',    'icon' => 'fas fa-chart-line'],
     ],
-    'Attirer' => [
-        ['module' => 'seo',         'label' => 'SEO',               'hint' => 'Positionnement Google',      'icon' => 'fas fa-magnifying-glass-chart'],
-        ['module' => 'gmb',         'label' => 'Google My Business','hint' => 'Avis et visibilité',         'icon' => 'fab fa-google'],
+    'Démarrer' => [
+        ['module' => 'commencer',   'label' => 'Commencer ici',     'hint' => 'Guide de démarrage',         'icon' => 'fas fa-rocket'],
+        ['module' => 'onboarding',  'label' => 'Onboarding',        'hint' => 'Activation guidée',          'icon' => 'fas fa-route'],
+    ],
+    'Se positionner' => [
+        ['module' => 'construire',  'label' => 'Construire',        'hint' => 'Clarifier votre message',    'icon' => 'fas fa-layer-group'],
+    ],
+    'Être visible' => [
+        ['module' => 'seo',         'label' => 'SEO',               'hint' => 'Apparaître sur Google',      'icon' => 'fas fa-magnifying-glass-chart'],
+        ['module' => 'gmb',         'label' => 'Google My Business','hint' => 'Avis et visibilité locale',  'icon' => 'fab fa-google'],
         ['module' => 'social',      'label' => 'Social',            'hint' => 'Publications & réseaux',     'icon' => 'fas fa-share-nodes'],
         ['module' => 'blog',        'label' => 'Rédaction',         'hint' => 'Articles, campagnes, posts', 'icon' => 'fas fa-pen-to-square'],
+        ['module' => 'attirer',     'label' => 'Attirer',           'hint' => 'Stratégie de visibilité',    'icon' => 'fas fa-bullseye'],
     ],
-    'Capture' => [
-        ['module' => 'messagerie',  'label' => 'Messagerie',        'hint' => 'Emails & contacts',          'icon' => 'fas fa-envelope'],
-        ['module' => 'financement', 'label' => 'Demandes de financement', 'hint' => 'Leads financement',  'icon' => 'fas fa-hand-holding-dollar'],
-        ['module' => 'biens',       'label' => 'Biens',             'hint' => 'Gestion du portefeuille',    'icon' => 'fas fa-house'],
+    'Capter des contacts' => [
+        ['module' => 'capture',     'label' => 'Capture',           'hint' => 'Pages et formulaires',       'icon' => 'fas fa-magnet', 'aliases' => ['capturer']],
+    ],
+    'Signer des clients' => [
+        ['module' => 'convertir',   'label' => 'Convertir',         'hint' => 'Transformer en clients',     'icon' => 'fas fa-arrow-trend-up'],
+    ],
+    'Améliorer mes résultats' => [
+        ['module' => 'optimiser',   'label' => 'Optimiser',         'hint' => 'Améliorer les résultats',    'icon' => 'fas fa-chart-line'],
     ],
     'Outils' => [
+        ['module' => 'messagerie',  'label' => 'Messagerie',        'hint' => 'Emails & contacts',          'icon' => 'fas fa-envelope'],
+        ['module' => 'financement', 'label' => 'Demandes de financement', 'hint' => 'Leads financement',  'icon' => 'fas fa-hand-holding-dollar'],
+        ['module' => 'biens',       'label' => 'Biens',             'hint' => 'Catalogue & mandats',        'icon' => 'fas fa-house'],
         ['module' => 'assistant',   'label' => 'Assistant IA',      'hint' => 'IA à votre service',         'icon' => 'fas fa-robot'],
     ],
     'Compte' => [

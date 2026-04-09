@@ -4,32 +4,35 @@ $contactFormError = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrf();
 
-    $rateLimitKey = 'contact_' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-    if (!EstimationTunnelService::checkRateLimit($rateLimitKey, 8)) {
-        $contactFormError = 'Trop de demandes envoyées depuis votre connexion. Merci de réessayer dans une heure.';
-    } else {
-        $email  = trim((string)($_POST['email']  ?? ''));
-        $prenom = trim((string)($_POST['prenom'] ?? ''));
+    $email      = trim((string)($_POST['email'] ?? ''));
+    $prenom     = trim((string)($_POST['prenom'] ?? ''));
+    $message    = trim((string)($_POST['message'] ?? ''));
+    $maxMessage = 2000;
 
-        if ($email !== '' && $prenom !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            LeadService::capture([
-                'source_type' => LeadService::SOURCE_CONTACT,
-                'pipeline'    => LeadService::SOURCE_CONTACT,
-                'stage'       => 'a_traiter',
-                'first_name'  => $prenom,
-                'last_name'   => trim((string)($_POST['nom']       ?? '')),
-                'email'       => $email,
-                'phone'       => trim((string)($_POST['telephone'] ?? '')),
-                'intent'      => trim((string)($_POST['sujet']     ?? 'Contact général')),
-                'notes'       => trim((string)($_POST['message']   ?? '')),
-                'consent'     => !empty($_POST['rgpd']),
-                'metadata'    => [
-                    'origin_path' => $_SERVER['REQUEST_URI'] ?? '/contact',
-                ],
-            ]);
+    if (
+        $email !== ''
+        && $prenom !== ''
+        && filter_var($email, FILTER_VALIDATE_EMAIL)
+        && $message !== ''
+        && mb_strlen($message) <= $maxMessage
+    ) {
+        LeadService::capture([
+            'source_type' => LeadService::SOURCE_CONTACT,
+            'pipeline'    => LeadService::SOURCE_CONTACT,
+            'stage'       => 'a_traiter',
+            'first_name'  => $prenom,
+            'last_name'   => trim((string)($_POST['nom']       ?? '')),
+            'email'       => $email,
+            'phone'       => trim((string)($_POST['telephone'] ?? '')),
+            'intent'      => trim((string)($_POST['sujet']     ?? 'Contact général')),
+            'notes'       => $message,
+            'consent'     => !empty($_POST['rgpd']),
+            'metadata'    => [
+                'origin_path' => $_SERVER['REQUEST_URI'] ?? '/contact',
+            ],
+        ]);
 
-            redirect('/merci');
-        }
+        redirect('/merci');
     }
 }
 
@@ -163,6 +166,7 @@ $contactPhoneHref = preg_replace('/\s+/', '', $contactPhone) ?: '';
                             rows="6"
                             placeholder="Décrivez votre projet immobilier..."
                             required
+                            maxlength="2000"
                             aria-describedby="message-err"></textarea>
                         <div class="form-error" id="message-err"></div>
                     </div>

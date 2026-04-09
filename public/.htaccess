@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Sitemap dynamique
+    RewriteRule ^sitemap\.xml$ sitemap.php [L,QSA]
+
     # Si le fichier ou le dossier existe physiquement, on le charge normalement
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

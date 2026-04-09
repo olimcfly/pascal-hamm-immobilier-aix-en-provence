@@ -105,7 +105,12 @@ function normalizeConvertirStatus(string $status): string
 
 function convertirLeadExists(int $leadId): bool
 {
-    $stmt = db()->prepare('SELECT id FROM leads WHERE id = :id LIMIT 1');
+    $leadSource = convertirLeadSource();
+    if ($leadSource === null) {
+        return false;
+    }
+
+    $stmt = db()->prepare('SELECT id FROM ' . $leadSource['table'] . ' WHERE id = :id LIMIT 1');
     $stmt->execute([':id' => $leadId]);
     return (bool)$stmt->fetchColumn();
 }
@@ -157,11 +162,16 @@ function addConvertirLeadNote(int $leadId, string $note): void
 
 function listConvertirCrmLeads(): array
 {
-    $sql = 'SELECT l.id, l.nom, l.email, l.telephone, l.message, l.source, l.persona, l.guide_titre, l.created_at,
+    $leadSource = convertirLeadSource();
+    if ($leadSource === null) {
+        return [];
+    }
+
+    $sql = 'SELECT ' . $leadSource['select'] . ',
                    COALESCE(t.status, "nouveau") AS crm_status,
                    t.note AS crm_note,
                    t.updated_at AS crm_updated_at
-            FROM leads l
+            FROM ' . $leadSource['table'] . ' l
             LEFT JOIN crm_lead_tracking t ON t.lead_id = l.id
             ORDER BY l.created_at DESC
             LIMIT 500';
@@ -171,11 +181,16 @@ function listConvertirCrmLeads(): array
 
 function findConvertirCrmLeadById(int $leadId): ?array
 {
-    $stmt = db()->prepare('SELECT l.id, l.nom, l.email, l.telephone, l.message, l.source, l.persona, l.guide_titre, l.created_at,
+    $leadSource = convertirLeadSource();
+    if ($leadSource === null) {
+        return null;
+    }
+
+    $stmt = db()->prepare('SELECT ' . $leadSource['select'] . ',
                                   COALESCE(t.status, "nouveau") AS crm_status,
                                   t.note AS crm_note,
                                   t.updated_at AS crm_updated_at
-                           FROM leads l
+                           FROM ' . $leadSource['table'] . ' l
                            LEFT JOIN crm_lead_tracking t ON t.lead_id = l.id
                            WHERE l.id = :id
                            LIMIT 1');
@@ -183,6 +198,55 @@ function findConvertirCrmLeadById(int $leadId): ?array
     $lead = $stmt->fetch();
 
     return $lead ?: null;
+}
+
+function convertirLeadSource(): ?array
+{
+    static $source = null;
+    static $loaded = false;
+
+    if ($loaded) {
+        return $source;
+    }
+    $loaded = true;
+
+    if (convertirTableExists('leads')) {
+        $source = [
+            'table' => 'leads',
+            'label' => 'leads',
+            'select' => 'l.id, l.nom, l.email, l.telephone, l.message, l.source, l.persona, l.guide_titre, l.created_at',
+        ];
+        return $source;
+    }
+
+    if (convertirTableExists('crm_leads')) {
+        $source = [
+            'table' => 'crm_leads',
+            'label' => 'crm_leads',
+            'select' => 'l.id,
+                         TRIM(CONCAT(COALESCE(l.first_name, ""), " ", COALESCE(l.last_name, ""))) AS nom,
+                         l.email,
+                         l.phone AS telephone,
+                         l.notes AS message,
+                         l.source_type AS source,
+                         l.pipeline AS persona,
+                         l.intent AS guide_titre,
+                         l.created_at',
+        ];
+        return $source;
+    }
+
+    return null;
+}
+
+function convertirTableExists(string $table): bool
+{
+    $stmt = db()->prepare('SELECT 1
+                           FROM information_schema.tables
+                           WHERE table_schema = DATABASE() AND table_name = :table
+                           LIMIT 1');
+    $stmt->execute([':table' => $table]);
+    return (bool)$stmt->fetchColumn();
 }
 
 function listConvertirCrmHistory(int $leadId): array
@@ -248,6 +312,8 @@ function renderConvertirHubCards(): void
 function renderConvertirCrmContacts(array $crmLeads, ?array $selectedLead, array $selectedLeadHistory): void
 {
     $flash = Session::getFlash();
+    $leadSource = convertirLeadSource();
+    $leadSourceLabel = $leadSource['label'] ?? 'leads / crm_leads';
     ?>
     <style>
         .crm-link-btn{display:inline-flex;margin-top:.85rem;background:#0f172a;color:#fff;text-decoration:none;padding:.55rem .85rem;border-radius:10px;font-weight:700;}
@@ -288,7 +354,7 @@ function renderConvertirCrmContacts(array $crmLeads, ?array $selectedLead, array
 
     <div class="convertir-toolbar">
         <a href="/admin?module=convertir" class="crm-link-btn" style="margin:0;background:#475569;">← Retour au hub</a>
-        <div class="convertir-count"><?= count($crmLeads) ?> leads capturés depuis la table <code>leads</code>.</div>
+        <div class="convertir-count"><?= count($crmLeads) ?> leads capturés depuis la table <code><?= e($leadSourceLabel) ?></code>.</div>
     </div>
 
     <div class="crm-layout">
@@ -309,7 +375,7 @@ function renderConvertirCrmContacts(array $crmLeads, ?array $selectedLead, array
                     </thead>
                     <tbody>
                     <?php if (!$crmLeads): ?>
-                        <tr><td colspan="5">Aucun lead dans la table <code>leads</code>.</td></tr>
+                        <tr><td colspan="5">Aucun lead dans la table <code><?= e($leadSourceLabel) ?></code>.</td></tr>
                     <?php endif; ?>
                     <?php foreach ($crmLeads as $lead): ?>
                         <?php $isSelected = $selectedLead && (int)$selectedLead['id'] === (int)$lead['id']; ?>

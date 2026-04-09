@@ -169,7 +169,7 @@ function renderContent()
             <div class="start-step-num">1</div>
             <div class="start-step-body">
                 <div class="start-step-label"><i class="fas fa-layer-group" style="color:#3b82f6;margin-right:6px;"></i>Construire votre positionnement</div>
-                <div class="start-step-desc">Définissez votre persona, votre territoire et votre offre. C'est la base de tout votre système marketing.</div>
+                <div class="start-step-desc">Commencez par ANCRE+, NeuroPersona, Offre, Zone et Synthèse pour poser des bases claires.</div>
             </div>
             <div class="start-step-arrow"><i class="fas fa-chevron-right"></i></div>
         </a>

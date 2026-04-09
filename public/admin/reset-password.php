@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenData !== null) {
             $hash = Auth::hashPassword($password);
 
             // Mettre à jour le mot de passe
-            $pdo->prepare("UPDATE users SET password = ? WHERE id = ?")
+            $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?")
                 ->execute([$hash, $tokenData['user_id']]);
 
             // Marquer le token comme utilisé

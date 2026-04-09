@@ -36,12 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo  = db();
             $stmt = $pdo->prepare(
-                "SELECT id, name FROM users WHERE email = ? AND role IN ('admin','superadmin') LIMIT 1"
+                "SELECT id, firstname, lastname FROM users WHERE email = ? AND role IN ('admin','superadmin') AND status = 'active' LIMIT 1"
             );
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user) {
+                $user['name'] = trim(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? ''));
                 // Invalider les anciens tokens de cet utilisateur
                 $pdo->prepare("DELETE FROM password_reset_tokens WHERE user_id = ?")
                     ->execute([$user['id']]);

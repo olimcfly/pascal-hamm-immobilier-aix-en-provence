@@ -1,9 +1,12 @@
 <?php
+/** @deprecated SEO legacy freeze: no new feature here. Use /modules/seo/mots-cles/api.php */
 declare(strict_types=1);
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 require_once __DIR__ . '/../../../bootstrap.php';
 require_once __DIR__ . '/../services/KeywordTracker.php';
+require_once __DIR__ . '/../_legacy_guard.php';
+seoLegacyGuard('modules/seo/ajax/check-keyword.php', '/modules/seo/mots-cles/api.php');
 
 // ── Helpers JSON ──────────────────────────────────────────────────────────────
 function jsonOk(mixed $data = null, string $message = 'OK'): never

@@ -90,13 +90,19 @@ function csrfField(): string
     return '<input type="hidden" name="csrf_token" value="' . csrfToken() . '">';
 }
 
-function verifyCsrf(): void
+function verifyCsrf(?string $token = null): bool
 {
-    $token = $_POST['csrf_token'] ?? '';
-    if (!hash_equals(csrfToken(), $token)) {
+    if ($token !== null) {
+        return hash_equals(csrfToken(), $token);
+    }
+
+    $postedToken = $_POST['csrf_token'] ?? '';
+    if (!hash_equals(csrfToken(), $postedToken)) {
         http_response_code(403);
         die('Token CSRF invalide.');
     }
+
+    return true;
 }
 
 function paginate(int $total, int $perPage, int $current): array

@@ -19,6 +19,7 @@ class GmbService
         $this->api = new GmbApiClient($this->userId);
         $this->avisManager = new AvisManager($this->pdo, $this->userId);
         $this->demandeManager = new DemandeAvisManager($this->pdo, $this->userId);
+        $this->ensureSyncQueueTable();
     }
 
     public function getFiche(): array
@@ -75,6 +76,74 @@ class GmbService
         $profile = $this->api->fetchLocationProfile();
         $this->saveFiche($profile);
         return $profile;
+    }
+
+    public function enqueueSyncJob(string $source = 'manual'): int
+    {
+        $stmt = $this->pdo->prepare('INSERT INTO gmb_sync_jobs
+            (user_id, status, source, attempts, payload, created_at, updated_at)
+            VALUES (?, "pending", ?, 0, ?, NOW(), NOW())');
+
+        $stmt->execute([
+            $this->userId,
+            $source,
+            json_encode(['requested_at' => date('c')], JSON_UNESCAPED_UNICODE),
+        ]);
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function getLatestSyncJob(): array
+    {
+        $stmt = $this->pdo->prepare('SELECT id, status, source, attempts, started_at, finished_at, error_message, created_at, updated_at
+            FROM gmb_sync_jobs
+            WHERE user_id = ?
+            ORDER BY id DESC
+            LIMIT 1');
+        $stmt->execute([$this->userId]);
+        $job = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$job) {
+            return [
+                'id' => null,
+                'status' => 'pending',
+                'source' => null,
+                'attempts' => 0,
+                'started_at' => null,
+                'finished_at' => null,
+                'error_message' => null,
+                'created_at' => null,
+                'updated_at' => null,
+            ];
+        }
+
+        return $job;
+    }
+
+    public function processSyncQueue(int $maxJobs = 5): int
+    {
+        $processed = 0;
+
+        for ($i = 0; $i < $maxJobs; $i++) {
+            $job = $this->lockNextPendingJob();
+            if ($job === null) {
+                break;
+            }
+
+            $jobId = (int) $job['id'];
+
+            try {
+                $this->syncFicheFromGoogle();
+                $avisSynced = $this->syncAvisFromGoogle();
+                $this->markJobDone($jobId, ['avis_synced' => $avisSynced]);
+            } catch (Throwable $e) {
+                $this->markJobError($jobId, $e->getMessage());
+            }
+
+            $processed++;
+        }
+
+        return $processed;
     }
 
     public function syncAvisFromGoogle(): int
@@ -149,5 +218,77 @@ class GmbService
         ]);
 
         return $apiStats;
+    }
+
+    private function ensureSyncQueueTable(): void
+    {
+        $this->pdo->exec('CREATE TABLE IF NOT EXISTS gmb_sync_jobs (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            status ENUM("pending","running","done","error") NOT NULL DEFAULT "pending",
+            source VARCHAR(50) NOT NULL DEFAULT "manual",
+            attempts SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+            payload JSON DEFAULT NULL,
+            result JSON DEFAULT NULL,
+            error_message TEXT DEFAULT NULL,
+            started_at DATETIME DEFAULT NULL,
+            finished_at DATETIME DEFAULT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_user_created (user_id, created_at),
+            INDEX idx_status_created (status, created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+    }
+
+    private function lockNextPendingJob(): ?array
+    {
+        $this->pdo->beginTransaction();
+
+        $stmt = $this->pdo->prepare('SELECT *
+            FROM gmb_sync_jobs
+            WHERE user_id = ? AND status = "pending"
+            ORDER BY id ASC
+            LIMIT 1
+            FOR UPDATE');
+        $stmt->execute([$this->userId]);
+        $job = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+        if ($job === null) {
+            $this->pdo->commit();
+            return null;
+        }
+
+        $update = $this->pdo->prepare('UPDATE gmb_sync_jobs
+            SET status = "running", attempts = attempts + 1, started_at = NOW(), updated_at = NOW()
+            WHERE id = ?');
+        $update->execute([(int) $job['id']]);
+
+        $this->pdo->commit();
+
+        return $job;
+    }
+
+    private function markJobDone(int $jobId, array $result): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE gmb_sync_jobs
+            SET status = "done", result = ?, error_message = NULL, finished_at = NOW(), updated_at = NOW()
+            WHERE id = ?');
+
+        $stmt->execute([
+            json_encode($result, JSON_UNESCAPED_UNICODE),
+            $jobId,
+        ]);
+    }
+
+    private function markJobError(int $jobId, string $message): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE gmb_sync_jobs
+            SET status = "error", error_message = ?, finished_at = NOW(), updated_at = NOW()
+            WHERE id = ?');
+
+        $stmt->execute([
+            mb_substr($message, 0, 5000),
+            $jobId,
+        ]);
     }
 }

@@ -12,6 +12,12 @@ $contactPhone        = trim((string) setting('contact_phone', defined('APP_PHONE
 $requestUri          = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
 $gaMeasurementId     = trim((string) setting('google_analytics_id', ''));
 $canonical           = $canonical ?? ($appUrl . $requestUri);
+$htmlLang            = $htmlLang ?? 'fr';
+$ogLocale            = $ogLocale ?? 'fr_FR';
+$layoutMode          = $layoutMode ?? 'default';
+$showPrimaryNav      = $showPrimaryNav ?? ($layoutMode !== 'landing');
+$showPrimaryFooter   = $showPrimaryFooter ?? ($layoutMode !== 'landing');
+$hreflangLinks       = is_array($hreflangLinks ?? null) ? $hreflangLinks : [];
 
 $noindexPaths = [
     '/merci',
@@ -114,7 +120,7 @@ if (count($breadcrumbItems) >= 2) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="<?= e($htmlLang) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -129,12 +135,16 @@ if (count($breadcrumbItems) >= 2) {
     <meta property="og:description" content="<?= e($metaDesc ?? ('Expert immobilier à ' . $zoneCity)) ?>">
     <meta property="og:type"        content="<?= e($ogType ?? 'website') ?>">
     <meta property="og:url"         content="<?= e($appUrl . $requestUri) ?>">
-    <meta property="og:locale"      content="fr_FR">
+    <meta property="og:locale"      content="<?= e($ogLocale) ?>">
     <meta property="og:site_name"   content="<?= e($appName) ?>">
     <?php if (!empty($ogImage)): ?>
     <meta property="og:image"     content="<?= e($ogImage) ?>">
     <meta property="og:image:alt" content="<?= e($pageTitle ?? $appName) ?>">
     <?php endif; ?>
+
+    <?php foreach ($hreflangLinks as $hreflang => $href): ?>
+    <link rel="alternate" hreflang="<?= e((string) $hreflang) ?>" href="<?= e((string) $href) ?>">
+    <?php endforeach; ?>
 
     <?php if ($gaMeasurementId !== ''): ?>
     <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($gaMeasurementId) ?>"></script>
@@ -245,7 +255,9 @@ if (count($breadcrumbItems) >= 2) {
 </head>
 <body class="<?= e($bodyClass ?? '') ?>">
 
+<?php if ($showPrimaryNav): ?>
 <?php require ROOT_PATH . '/includes/layout/header.php'; ?>
+<?php endif; ?>
 
 <main id="main-content">
     <?php $flash = Session::getFlash(); if ($flash): ?>
@@ -261,7 +273,9 @@ if (count($breadcrumbItems) >= 2) {
     <?= $pageContent ?? '' ?>
 </main>
 
+<?php if ($showPrimaryFooter): ?>
 <?php require __DIR__ . '/footer.php'; ?>
+<?php endif; ?>
 
 <script>
 (function(){

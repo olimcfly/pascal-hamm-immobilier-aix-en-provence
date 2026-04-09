@@ -11,9 +11,8 @@ if ($advisorDisplayName === '') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(replacePlaceholders((string)($pageTitle ?? 'IMMO LOCAL+'))) ?> — <?= htmlspecialchars($advisorDisplayName) ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="/admin/assets/css/dashboard.css?v=<?= filemtime($_SERVER['DOCUMENT_ROOT'] . '/admin/assets/css/dashboard.css') ?>">
-    <link rel="stylesheet"
-          href="/admin/assets/css/settings.css?v=<?= file_exists($_SERVER['DOCUMENT_ROOT'].'/admin/assets/css/settings.css') ? filemtime($_SERVER['DOCUMENT_ROOT'].'/admin/assets/css/settings.css') : 1 ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/dashboard.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/settings.css')) ?>">
 </head>
 <body data-current-module="<?= htmlspecialchars($module ?? 'construire') ?>">
 <div class="dashboard-container" id="dashboard-container">
@@ -151,6 +150,6 @@ if ($advisorDisplayName === '') {
 
 </div>
 
-<script src="/admin/assets/js/dashboard.js?v=<?= filemtime($_SERVER['DOCUMENT_ROOT'] . '/admin/assets/js/dashboard.js') ?>"></script>
+<script src="<?= e(asset_url('/admin/assets/js/dashboard.js')) ?>"></script>
 </body>
 </html>

@@ -43,7 +43,7 @@ $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="card__img-wrapper">
                             <img
                                 class="card__img"
-                                src="/uploads/<?= e($bien['image'] ?? 'placeholder.jpg') ?>"
+                                src="<?= !empty($bien['photo_principale']) ? e($bien['photo_principale']) : (!empty($bien['image']) ? '/uploads/' . e($bien['image']) : '/assets/images/placeholder.php?type=bien&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0)) ?>"
                                 alt="<?= e($bien['titre'] ?? 'Bien immobilier') ?>"
                                 loading="lazy"
                             >

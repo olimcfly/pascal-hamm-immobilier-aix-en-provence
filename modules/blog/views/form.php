@@ -11,108 +11,80 @@ if ($id) {
     if (!$a) { header('Location: ../accueil.php'); exit; }
 }
 
-$silos = $pdo->prepare("SELECT id, nom FROM blog_silos WHERE website_id=? AND statut='actif' ORDER BY nom");
-$silos->execute([$website_id]);
-$silos = $silos->fetchAll();
-
-$v = fn($k, $d='') => htmlspecialchars($a[$k] ?? $d);
+$v = static fn(string $k, string $d = ''): string => htmlspecialchars((string)($a[$k] ?? $d), ENT_QUOTES, 'UTF-8');
+$datePublication = '';
+if (!empty($a['date_publication'])) {
+    $ts = strtotime((string)$a['date_publication']);
+    if ($ts !== false) {
+        $datePublication = date('Y-m-d\\TH:i', $ts);
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title><?= $id ? 'Éditer' : 'Nouvel' ?> article</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><?= $id ? 'Éditer' : 'Créer' ?> un article</title>
 <link rel="stylesheet" href="/modules/blog/assets/blog.css">
 </head>
 <body>
 <div class="cms-wrap">
   <header class="cms-header">
     <a href="accueil.php" class="back">← Retour</a>
-    <h1><?= $id ? 'Éditer l\'article' : 'Nouvel article' ?></h1>
+    <h1><?= $id ? 'Éditer l\'article' : 'Créer un article' ?></h1>
   </header>
 
-  <form method="post" action="controllers/save.php" class="article-form">
+  <form method="post" action="controllers/save.php" class="article-form" enctype="multipart/form-data">
     <input type="hidden" name="id" value="<?= $id ?>">
 
     <div class="form-grid">
       <div class="col-main">
         <div class="form-group">
-          <label>Titre *</label>
-          <input type="text" name="titre" value="<?= $v('titre') ?>" required id="titre-input">
+          <label for="titre-input">Titre *</label>
+          <input type="text" id="titre-input" name="titre" value="<?= $v('titre') ?>" required>
         </div>
+
         <div class="form-group">
-          <label>Slug</label>
-          <input type="text" name="slug" value="<?= $v('slug') ?>" id="slug-input">
+          <label for="slug-input">Slug</label>
+          <input type="text" id="slug-input" name="slug" value="<?= $v('slug') ?>" placeholder="auto-genere-depuis-le-titre">
         </div>
+
         <div class="form-group">
-          <label>H1</label>
-          <input type="text" name="h1" value="<?= $v('h1') ?>">
+          <label for="contenu-input">Contenu</label>
+          <textarea id="contenu-input" name="contenu" rows="18" placeholder="Rédigez votre article ici..."><?= $v('contenu') ?></textarea>
+          <small>Éditeur simple (textarea). Peut être remplacé plus tard par un éditeur riche.</small>
         </div>
+
         <div class="form-group">
-          <label>Contenu</label>
-          <textarea name="contenu" id="contenu" rows="20"><?= $v('contenu') ?></textarea>
+          <label for="meta-desc-input">Meta description</label>
+          <textarea id="meta-desc-input" name="meta_desc" maxlength="160" rows="3" placeholder="Description SEO de la page (160 caractères max)"><?= $v('meta_desc') ?></textarea>
+          <div class="char-count" id="meta-count">0/160</div>
         </div>
       </div>
 
       <div class="col-side">
         <div class="side-box">
           <h3>Publication</h3>
-          <div class="form-group">
-            <label>Statut</label>
-            <select name="statut">
-              <?php foreach(['brouillon','planifié','publié','archivé'] as $s): ?>
-              <option value="<?= $s ?>" <?= ($a['statut']??'')===$s?'selected':'' ?>><?= ucfirst($s) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Date de publication</label>
-            <input type="datetime-local" name="date_publication" value="<?= $v('date_publication') ?>">
-          </div>
-          <div class="form-group">
-            <label>Type</label>
-            <select name="type">
-              <option value="satellite" <?= ($a['type']??'')==='satellite'?'selected':'' ?>>Satellite</option>
-              <option value="pilier" <?= ($a['type']??'')==='pilier'?'selected':'' ?>>Pilier</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Indexation</label>
-            <select name="index_status">
-              <option value="index" <?= ($a['index_status']??'')==='index'?'selected':'' ?>>Index</option>
-              <option value="noindex" <?= ($a['index_status']??'')==='noindex'?'selected':'' ?>>Noindex</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="side-box">
-          <h3>Organisation</h3>
           <div class="form-group">
-            <label>Silo</label>
-            <select name="silo_id">
-              <option value="">— Aucun —</option>
-              <?php foreach ($silos as $s): ?>
-              <option value="<?= $s['id'] ?>" <?= ($a['silo_id']??'')==$s['id']?'selected':'' ?>><?= htmlspecialchars($s['nom']) ?></option>
-              <?php endforeach; ?>
+            <label for="image-input">Image à la une</label>
+            <input type="file" id="image-input" name="featured_image" accept="image/*">
+            <small>Champ prêt pour l'upload. Le contrôleur actuel sauvegarde uniquement les données textuelles.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="statut-input">Statut</label>
+            <select id="statut-input" name="statut">
+              <?php $statut = $a['statut'] ?? 'brouillon'; ?>
+              <option value="brouillon" <?= $statut === 'brouillon' ? 'selected' : '' ?>>Brouillon</option>
+              <option value="publié" <?= $statut === 'publié' ? 'selected' : '' ?>>Publié</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Niveau de conscience (1-5)</label>
-            <input type="number" name="niveau_conscience" min="1" max="5" value="<?= $v('niveau_conscience') ?>">
-          </div>
-        </div>
 
-        <div class="side-box">
-          <h3>SEO</h3>
           <div class="form-group">
-            <label>SEO Title <small>(max 70)</small></label>
-            <input type="text" name="seo_title" maxlength="70" value="<?= $v('seo_title') ?>">
-            <div class="char-count" id="seo-title-count">0/70</div>
-          </div>
-          <div class="form-group">
-            <label>Meta description <small>(max 160)</small></label>
-            <textarea name="meta_desc" maxlength="160" rows="3"><?= $v('meta_desc') ?></textarea>
-            <div class="char-count" id="meta-count">0/160</div>
+            <label for="date-publication-input">Date de publication</label>
+            <input type="datetime-local" id="date-publication-input" name="date_publication" value="<?= htmlspecialchars($datePublication, ENT_QUOTES, 'UTF-8') ?>">
           </div>
         </div>
 
@@ -121,28 +93,43 @@ $v = fn($k, $d='') => htmlspecialchars($a[$k] ?? $d);
     </div>
   </form>
 </div>
+
 <script>
-// Auto-slug
-document.getElementById('titre-input').addEventListener('input', function() {
-    const slug = this.value.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const s = document.getElementById('slug-input');
-    if (!s.dataset.manual) s.value = slug;
-});
-document.getElementById('slug-input').addEventListener('input', function() {
-    this.dataset.manual = '1';
-});
-// Char counters
-function charCount(inputId, countId, max) {
-    const el = document.querySelector('[name="' + inputId + '"]');
-    const ct = document.getElementById(countId);
-    if (!el || !ct) return;
-    const update = () => ct.textContent = el.value.length + '/' + max;
-    el.addEventListener('input', update); update();
-}
-charCount('seo_title', 'seo-title-count', 70);
-charCount('meta_desc', 'meta-count', 160);
+(function () {
+  const titleInput = document.getElementById('titre-input');
+  const slugInput = document.getElementById('slug-input');
+  const metaInput = document.getElementById('meta-desc-input');
+  const metaCount = document.getElementById('meta-count');
+
+  function slugify(value) {
+    return value
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  if (titleInput && slugInput) {
+    titleInput.addEventListener('input', function () {
+      if (!slugInput.dataset.manual) {
+        slugInput.value = slugify(titleInput.value);
+      }
+    });
+
+    slugInput.addEventListener('input', function () {
+      slugInput.dataset.manual = '1';
+      slugInput.value = slugify(slugInput.value);
+    });
+  }
+
+  if (metaInput && metaCount) {
+    const updateCount = function () {
+      metaCount.textContent = metaInput.value.length + '/160';
+    };
+    metaInput.addEventListener('input', updateCount);
+    updateCount();
+  }
+})();
 </script>
 </body>
 </html>

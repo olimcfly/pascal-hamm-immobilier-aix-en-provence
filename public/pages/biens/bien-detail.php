@@ -1,63 +1,52 @@
 <?php
-require_once __DIR__ . '/../../core/bootstrap.php';
+// bootstrap déjà chargé par public/index.php
 
 // ── Récupération du bien ──────────────────────────────────────
-$slug = $router->getParam('slug') ?? '';
+$slug = $GLOBALS['bienSlug'] ?? '';
 
-$bien = $db->prepare("
-    SELECT
-        b.*,
-        bt.label        AS type_label,
-        bt.icon         AS type_icon,
-        s.name          AS secteur_name,
-        a.name          AS advisor_name,
-        a.phone         AS advisor_phone,
-        a.email         AS advisor_email,
-        a.photo         AS advisor_photo,
-        a.title         AS advisor_title
-    FROM   biens b
-    LEFT JOIN bien_types  bt ON bt.id = b.type_id
-    LEFT JOIN secteurs    s  ON s.id  = b.secteur_id
-    LEFT JOIN advisors    a  ON a.id  = b.advisor_id
-    WHERE  b.slug   = :slug
-    AND    b.active = 1
-    LIMIT  1
-");
+$pdo  = db();
+$bien = $pdo->prepare("SELECT * FROM biens WHERE slug = :slug AND statut != 'Archivé' LIMIT 1");
 $bien->execute([':slug' => $slug]);
 $b = $bien->fetch(PDO::FETCH_ASSOC);
 
 if (!$b) {
     http_response_code(404);
-    require_once __DIR__ . '/../templates/404.php';
+    $pageTitle   = 'Bien introuvable';
+    $pageContent = '<section class="section"><div class="container text-center"><h1 style="font-size:4rem;color:var(--clr-primary)">404</h1><p>Ce bien est introuvable ou n\'est plus disponible.</p><a href="/biens" class="btn btn--primary" style="margin-top:1.5rem">Voir nos biens</a></div></section>';
+    require ROOT_PATH . '/public/templates/layout.php';
     exit;
 }
 
-// ── Photos ────────────────────────────────────────────────────
-$photosStmt = $db->prepare("
-    SELECT * FROM bien_photos
-    WHERE  bien_id = :id
-    ORDER  BY position ASC
-");
-$photosStmt->execute([':id' => $b['id']]);
-$photos = $photosStmt->fetchAll(PDO::FETCH_ASSOC);
+// ── Photos : on construit un tableau depuis photo_principale ──
+$photos = [];
+if (!empty($b['photo_principale'])) {
+    $photos[] = ['url' => $b['photo_principale'], 'url_thumb' => $b['photo_principale']];
+}
 
 // ── Biens similaires ──────────────────────────────────────────
-$similairesStmt = $db->prepare("
-    SELECT b.*, bt.label AS type_label
-    FROM   biens b
-    LEFT JOIN bien_types bt ON bt.id = b.type_id
-    WHERE  b.active     = 1
-    AND    b.id        != :id
-    AND   (b.type_id   = :type_id OR b.secteur_id = :secteur_id)
-    ORDER  BY b.created_at DESC
+$similairesStmt = $pdo->prepare("
+    SELECT * FROM biens
+    WHERE  statut != 'Archivé'
+    AND    id     != :id
+    AND    type_bien = :type_bien
+    ORDER  BY created_at DESC
     LIMIT  3
 ");
-$similairesStmt->execute([
-    ':id'         => $b['id'],
-    ':type_id'    => $b['type_id'],
-    ':secteur_id' => $b['secteur_id'],
-]);
+$similairesStmt->execute([':id' => $b['id'], ':type_bien' => $b['type_bien']]);
 $similaires = $similairesStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// ── Aliases de colonnes pour rétro-compatibilité du template ─
+$b['secteur_name'] = $b['secteur'] ?: $b['ville'] ?: 'Aix-en-Provence';
+$b['type_label']   = ucfirst($b['type_bien'] ?? 'Bien');
+$typeIcons = ['appartement'=>'fa-building','maison'=>'fa-home','terrain'=>'fa-mountain','local'=>'fa-store','autre'=>'fa-key'];
+$b['type_icon']    = $typeIcons[$b['type_bien'] ?? ''] ?? 'fa-home';
+$b['sdb']          = $b['salles_de_bain'] ?? null;
+// Advisor fixe — Pascal Hamm
+$b['advisor_name']  = 'Pascal Hamm';
+$b['advisor_title'] = 'Expert immobilier — Aix-en-Provence';
+$b['advisor_phone'] = '06 XX XX XX XX';
+$b['advisor_photo'] = '/assets/images/pascal-hamm.jpeg';
+$b['advisor_email'] = defined('CONTACT_EMAIL') ? CONTACT_EMAIL : '';
 
 // ── DPE — couleurs ────────────────────────────────────────────
 $dpeColors = [
@@ -88,13 +77,11 @@ $pageTitle = htmlspecialchars($b['titre'])
 $metaDesc  = 'Découvrez ce bien immobilier à '
            . htmlspecialchars($b['secteur_name'])
            . ' : '
-           . htmlspecialchars(mb_substr(strip_tags($b['description']), 0, 140))
+           . htmlspecialchars(mb_substr(strip_tags($b['description'] ?? ''), 0, 140))
            . '…';
 
 $extraCss = ['/assets/css/bien-detail.css'];
 $extraJs  = ['/assets/js/bien-detail.js'];
-
-ob_start();
 ?>
 
 <!-- ── Schema.org RealEstateListing ──────────────────────────── -->
@@ -103,7 +90,7 @@ ob_start();
     "@context":     "https://schema.org",
     "@type":        "RealEstateListing",
     "name":         "<?= htmlspecialchars($b['titre']) ?>",
-    "description":  "<?= htmlspecialchars(mb_substr(strip_tags($b['description']), 0, 200)) ?>",
+    "description":  "<?= htmlspecialchars(mb_substr(strip_tags($b['description'] ?? ''), 0, 200)) ?>",
     "url":          "https://pascalhamm.fr/biens/<?= htmlspecialchars($b['slug']) ?>",
     "datePosted":   "<?= date('Y-m-d', strtotime($b['created_at'])) ?>",
     "price":        "<?= $b['prix'] ?>",
@@ -159,7 +146,8 @@ ob_start();
                             alt="<?= htmlspecialchars($b['titre']) ?> — photo principale"
                             class="bien-gallery__main-img"
                             id="galleryMainImg"
-                            loading="eager">
+                            loading="eager"
+                            onerror="this.onerror=null;this.src='/assets/images/placeholder.php?type=<?= urlencode($b['type_bien'] ?? 'bien') ?>&surface=<?= (int)($b['surface'] ?? 0) ?>&pieces=<?= (int)($b['pieces'] ?? 0) ?>'">
 
                         <!-- Badges sur la photo -->
                         <div class="bien-gallery__badges">
@@ -339,9 +327,9 @@ ob_start();
                         Description
                     </h2>
                     <div class="bien-description__text" id="descText">
-                        <?= nl2br(htmlspecialchars($b['description'])) ?>
+                        <?= nl2br(htmlspecialchars($b['description'] ?? '')) ?>
                     </div>
-                    <?php if (strlen($b['description']) > 600): ?>
+                    <?php if (strlen($b['description'] ?? '') > 600): ?>
                     <button class="bien-description__toggle" id="descToggle">
                         <i class="fas fa-chevron-down"></i>
                         Lire la suite
@@ -572,19 +560,19 @@ ob_start();
                             $formError = 'Adresse email invalide.';
                         } else {
                             // Insert DB
-                            $insertLead = $db->prepare("
-                                INSERT INTO leads
-                                    (bien_id, bien_ref, nom, email, tel, message, source, created_at)
+                            [$fn, $ln] = array_pad(explode(' ', $nom, 2), 2, '');
+                            $insertLead = $pdo->prepare("
+                                INSERT INTO crm_leads
+                                    (source_type, pipeline, stage, first_name, last_name, email, phone, notes, consent, created_at)
                                 VALUES
-                                    (:bien_id, :bien_ref, :nom, :email, :tel, :message, 'bien-detail', NOW())
+                                    ('bien-detail','inbound','new',:fn,:ln,:email,:tel,:notes,1,NOW())
                             ");
                             $insertLead->execute([
-                                ':bien_id'  => $b['id'],
-                                ':bien_ref' => $b['reference'] ?? $b['id'],
-                                ':nom'      => $nom,
-                                ':email'    => $email,
-                                ':tel'      => $tel,
-                                ':message'  => $message,
+                                ':fn'    => $fn,
+                                ':ln'    => $ln,
+                                ':email' => $email,
+                                ':tel'   => $tel,
+                                ':notes' => "Ref: " . ($b['reference'] ?? $b['id']) . "\n" . $message,
                             ]);
 
                             // Email notification
@@ -773,12 +761,13 @@ ob_start();
                     <a href="/biens/<?= htmlspecialchars($s['slug']) ?>"
                        class="bien-card__img-link">
                         <img
-                            src="<?= htmlspecialchars($s['photo_principale'] ?? '/assets/img/placeholder-bien.jpg') ?>"
+                            src="<?= !empty($s['photo_principale']) ? htmlspecialchars($s['photo_principale']) : '/assets/images/placeholder.php?type=' . urlencode($s['type_bien'] ?? 'bien') . '&surface=' . (int)($s['surface'] ?? 0) . '&pieces=' . (int)($s['pieces'] ?? 0) ?>"
                             alt="<?= htmlspecialchars($s['titre']) ?>"
                             loading="lazy"
-                            class="bien-card__img">
+                            class="bien-card__img"
+                            onerror="this.onerror=null;this.src='/assets/images/placeholder.php?type=<?= urlencode($s['type_bien'] ?? 'bien') ?>'">
                         <span class="bien-card__type">
-                            <?= htmlspecialchars($s['type_label']) ?>
+                            <?= htmlspecialchars(ucfirst($s['type_bien'] ?? 'Bien')) ?>
                         </span>
                     </a>
                     <div class="bien-card__body">
@@ -814,7 +803,3 @@ ob_start();
 
 </div><!-- /.bien-detail-page -->
 
-<?php
-$pageContent = ob_get_clean();
-require_once __DIR__ . '/../templates/layout.php';
-?>

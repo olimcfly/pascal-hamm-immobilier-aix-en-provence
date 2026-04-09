@@ -71,14 +71,19 @@ $nbBiensTotal = count($biens);
 
                         <div class="bien-card__header">
 
-                            <?php if (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false): ?>
-                                <img class="bien-card__img" src="<?= htmlspecialchars($bien['photo_principale']) ?>" alt="">
-                            <?php else: ?>
-                                <div class="placeholder-image">
-                                    <span>🏡</span>
-                                    <p><?= htmlspecialchars($bien['ville']) ?></p>
-                                </div>
-                            <?php endif; ?>
+                            <?php
+                                $photoSrc = (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false)
+                                    ? htmlspecialchars($bien['photo_principale'])
+                                    : '/assets/images/placeholder.php?type=' . urlencode($bien['type_bien'] ?? 'bien') . '&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
+                            ?>
+                            <?php
+                                $placeholderFallback = '/assets/images/placeholder.php?type=' . urlencode($bien['type_bien'] ?? 'bien') . '&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
+                            ?>
+                            <img class="bien-card__img"
+                                 src="<?= $photoSrc ?>"
+                                 alt="<?= htmlspecialchars($bien['titre'] ?? '') ?>"
+                                 loading="lazy"
+                                 onerror="this.onerror=null;this.src='<?= $placeholderFallback ?>'">
 
                             <span class="bien-badge <?= strtolower($bien['transaction_type']) === 'vente' ? 'vente' : 'location' ?>">
                                 <?= htmlspecialchars($bien['transaction_type']) ?>

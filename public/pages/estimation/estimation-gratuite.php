@@ -1,5 +1,8 @@
 <?php
-require_once __DIR__ . '/../../core/bootstrap.php';
+// Bootstrap déjà chargé par le router (index.php)
+if (!defined('ROOT_PATH')) {
+    require_once __DIR__ . '/../../../core/bootstrap.php';
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrf();

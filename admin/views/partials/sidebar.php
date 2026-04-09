@@ -15,6 +15,7 @@ $menuGroups = [
         ['module' => 'gmb',         'label' => 'Google My Business','hint' => 'Avis et visibilité',        'icon' => 'fab fa-google'],
         ['module' => 'seo',         'label' => 'SEO',               'hint' => 'Positionnement Google',     'icon' => 'fas fa-magnifying-glass-chart'],
         ['module' => 'social',      'label' => 'Social',            'hint' => 'Publications & réseaux',    'icon' => 'fas fa-share-nodes'],
+        ['module' => 'financement', 'label' => 'Demandes de financement', 'hint' => 'Leads financement', 'icon' => 'fas fa-hand-holding-dollar'],
     ],
     'Contenu' => [
         ['module' => 'cms_blog',    'label' => 'Modifier le Blog',  'hint' => 'Sections CMS /blog',        'icon' => 'fas fa-blog', 'url' => '/admin/cms/edit/blog'],

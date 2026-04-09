@@ -7,8 +7,11 @@ $advisorPhoneDisplay = '06 67 19 83 66';
 $advisorEmail        = defined('APP_EMAIL') ? APP_EMAIL : '';
 $appUrl              = defined('APP_URL')   ? APP_URL   : 'https://pascalhamm.fr';
 $appName             = 'Pascal Hamm | Expert Immobilier 360°';
+$contactAddress      = trim((string) setting('contact_address', defined('APP_ADDRESS') ? APP_ADDRESS : ''));
+$contactPhone        = trim((string) setting('contact_phone', defined('APP_PHONE') ? APP_PHONE : ''));
 $requestUri          = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
 $gaMeasurementId     = trim((string) setting('google_analytics_id', ''));
+$canonical           = $canonical ?? ($appUrl . $requestUri);
 
 $noindexPaths = [
     '/merci',
@@ -27,6 +30,88 @@ foreach ($noindexPaths as $pathPattern) {
         break;
     }
 }
+
+$pathSegments = array_values(array_filter(explode('/', trim($requestUri, '/'))));
+$breadcrumbItems = is_array($breadcrumbItems ?? null) ? $breadcrumbItems : [];
+
+if ($breadcrumbItems === []) {
+    $formatSegmentLabel = static function (string $segment): string {
+        $label = urldecode(str_replace(['-', '_'], ' ', $segment));
+        return mb_convert_case($label, MB_CASE_TITLE, 'UTF-8');
+    };
+
+    $firstSegment = $pathSegments[0] ?? '';
+
+    if ($firstSegment === 'secteurs') {
+        $breadcrumbItems[] = ['name' => 'Accueil', 'url' => $appUrl . '/'];
+        $breadcrumbItems[] = ['name' => 'Secteurs', 'url' => $appUrl . '/secteurs'];
+
+        if (!empty($pathSegments[1])) {
+            $breadcrumbItems[] = [
+                'name' => $formatSegmentLabel((string) $pathSegments[1]),
+                'url'  => $appUrl . '/secteurs/' . rawurlencode((string) $pathSegments[1]),
+            ];
+        }
+
+        if (!empty($pathSegments[2])) {
+            $breadcrumbItems[] = [
+                'name' => $formatSegmentLabel((string) $pathSegments[2]),
+                'url'  => $canonical,
+            ];
+        }
+    } elseif ($firstSegment === 'blog') {
+        $breadcrumbItems[] = ['name' => 'Accueil', 'url' => $appUrl . '/'];
+        $breadcrumbItems[] = ['name' => 'Blog', 'url' => $appUrl . '/blog'];
+
+        if (!empty($pathSegments[1])) {
+            $currentLabel = trim((string) ($pageTitle ?? ''));
+            if ($currentLabel !== '') {
+                $currentLabel = preg_replace('/\s+[—|-]\s+.+$/u', '', $currentLabel) ?: $currentLabel;
+            }
+            if ($currentLabel === '') {
+                $currentLabel = $formatSegmentLabel((string) $pathSegments[1]);
+            }
+
+            $breadcrumbItems[] = [
+                'name' => $currentLabel,
+                'url'  => $canonical,
+            ];
+        }
+    } elseif (in_array($firstSegment, ['category', 'author', 'tag'], true)) {
+        $breadcrumbItems[] = ['name' => 'Accueil', 'url' => $appUrl . '/'];
+        $breadcrumbItems[] = ['name' => $formatSegmentLabel($firstSegment), 'url' => $appUrl . '/' . $firstSegment];
+
+        if (!empty($pathSegments[1])) {
+            $breadcrumbItems[] = [
+                'name' => $formatSegmentLabel((string) $pathSegments[1]),
+                'url'  => $canonical,
+            ];
+        }
+    }
+}
+
+$breadcrumbItems = array_values(array_filter($breadcrumbItems, static function ($item): bool {
+    return is_array($item) && !empty($item['name']) && !empty($item['url']);
+}));
+
+$breadcrumbJsonLd = null;
+if (count($breadcrumbItems) >= 2) {
+    $itemListElement = [];
+    foreach ($breadcrumbItems as $position => $item) {
+        $itemListElement[] = [
+            '@type'    => 'ListItem',
+            'position' => $position + 1,
+            'name'     => (string) $item['name'],
+            'item'     => (string) $item['url'],
+        ];
+    }
+
+    $breadcrumbJsonLd = json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => $itemListElement,
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -36,7 +121,7 @@ foreach ($noindexPaths as $pathPattern) {
     <title><?= e($pageTitle ?? $appName) ?></title>
     <meta name="description" content="<?= e($metaDesc ?? $siteMetaDescription) ?>">
     <meta name="robots"      content="<?= e($metaRobots ?? 'index, follow') ?>">
-    <link rel="canonical"    href="<?= e($canonical ?? $appUrl . $requestUri) ?>">
+    <link rel="canonical"    href="<?= e($canonical) ?>">
     <link rel="icon" href="/assets/images/favicon.svg" type="image/svg+xml">
 
     <!-- Open Graph -->
@@ -87,6 +172,48 @@ foreach ($noindexPaths as $pathPattern) {
         <?php if (!empty($jsonLd)): ?>,<?= $jsonLd ?><?php endif; ?>
     }
     </script>
+    <?php if ($breadcrumbJsonLd !== null): ?>
+    <script type="application/ld+json"><?= $breadcrumbJsonLd ?></script>
+    <?php endif; ?>
+
+    <!-- JSON-LD : LocalBusiness -->
+    <script type="application/ld+json">
+    <?= json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'LocalBusiness',
+        'name' => $advisorName,
+        'description' => $siteMetaDescription,
+        'url' => $appUrl,
+        'telephone' => $contactPhone !== '' ? $contactPhone : $advisorPhone,
+        'email' => $advisorEmail,
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => $contactAddress !== '' ? $contactAddress : 'Aix-en-Provence, France',
+            'addressLocality' => $zoneCity,
+            'postalCode' => '13100',
+            'addressRegion' => 'Provence-Alpes-Côte d’Azur',
+            'addressCountry' => 'FR',
+        ],
+        'openingHoursSpecification' => [
+            [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                'opens' => '09:00',
+                'closes' => '19:00',
+            ],
+            [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => 'Saturday',
+                'opens' => '10:00',
+                'closes' => '17:00',
+            ],
+        ],
+        'areaServed' => [
+            '@type' => 'AdministrativeArea',
+            'name' => 'Aix-en-Provence',
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -94,9 +221,9 @@ foreach ($noindexPaths as $pathPattern) {
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/main.css')) ?>">
     <?php foreach ($extraCss ?? [] as $css): ?>
-    <link rel="stylesheet" href="<?= e($css) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url($css)) ?>">
     <?php endforeach; ?>
 
     <style>
@@ -152,9 +279,9 @@ window.__APP_SETTINGS__ = {
 </script>
 
 <!-- JS -->
-<script src="/assets/js/main.js" defer></script>
+<script src="<?= e(asset_url('/assets/js/main.js')) ?>" defer></script>
 <?php foreach ($extraJs ?? [] as $js): ?>
-<script src="<?= e($js) ?>" defer></script>
+<script src="<?= e(asset_url($js)) ?>" defer></script>
 <?php endforeach; ?>
 
 </body>

@@ -5,6 +5,7 @@ class LeadService
     public const SOURCE_ESTIMATION = 'estimation';
     public const SOURCE_RESSOURCE = 'telechargement';
     public const SOURCE_CONTACT = 'contact';
+    public const SOURCE_FINANCEMENT = 'financement';
     public const SOURCE_AUTRE = 'autre';
 
     private static bool $tableReady = false;
@@ -59,6 +60,11 @@ class LeadService
             $params[':pipeline'] = self::sanitizePipeline((string)$filters['pipeline']);
         }
 
+        if (!empty($filters['stage_like'])) {
+            $where[] = 'stage LIKE :stage_like';
+            $params[':stage_like'] = '%' . self::sanitizeStageLike((string)$filters['stage_like']) . '%';
+        }
+
         $sql = 'SELECT * FROM crm_leads';
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
@@ -76,12 +82,72 @@ class LeadService
         return $rows;
     }
 
+    public static function updateRdvStatus(int $leadId, string $action, ?string $scheduledAt = null, string $comment = ''): bool
+    {
+        self::ensureTable();
+
+        $leadId = max(0, $leadId);
+        if ($leadId <= 0) {
+            return false;
+        }
+
+        $action = strtolower(trim($action));
+        if (!in_array($action, ['confirm', 'cancel', 'reschedule'], true)) {
+            return false;
+        }
+
+        $targetStage = match ($action) {
+            'confirm' => 'rdv_planifie',
+            'cancel' => 'perdu',
+            'reschedule' => 'rdv_a_planifier',
+        };
+
+        $stmt = db()->prepare('SELECT metadata_json, notes FROM crm_leads WHERE id = :id LIMIT 1');
+        $stmt->execute([':id' => $leadId]);
+        $lead = $stmt->fetch();
+        if (!$lead) {
+            return false;
+        }
+
+        $metadata = json_decode((string)($lead['metadata_json'] ?? '{}'), true) ?: [];
+        $existingNotes = trim((string)($lead['notes'] ?? ''));
+
+        if ($scheduledAt !== null && $scheduledAt !== '') {
+            $metadata['appointment_at'] = $scheduledAt;
+        }
+        $metadata['appointment_status'] = $action;
+        $metadata['appointment_updated_at'] = date('c');
+
+        $comment = trim($comment);
+        $nextNotes = $existingNotes;
+        if ($comment !== '') {
+            $prefix = '[' . date('d/m/Y H:i') . '] ';
+            $nextNotes = trim($existingNotes . PHP_EOL . $prefix . $comment);
+        }
+
+        $update = db()->prepare('UPDATE crm_leads
+            SET stage = :stage,
+                metadata_json = :metadata_json,
+                notes = :notes,
+                updated_at = NOW()
+            WHERE id = :id
+            LIMIT 1');
+
+        return $update->execute([
+            ':stage' => $targetStage,
+            ':metadata_json' => json_encode($metadata, JSON_UNESCAPED_UNICODE),
+            ':notes' => $nextNotes,
+            ':id' => $leadId,
+        ]);
+    }
+
     public static function stageMatrix(): array
     {
         return [
             self::SOURCE_ESTIMATION => ['nouveau', 'a_qualifier', 'rdv_a_planifier', 'rdv_planifie', 'converti', 'perdu'],
             self::SOURCE_RESSOURCE => ['nouveau', 'nurturing', 'a_relancer', 'rdv_propose', 'converti', 'inactif'],
             self::SOURCE_CONTACT => ['nouveau', 'a_traiter', 'en_discussion', 'rdv_planifie', 'converti', 'archive'],
+            self::SOURCE_FINANCEMENT => ['nouveau', 'en_cours', 'traite'],
             self::SOURCE_AUTRE => ['nouveau', 'a_qualifier', 'en_cours', 'converti', 'archive'],
         ];
     }
@@ -103,6 +169,7 @@ class LeadService
             'en_discussion' => 'En discussion',
             'archive' => 'Archivé',
             'en_cours' => 'En cours',
+            'traite' => 'Traité',
         ];
 
         return $labels[$stage] ?? ucfirst(str_replace('_', ' ', $stage));
@@ -114,6 +181,7 @@ class LeadService
             self::SOURCE_ESTIMATION => 'Estimation',
             self::SOURCE_RESSOURCE => 'Téléchargement',
             self::SOURCE_CONTACT => 'Contact',
+            self::SOURCE_FINANCEMENT => 'Financement',
             self::SOURCE_AUTRE => 'Autre',
         ][$source] ?? ucfirst($source);
     }
@@ -154,7 +222,7 @@ class LeadService
     private static function sanitizeSource(string $source): string
     {
         $source = strtolower(trim($source));
-        $allowed = [self::SOURCE_ESTIMATION, self::SOURCE_RESSOURCE, self::SOURCE_CONTACT, self::SOURCE_AUTRE];
+        $allowed = [self::SOURCE_ESTIMATION, self::SOURCE_RESSOURCE, self::SOURCE_CONTACT, self::SOURCE_FINANCEMENT, self::SOURCE_AUTRE];
         return in_array($source, $allowed, true) ? $source : self::SOURCE_AUTRE;
     }
 
@@ -168,6 +236,12 @@ class LeadService
     {
         $stage = strtolower(trim($stage));
         return preg_replace('/[^a-z0-9_\-]/', '', $stage) ?: 'nouveau';
+    }
+
+    private static function sanitizeStageLike(string $stage): string
+    {
+        $stage = strtolower(trim($stage));
+        return preg_replace('/[^a-z0-9_\-]/', '', $stage) ?: 'rdv';
     }
 
     private static function sanitizePriority(string $priority): string

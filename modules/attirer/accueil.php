@@ -223,11 +223,11 @@ function renderAttirerHub(): void
 
         <section class="attirer-narrative">
             <article class="attirer-narrative-card">
-                <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> MOTIVATION</h3>
+                <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Le constat</h3>
                 <p>Sans visibilité structurée, les conseillers enchaînent les actions isolées, subissent des périodes creuses et dépendent du bouche-à-oreille.</p>
             </article>
             <article class="attirer-narrative-card">
-                <h3><i class="fas fa-diagram-project" style="color:#3b82f6;"></i> EXPLICATION</h3>
+                <h3><i class="fas fa-diagram-project" style="color:#3b82f6;"></i> La logique</h3>
                 <p>Pour stabiliser vos contacts, combinez trois leviers complémentaires :</p>
                 <ul class="attirer-leviers">
                     <li>Contenu</li>
@@ -236,7 +236,7 @@ function renderAttirerHub(): void
                 </ul>
             </article>
             <article class="attirer-narrative-card">
-                <h3><i class="fas fa-chart-line" style="color:#10b981;"></i> RÉSULTAT</h3>
+                <h3><i class="fas fa-chart-line" style="color:#10b981;"></i> Ce que vous gagnez</h3>
                 <p>Vous obtenez une présence constante, plus de demandes entrantes et un flux de leads réguliers sur votre zone.</p>
             </article>
             <article class="attirer-narrative-card">

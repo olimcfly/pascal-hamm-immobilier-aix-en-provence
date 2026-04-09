@@ -28,7 +28,7 @@ function renderContent(): void
 
     <section class="optimiser-mere-card" aria-label="Cycle d'amélioration continue">
         <div class="optimiser-mere-header">
-            <span class="optimiser-mere-kicker">MOTIVATION</span>
+            <span class="optimiser-mere-kicker">POINT DE DÉPART</span>
             <h2>Travailler sans données = perte</h2>
         </div>
         <p class="optimiser-mere-explanation">
@@ -52,8 +52,8 @@ function renderContent(): void
             <div class="optimiser-cycle-loop" aria-hidden="true"><i class="fas fa-rotate-right"></i></div>
         </div>
         <div class="optimiser-mere-footer">
-            <p><strong>Résultat :</strong> progression continue.</p>
-            <p><strong>Action :</strong> faire 1 amélioration maintenant.</p>
+            <p><strong>Impact :</strong> progression continue.</p>
+            <p><strong>Étape suivante :</strong> faire 1 amélioration maintenant.</p>
         </div>
     </section>
 

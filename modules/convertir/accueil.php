@@ -593,11 +593,11 @@ function renderConvertirHubCards(): void
             <h2>Méthode mère</h2>
             <div class="convertir-core-grid">
                 <article class="convertir-core-item">
-                    <span class="convertir-core-label">Motivation</span>
-                    <div>Perte de leads sans méthode</div>
+                    <span class="convertir-core-label">Point de départ</span>
+                    <div>Sans suivi clair, des contacts chauds se perdent.</div>
                 </article>
                 <article class="convertir-core-item">
-                    <span class="convertir-core-label">Explication</span>
+                    <span class="convertir-core-label">Méthode simple</span>
                     <ul>
                         <li>CRM</li>
                         <li>RDV</li>
@@ -606,12 +606,12 @@ function renderConvertirHubCards(): void
                     </ul>
                 </article>
                 <article class="convertir-core-item">
-                    <span class="convertir-core-label">Résultat</span>
-                    <div>Plus de mandats</div>
+                    <span class="convertir-core-label">Impact direct</span>
+                    <div>Plus de signatures et plus de mandats.</div>
                 </article>
                 <article class="convertir-core-item">
-                    <span class="convertir-core-label">Action</span>
-                    <div>Suivre les étapes</div>
+                    <span class="convertir-core-label">Prochaine étape</span>
+                    <div>Suivez les modules dans l’ordre ci-dessous.</div>
                 </article>
             </div>
         </section>

@@ -24,20 +24,20 @@ function renderSeoHub(array $stats): void
 
         <section class="seo-mother-block" aria-label="Synthèse visibilité locale">
             <div class="seo-mother-item">
-                <span class="mother-label">Motivation</span>
+                <span class="mother-label">Contexte</span>
                 <p>Peu de visibilité = perte de leads.</p>
             </div>
             <div class="seo-mother-item">
-                <span class="mother-label">Explication</span>
+                <span class="mother-label">Plan d'action</span>
                 <p>3 piliers : pages locales, mots-clés, technique.</p>
             </div>
             <div class="seo-mother-item">
-                <span class="mother-label">Résultat</span>
+                <span class="mother-label">Bénéfices</span>
                 <p>Plus de trafic local et plus de leads vendeurs.</p>
             </div>
             <div class="seo-mother-item">
                 <span class="mother-label">Action</span>
-                <a href="/admin?module=seo&action=ville-edit" class="btn btn-sm">Créer pages</a>
+                <a href="/admin?module=seo&action=ville-edit" class="btn btn-sm">Créer mes pages</a>
             </div>
         </section>
 

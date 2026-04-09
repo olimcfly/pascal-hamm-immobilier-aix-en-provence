@@ -10,23 +10,23 @@ require_once __DIR__ . '/../../core/bootstrap.php';
     </header>
 
     <section class="gmb-panel gmb-mere-block" aria-labelledby="mere-title">
-        <h2 id="mere-title">MERE</h2>
+        <h2 id="mere-title">Votre cap local</h2>
         <div class="gmb-mere-grid">
             <article class="gmb-mere-item">
-                <h3>Motivation</h3>
-                <p>Visibilité locale = leads</p>
+                <h3>Ce qui bloque</h3>
+                <p>Sans présence locale, vous manquez des demandes chaque semaine.</p>
             </article>
             <article class="gmb-mere-item">
-                <h3>Explication</h3>
-                <p>3 piliers : fiche, avis, contenu</p>
+                <h3>La logique</h3>
+                <p>Fiche claire, avis réguliers et contenus actifs travaillent ensemble.</p>
             </article>
             <article class="gmb-mere-item">
-                <h3>Résultat</h3>
-                <p>Appels + leads</p>
+                <h3>Ce que vous gagnez</h3>
+                <p>Plus d’appels qualifiés et plus de prises de contact.</p>
             </article>
             <article class="gmb-mere-item">
-                <h3>Action</h3>
-                <p>Optimiser fiche</p>
+                <h3>Commencer</h3>
+                <p>Activez votre fiche puis enchaînez les modules.</p>
             </article>
         </div>
     </section>

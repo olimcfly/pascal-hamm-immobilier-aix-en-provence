@@ -1,5 +1,5 @@
 <?php
-$currentModule = $module ?? 'construire';
+$currentModule = $module ?? 'dashboard';
 $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
 
 $moduleExists = static function (string $moduleName): bool {

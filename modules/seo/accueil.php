@@ -1,68 +1,32 @@
 <?php
+
+declare(strict_types=1);
+
 require_once __DIR__ . '/services/SeoService.php';
-require_once __DIR__ . '/services/SeoKeywordPilotService.php';
+require_once __DIR__ . '/services/CityPageService.php';
 
-$pageTitle       = 'SEO';
-$pageDescription = 'Pilotez votre référencement local';
-
-$user      = Auth::user();
-$userId    = (int)($user['id'] ?? 0);
-$seoService = new SeoService(db());
-$stats     = $seoService->getHubStats($userId);
-
-$allowedViews = ['hub', 'keywords', 'keyword_edit', 'keyword_positions', 'villes', 'sitemap', 'performance', 'performance_history', 'performance_run'];
-$seoAction = $_GET['action'] ?? 'hub';
-if (!in_array($seoAction, $allowedViews, true)) {
-    $seoAction = 'hub';
+$allowedActions = ['index', 'villes', 'ville-edit', 'ville-preview', 'keywords', 'sitemap', 'performance'];
+$action = preg_replace('/[^a-z-]/', '', (string)($_GET['action'] ?? 'index'));
+if (!in_array($action, $allowedActions, true)) {
+    $action = 'index';
 }
 
-function renderContent(): void
+$pageTitle = match ($action) {
+    'villes' => 'SEO · Fiches villes',
+    'ville-edit' => 'SEO · Éditer une fiche ville',
+    'ville-preview' => 'SEO · Prévisualisation fiche ville',
+    default => 'SEO',
+};
+$pageDescription = 'Pilotez votre référencement local';
+
+$user = Auth::user();
+$userId = (int)($user['id'] ?? 0);
+$seoService = new SeoService(db());
+$cityPageService = new CityPageService(db());
+$stats = $seoService->getHubStats($userId);
+
+function renderSeoHub(array $stats): void
 {
-    global $stats, $seoAction;
-
-    $cssPath = $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/css/seo.css';
-    $cssVersion = is_file($cssPath) ? (int)filemtime($cssPath) : 1;
-    echo '<link rel="stylesheet" href="/admin/assets/css/seo.css?v=' . $cssVersion . '">';
-
-    if ($seoAction === 'keywords') {
-        require __DIR__ . '/mots-cles/index.php';
-        return;
-    }
-
-    if ($seoAction === 'keyword_edit') {
-        require __DIR__ . '/mots-cles/edit.php';
-        return;
-    }
-
-    if ($seoAction === 'keyword_positions') {
-        require __DIR__ . '/mots-cles/positions.php';
-        return;
-    }
-
-    if ($seoAction === 'villes') {
-        require __DIR__ . '/fiches-villes.php';
-        return;
-    }
-
-    if ($seoAction === 'sitemap') {
-        require __DIR__ . '/sitemap.php';
-        return;
-    }
-
-    if ($seoAction === 'performance') {
-        require __DIR__ . '/performance/index.php';
-        return;
-    }
-
-    if ($seoAction === 'performance_history') {
-        require __DIR__ . '/performance/history.php';
-        return;
-    }
-
-    if ($seoAction === 'performance_run') {
-        require __DIR__ . '/performance/audit.php';
-        return;
-    }
     ?>
     <div class="seo-hub">
         <div class="seo-breadcrumb">Accueil › SEO</div>
@@ -135,14 +99,38 @@ function renderContent(): void
 
         </div>
     </div>
-
-    <script>
-    function filterModules(q) {
-        q = q.toLowerCase();
-        document.querySelectorAll('#seo-modules-grid .seo-card').forEach(function(card) {
-            card.style.display = card.dataset.module.includes(q) ? '' : 'none';
-        });
-    }
-    </script>
     <?php
+}
+
+function renderContent(): void
+{
+    global $action, $stats;
+
+    echo '<link rel="stylesheet" href="' . e(asset_url('/admin/assets/css/seo.css')) . '">';
+
+    switch ($action) {
+        case 'villes':
+            require __DIR__ . '/fiches-villes/index.php';
+            break;
+        case 'ville-edit':
+            require __DIR__ . '/fiches-villes/edit.php';
+            break;
+        case 'ville-preview':
+            require __DIR__ . '/fiches-villes/preview.php';
+            break;
+        case 'keywords':
+            renderSeoHub($stats);
+            break;
+        case 'sitemap':
+            require __DIR__ . '/sitemap.php';
+            break;
+        case 'performance':
+            require __DIR__ . '/performance.php';
+            break;
+        default:
+            renderSeoHub($stats);
+            break;
+    }
+
+    echo '<script src="' . e(asset_url('/admin/assets/js/seo.js')) . '" defer></script>';
 }

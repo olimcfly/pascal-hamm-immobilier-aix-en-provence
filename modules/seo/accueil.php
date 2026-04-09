@@ -29,7 +29,7 @@ function renderSeoHub(array $stats): void
         <div class="seo-grid" id="seo-modules-grid">
             <article class="seo-card" data-module="mots-clés top 10 positions" style="--accent:#3b82f6;--icon-bg:#dbeafe;">
                 <div class="seo-card-head"><span class="icon">🔑</span><h3>Mots-clés</h3></div>
-                <p>Suivez le positionnement de vos mots-clés cibles sur Google.</p>
+                <p>Suivez votre visibilité locale sur les requêtes vendeurs stratégiques.</p>
                 <div class="badges"><span>Top 10</span><span>Positions</span></div>
                 <a href="/admin?module=seo&action=keywords" class="btn btn-sm">Consulter</a>
                 <small><?= (int) $stats['keywords_count'] ?> mots-clés suivis</small>

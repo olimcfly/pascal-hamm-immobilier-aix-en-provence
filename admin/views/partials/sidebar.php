@@ -12,6 +12,7 @@ $menuGroups = [
     ],
     'Outils' => [
         ['module' => 'assistant',   'label' => 'Assistant IA',      'hint' => 'IA à votre service',        'icon' => 'fas fa-robot'],
+        ['module' => 'messagerie',  'label' => 'Messagerie',        'hint' => 'Emails & contacts',         'icon' => 'fas fa-envelope'],
         ['module' => 'biens',       'label' => 'Biens',             'hint' => 'Gestion du portefeuille',   'icon' => 'fas fa-house'],
         ['module' => 'gmb',         'label' => 'Google My Business','hint' => 'Avis et visibilité',        'icon' => 'fab fa-google'],
         ['module' => 'seo',         'label' => 'SEO',               'hint' => 'Positionnement Google',     'icon' => 'fas fa-magnifying-glass-chart'],
@@ -19,7 +20,7 @@ $menuGroups = [
         ['module' => 'financement', 'label' => 'Demandes de financement', 'hint' => 'Leads financement', 'icon' => 'fas fa-hand-holding-dollar'],
     ],
     'Contenu' => [
-        ['module' => 'cms_blog',    'label' => 'Modifier le Blog',  'hint' => 'Sections CMS /blog',        'icon' => 'fas fa-blog', 'url' => '/admin/cms/edit/blog'],
+        ['module' => 'redaction',   'label' => 'Rédaction',         'hint' => 'Articles, campagnes, posts', 'icon' => 'fas fa-pen-to-square'],
     ],
     'Compte' => [
         ['module' => 'parametres',  'label' => 'Paramètres',        'hint' => 'Compte et préférences',     'icon' => 'fas fa-gear'],
@@ -49,6 +50,21 @@ if (($authUser['role'] ?? '') === 'superadmin') {
                data-tooltip="<?= htmlspecialchars($item['label']) ?>">
                 <span class="menu-icon"><i class="<?= htmlspecialchars($item['icon']) ?>"></i></span>
                 <span class="menu-label"><?= htmlspecialchars($item['label']) ?>
+                    <?php if ($item['module'] === 'messagerie'): ?>
+                        <?php
+                        try {
+                            static $msgUnread = null;
+                            if ($msgUnread === null) {
+                                require_once ROOT_PATH . '/modules/messagerie/repositories/MessageRepository.php';
+                                $msgRepo = new MessageRepository(db());
+                                $msgUnread = $msgRepo->getTotalUnread((int)(Auth::user()['id'] ?? 1));
+                            }
+                            if ($msgUnread > 0): ?>
+                                <span style="background:#ef4444;color:#fff;border-radius:999px;font-size:.6rem;padding:1px 5px;margin-left:4px;font-weight:700;"><?= (int)$msgUnread ?></span>
+                        <?php endif;
+                        } catch (Throwable) {}
+                        ?>
+                    <?php endif; ?>
                     <small class="menu-hint"><?= htmlspecialchars($item['hint']) ?></small>
                 </span>
             </a>

@@ -1,5 +1,6 @@
 .gmb-page-header h1 { margin: 0 0 6px; font-size: 30px; }
 .gmb-page-header p { margin: 0 0 18px; color: #64748b; }
+.gmb-page-header .gmb-version-note { margin: 0 0 8px; color: #1e40af; font-weight: 600; }
 .gmb-cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
 .gmb-card { display:block; padding:18px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; text-decoration:none; color:#0f172a; }
 .gmb-card:hover { border-color:#2563eb; transform:translateY(-1px); }

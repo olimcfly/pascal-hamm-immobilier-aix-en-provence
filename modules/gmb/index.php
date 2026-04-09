@@ -22,6 +22,9 @@ $updatedAt = $syncJob['updated_at'] ?? null;
     <div>
         <h1><i class="fab fa-google"></i> Hub Google My Business</h1>
         <p>Pilotez votre présence locale : fiche, avis, demandes d'avis et statistiques.</p>
+        <p class="gmb-version-note">
+            Interface GMB v2 — si l'affichage paraît ancien, forcez un rechargement du navigateur (Ctrl/Cmd + Shift + R).
+        </p>
     </div>
 </div>
 

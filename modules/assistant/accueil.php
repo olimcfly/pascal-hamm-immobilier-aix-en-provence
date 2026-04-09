@@ -139,6 +139,14 @@ function renderContent()
             ['name' => 'activite',   'label' => 'Activité actuelle',    'placeholder' => 'ex : peu de prospection terrain'],
         ]); ?>
 
+        <?php noahCard('argumentaire_mandat', 'Argumentaire Mandat', 'Scripts et supports pour signer en exclusivité', '#c0392b', '#fdecea', 'fa-file-signature', [
+            ['name' => 'zone',           'label' => 'Zone géographique',       'placeholder' => 'ex : Aix-en-Provence centre'],
+            ['name' => 'type_bien',      'label' => 'Type de bien',            'placeholder' => 'ex : appartement T3 avec terrasse'],
+            ['name' => 'profil_vendeur', 'label' => 'Profil vendeur',          'placeholder' => 'ex : vendeur prudent, compare plusieurs agences'],
+            ['name' => 'objections',     'label' => 'Objections principales',  'placeholder' => 'ex : je veux garder la liberté / vos honoraires sont élevés'],
+            ['name' => 'objectif',       'label' => 'Objectif du RDV',         'placeholder' => 'ex : signer un mandat exclusif au 1er rendez-vous'],
+        ]); ?>
+
     </div>
 
     <script>

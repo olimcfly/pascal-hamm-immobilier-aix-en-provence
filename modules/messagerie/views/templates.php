@@ -32,6 +32,15 @@ foreach ($templates as $t) {
 .btn-new{background:#2563eb;color:#fff;border:0;padding:8px 16px;border-radius:9px;font-size:.83rem;font-weight:700;cursor:pointer;}
 .tpl-modal .sf textarea{min-height:180px;}
 .tpl-default-badge{font-size:.62rem;padding:1px 6px;border-radius:999px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;margin-left:4px;}
+.tpl-ai-box{margin:8px 0 14px;padding:10px;border:1px dashed #cbd5e1;border-radius:10px;background:#f8fafc;}
+.tpl-ai-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;}
+.tpl-ai-btn{background:#0f172a;color:#fff;border:0;padding:8px 12px;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;}
+.tpl-ai-btn:hover{background:#1e293b;}
+.tpl-editor-wrap{border:1px solid #d1d5db;border-radius:10px;overflow:hidden;background:#fff;}
+.tpl-editor-toolbar{display:flex;gap:4px;padding:8px;border-bottom:1px solid #e5e7eb;background:#f8fafc;}
+.tpl-editor-toolbar button{border:1px solid #cbd5e1;background:#fff;padding:4px 8px;border-radius:6px;font-size:.75rem;cursor:pointer;color:#334155;}
+.tpl-editor-toolbar button:hover{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;}
+.tpl-editor{min-height:190px;padding:12px;font-size:.86rem;line-height:1.6;color:#334155;outline:none;white-space:pre-wrap;}
 </style>
 
 <div class="tpl-header">
@@ -100,6 +109,21 @@ foreach ($templates as $t) {
         </div>
         <input type="hidden" id="tplId" value="">
         <div class="sf">
+            <div class="tpl-ai-box">
+                <div style="font-size:.76rem;font-weight:700;color:#334155;margin-bottom:8px;"><i class="fas fa-wand-magic-sparkles" style="color:#2563eb;"></i> Générer avec IA</div>
+                <div class="tpl-ai-grid">
+                    <input type="text" id="tplAiGoal" placeholder="Objectif (ex: relance après visite)">
+                    <select id="tplAiTone">
+                        <option value="professionnel">Ton professionnel</option>
+                        <option value="amical">Ton amical</option>
+                        <option value="urgent">Ton urgent</option>
+                        <option value="premium">Ton premium</option>
+                    </select>
+                    <button type="button" class="tpl-ai-btn" onclick="generateTplWithAI()"><i class="fas fa-sparkles"></i> Générer</button>
+                </div>
+                <input type="text" id="tplAiContext" placeholder="Contexte optionnel (type de bien, situation client...)" style="margin-top:8px;">
+                <div id="tplAiFeedback" style="font-size:.72rem;color:#64748b;margin-top:6px;"></div>
+            </div>
             <div>
                 <label>Nom du template *</label>
                 <input type="text" id="tplName" placeholder="Ex: Relance après visite">
@@ -118,7 +142,19 @@ foreach ($templates as $t) {
             </div>
             <div>
                 <label>Corps du message <small style="font-weight:400;color:#94a3b8;">Placeholders : {{contact_prenom}} {{conseiller_nom}} {{bien_titre}} etc.</small></label>
-                <textarea id="tplBody" placeholder="Bonjour {{contact_prenom}},&#10;&#10;...&#10;&#10;Cordialement,&#10;{{conseiller_nom}}"></textarea>
+                <div class="tpl-editor-wrap">
+                    <div class="tpl-editor-toolbar">
+                        <button type="button" onclick="editorCmd('bold')"><b>B</b></button>
+                        <button type="button" onclick="editorCmd('italic')"><i>I</i></button>
+                        <button type="button" onclick="editorCmd('insertUnorderedList')">• Liste</button>
+                        <button type="button" onclick="editorCmd('insertParagraph')">¶ Paragraphe</button>
+                        <button type="button" onclick="insertPlaceholder('{{contact_prenom}}')">{{contact_prenom}}</button>
+                        <button type="button" onclick="insertPlaceholder('{{conseiller_nom}}')">{{conseiller_nom}}</button>
+                        <button type="button" onclick="insertPlaceholder('{{bien_titre}}')">{{bien_titre}}</button>
+                    </div>
+                    <div id="tplBodyEditor" class="tpl-editor" contenteditable="true"></div>
+                </div>
+                <textarea id="tplBody" style="display:none;" placeholder="Bonjour {{contact_prenom}},&#10;&#10;...&#10;&#10;Cordialement,&#10;{{conseiller_nom}}"></textarea>
             </div>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
@@ -159,13 +195,17 @@ function filterCat(cat, btn) {
 }
 
 function openTplForm(tpl = null) {
+    const htmlBody = tpl ? (tpl.body_html || '') : '';
     document.getElementById('tplId').value      = tpl ? tpl.id : '';
     document.getElementById('tplName').value    = tpl ? tpl.name : '';
     document.getElementById('tplSubject').value = tpl ? tpl.subject : '';
-    document.getElementById('tplBody').value    = tpl ? tpl.body_html.replace(/<br\s*\/?>/gi,'\n').replace(/<p>/gi,'').replace(/<\/p>/gi,'\n').replace(/<[^>]*>/g,'') : '';
     document.getElementById('tplCategory').value = tpl ? tpl.category : 'general';
     document.getElementById('tplFormTitle').textContent = tpl ? 'Modifier le template' : 'Nouveau template';
     document.getElementById('tplFormFeedback').textContent = '';
+    document.getElementById('tplAiFeedback').textContent = '';
+    document.getElementById('tplAiGoal').value = '';
+    document.getElementById('tplAiContext').value = '';
+    setEditorHtml(htmlBody || '<p>Bonjour {{contact_prenom}},</p><p></p><p>Cordialement,<br>{{conseiller_nom}}</p>');
     openModal('tplFormModal');
     setTimeout(() => document.getElementById('tplName').focus(), 100);
 }
@@ -178,8 +218,8 @@ async function saveTpl() {
     const name = document.getElementById('tplName').value.trim();
     const fb   = document.getElementById('tplFormFeedback');
     if (!name) { fb.textContent = 'Nom obligatoire.'; return; }
-    const rawBody = document.getElementById('tplBody').value.trim();
-    const htmlBody = rawBody.split('\n').map(l => l.trim() ? `<p>${l}</p>` : '').join('');
+    syncEditorToTextarea();
+    const htmlBody = document.getElementById('tplBody').value.trim();
     const fd = new FormData();
     fd.append('id',       document.getElementById('tplId').value);
     fd.append('name',     name);
@@ -210,4 +250,68 @@ function previewTemplate(id) {
 
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function editorCmd(cmd) {
+    document.execCommand(cmd, false, null);
+    syncEditorToTextarea();
+}
+
+function insertPlaceholder(text) {
+    document.execCommand('insertText', false, text);
+    syncEditorToTextarea();
+}
+
+function normalizeEditorHtml(html) {
+    const div = document.createElement('div');
+    div.innerHTML = (html || '').trim();
+    if (!div.innerHTML) return '';
+    div.querySelectorAll('script,style').forEach(node => node.remove());
+    return div.innerHTML;
+}
+
+function setEditorHtml(html) {
+    const clean = normalizeEditorHtml(html);
+    document.getElementById('tplBodyEditor').innerHTML = clean;
+    syncEditorToTextarea();
+}
+
+function syncEditorToTextarea() {
+    const html = normalizeEditorHtml(document.getElementById('tplBodyEditor').innerHTML);
+    document.getElementById('tplBody').value = html;
+}
+
+document.getElementById('tplBodyEditor').addEventListener('input', syncEditorToTextarea);
+
+async function generateTplWithAI() {
+    const feedback = document.getElementById('tplAiFeedback');
+    const goal = document.getElementById('tplAiGoal').value.trim();
+    if (!goal) {
+        feedback.textContent = "Ajoutez un objectif pour lancer la génération IA.";
+        return;
+    }
+
+    feedback.textContent = 'Génération en cours...';
+    const fd = new FormData();
+    fd.append('goal', goal);
+    fd.append('tone', document.getElementById('tplAiTone').value);
+    fd.append('context', document.getElementById('tplAiContext').value.trim());
+    fd.append('category', document.getElementById('tplCategory').value);
+
+    try {
+        const res = await fetch('/admin?module=messagerie&action=ai_template', { method:'POST', body:fd });
+        const d = await res.json();
+        if (!d.ok) {
+            feedback.textContent = d.error || "Impossible de générer le template.";
+            return;
+        }
+        if (!document.getElementById('tplName').value.trim()) {
+            document.getElementById('tplName').value = d.name || '';
+        }
+        document.getElementById('tplSubject').value = d.subject || '';
+        setEditorHtml(d.body_html || '');
+        feedback.textContent = 'Template généré. Vous pouvez le modifier manuellement avant enregistrement.';
+    } catch (e) {
+        feedback.textContent = "Erreur réseau pendant la génération IA.";
+    }
+}
 </script>

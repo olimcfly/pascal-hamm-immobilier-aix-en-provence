@@ -163,6 +163,83 @@ if (isset($_GET['action'])) {
         exit;
     }
 
+    // ── IA — Générer un template ─────────────────────────────────
+    if ($action === 'ai_template') {
+        $apiKey = (string) setting('tech_openai_key', '', $userId);
+        if ($apiKey === '') {
+            echo json_encode(['ok' => false, 'error' => 'Clé OpenAI non configurée dans Paramètres → API.']);
+            exit;
+        }
+
+        $goal        = trim((string)($_POST['goal'] ?? ''));
+        $context     = trim((string)($_POST['context'] ?? ''));
+        $tone        = in_array($_POST['tone'] ?? '', ['professionnel', 'amical', 'urgent', 'premium'], true) ? (string)$_POST['tone'] : 'professionnel';
+        $category    = in_array($_POST['category'] ?? '', array_keys($tplRepo->categories()), true) ? (string)$_POST['category'] : 'general';
+        $advisorName = (string) setting('profil_nom', APP_NAME, $userId);
+
+        if ($goal === '') {
+            echo json_encode(['ok' => false, 'error' => 'Objectif obligatoire pour générer un template.']);
+            exit;
+        }
+
+        $systemPrompt = "Tu es un assistant pour {$advisorName}, conseiller immobilier expert. "
+            . "Génère un template email réutilisable en français avec placeholders. "
+            . "Utilise, si pertinent, {{contact_prenom}}, {{conseiller_nom}}, {{bien_titre}}, {{date_rdv}}. "
+            . "Retourne UNIQUEMENT du JSON valide avec les clés : name, subject, body_html. "
+            . "body_html doit contenir du HTML simple avec uniquement <p> et <br>.";
+
+        $userPrompt = "Objectif du template : {$goal}.\n"
+            . "Ton : {$tone}.\n"
+            . "Catégorie : {$category}.\n";
+
+        if ($context !== '') {
+            $userPrompt .= "Contexte métier : {$context}.\n";
+        }
+
+        $userPrompt .= "Signature à inclure naturellement avec {{conseiller_nom}}.\n"
+            . "Réponds strictement au format JSON.";
+
+        $payload = json_encode([
+            'model'       => 'gpt-4o-mini',
+            'messages'    => [
+                ['role' => 'system', 'content' => $systemPrompt],
+                ['role' => 'user',   'content' => $userPrompt],
+            ],
+            'temperature' => 0.65,
+            'max_tokens'  => 900,
+        ], JSON_UNESCAPED_UNICODE);
+
+        $ch = curl_init('https://api.openai.com/v1/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 45,
+            CURLOPT_POST           => true,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $apiKey,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_POSTFIELDS => $payload,
+        ]);
+        $resp = curl_exec($ch);
+        curl_close($ch);
+
+        $data    = json_decode($resp ?: '{}', true);
+        $content = $data['choices'][0]['message']['content'] ?? '';
+        $parsed  = json_decode($content, true);
+
+        if (is_array($parsed) && isset($parsed['name'], $parsed['subject'], $parsed['body_html'])) {
+            echo json_encode([
+                'ok'       => true,
+                'name'     => trim((string)$parsed['name']),
+                'subject'  => trim((string)$parsed['subject']),
+                'body_html'=> trim((string)$parsed['body_html']),
+            ]);
+        } else {
+            echo json_encode(['ok' => false, 'error' => 'Réponse IA invalide. Réessayez.', 'raw' => $content]);
+        }
+        exit;
+    }
+
     // ── Templates CRUD ───────────────────────────────────────────
     if ($action === 'template_save') {
         $id      = (int)($_POST['id'] ?? 0);

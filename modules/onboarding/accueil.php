@@ -19,6 +19,14 @@ $onboardingController = new OnboardingController(
 
 $onboardingViewData = $onboardingController->handle();
 
+// Charge les modules stratégiques pour l'écran post-onboarding
+$_stratModules = require __DIR__ . '/../../admin/data/modules.php';
+$_stratKeys    = ['construire', 'attirer', 'capturer', 'convertir', 'optimiser'];
+$onboardingViewData['stratModules'] = array_map(
+    static fn(string $k) => $_stratModules[$k] ?? [],
+    array_combine($_stratKeys, $_stratKeys)
+);
+
 function renderContent(): void
 {
     global $onboardingViewData;

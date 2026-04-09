@@ -44,6 +44,51 @@ $updatedAt = $syncJob['updated_at'] ?? null;
     <p class="gmb-sync-error" data-gmb-sync-error></p>
 </section>
 
+<?php
+try {
+    $_gpdo   = db();
+    $_avis_total = (int) $_gpdo->query("SELECT COUNT(*) FROM courtier_reviews")->fetchColumn();
+    $_avis_mois  = (int) $_gpdo->query("SELECT COUNT(*) FROM courtier_reviews WHERE created_at >= DATE_FORMAT(NOW(),'%Y-%m-01')")->fetchColumn();
+    $_avis_note  = $_gpdo->query("SELECT ROUND(AVG(rating),1) FROM courtier_reviews WHERE rating > 0")->fetchColumn();
+    $_pub_gmb    = (int) $_gpdo->query("SELECT COUNT(*) FROM blog_publications WHERE reseau='gmb'")->fetchColumn();
+    $_pub_gmb_m  = (int) $_gpdo->query("SELECT COUNT(*) FROM blog_publications WHERE reseau='gmb' AND created_at >= DATE_FORMAT(NOW(),'%Y-%m-01')")->fetchColumn();
+} catch (Exception $e) {
+    $_avis_total = $_avis_mois = $_pub_gmb = $_pub_gmb_m = 0;
+    $_avis_note = null;
+}
+?>
+<div class="db-kpi-grid" style="margin-bottom:24px">
+
+    <a href="/admin?module=gmb&view=avis" class="db-kpi accent-gold">
+        <div class="db-kpi-icon">⭐</div>
+        <div class="db-kpi-val"><?= $_avis_total ?></div>
+        <div class="db-kpi-label">Avis clients</div>
+        <div class="db-kpi-sub"><?= $_avis_note ? 'Note moyenne : ' . $_avis_note . '/5' : 'Aucune note' ?></div>
+    </a>
+
+    <a href="/admin?module=gmb&view=avis" class="db-kpi accent-green">
+        <div class="db-kpi-icon">🆕</div>
+        <div class="db-kpi-val"><?= $_avis_mois ?></div>
+        <div class="db-kpi-label">Nouveaux avis</div>
+        <div class="db-kpi-sub">Ce mois-ci</div>
+    </a>
+
+    <a href="/admin?module=redaction&action=pool_gmb" class="db-kpi" style="border-left-color:#ea4335">
+        <div class="db-kpi-icon">📝</div>
+        <div class="db-kpi-val"><?= $_pub_gmb ?></div>
+        <div class="db-kpi-label">Posts GMB rédigés</div>
+        <div class="db-kpi-sub"><?= $_pub_gmb_m ?> ce mois · min. 1/semaine recommandé</div>
+    </a>
+
+    <div class="db-kpi <?= $currentStatus === 'done' ? 'accent-green' : ($currentStatus === 'error' ? 'accent-red' : 'accent-blue') ?>">
+        <div class="db-kpi-icon"><?= $currentStatus === 'done' ? '✅' : ($currentStatus === 'error' ? '❌' : '🔄') ?></div>
+        <div class="db-kpi-val" style="font-size:1.1rem;font-weight:700"><?= htmlspecialchars($currentStatusLabel) ?></div>
+        <div class="db-kpi-label">Synchro GMB</div>
+        <div class="db-kpi-sub"><?= $updatedAt ? 'Màj : ' . date('d/m H:i', strtotime($updatedAt)) : 'Jamais synchronisé' ?></div>
+    </div>
+
+</div>
+
 <div class="gmb-cards-grid">
     <a class="gmb-card" href="/admin?module=gmb&view=fiche">
         <h3>Ma fiche GMB</h3>

@@ -107,6 +107,7 @@ $legalLinks = [
                 <?php foreach ($legalLinks as $label => $href): ?>
                     <a href="<?= e($href) ?>"><?= e($label) ?></a>
                 <?php endforeach; ?>
+                <a href="/admin" style="opacity:.2;font-size:.7rem;color:inherit;margin-left:.5rem" tabindex="-1" aria-hidden="true">·</a>
             </nav>
         </div>
     </div>

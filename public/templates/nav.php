@@ -109,11 +109,11 @@ $navItems = [
         ],
     ],
 
-    // ── Financement ──────────────────────────────────────────────
+    // ── Guide local ──────────────────────────────────────────────
     [
-        'path'  => '/financement',
-        'href'  => url('/financement'),
-        'label' => 'Financement',
+        'path'  => '/guide-local',
+        'href'  => url('/guide-local'),
+        'label' => 'Guide local',
     ],
 
     // ── Blog ─────────────────────────────────────────────────────

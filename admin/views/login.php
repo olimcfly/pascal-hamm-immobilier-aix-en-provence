@@ -159,6 +159,10 @@
 
     <div class="login-footer">
         <a href="/">&larr; Retour au site</a>
+        &nbsp;&nbsp;·&nbsp;&nbsp;
+        <a href="https://pascal-hamm-immobilier-aix-en-provence.fr/webmail" target="_blank" rel="noopener" style="opacity:.5;font-size:.72rem">
+            Webmail
+        </a>
     </div>
 
 </div>

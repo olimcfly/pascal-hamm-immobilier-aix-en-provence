@@ -56,6 +56,22 @@
 .compare-card li { margin-bottom: .5rem; }
 .compare-card--positive { border-left: 4px solid #16a34a; }
 .compare-card--risk { border-left: 4px solid #c9a84c; }
+/* ── Section biens : grille compacte ── */
+#biens-en-vente .grid-3 {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 320px));
+  justify-content: center;
+  gap: 1.25rem;
+}
+#biens-en-vente .card__img {
+  aspect-ratio: 16/10;
+}
+#biens-en-vente .card__body {
+  padding: 1rem;
+}
+#biens-en-vente .card__title {
+  font-size: 1rem;
+}
+
 .property-card-premium { position: relative; }
 .property-card-premium .property-badge {
   display: inline-block;

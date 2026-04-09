@@ -13,38 +13,18 @@ if (!class_exists('ZoneController')) {
 
 $router = new Router();
 
-$routeToPage = [
-    '/' => 'core/home',
-    '/a-propos' => 'core/a-propos',
-    '/contact' => 'core/contact',
-    '/services' => 'services/services',
-    '/viager' => 'services/services',
-    '/biens' => 'biens/index',
-    '/search' => 'biens/index',
-    '/blog' => 'blog/index',
-    '/actualites' => 'actualites/index',
-    '/guide-local' => 'guide-local/index',
-    '/ressources' => 'ressources/index',
-    '/ressources/guide-acheteur' => 'ressources/guide-acheteur',
-    '/ressources/guide-vendeur' => 'ressources/guide-vendeur',
-    '/blog' => 'blog/index',
-    '/actualites' => 'actualites/index',
-    '/avis' => 'social-proof/avis',
-    '/avis-clients' => 'social-proof/avis',
-    '/estimation-gratuite' => 'capture/estimation-gratuite',
-    '/financement' => 'financement/financement',
-    '/mentions-legales' => 'legal/mentions-legales',
-    '/politique-confidentialite' => 'legal/politique-confidentialite',
-    '/politique-cookies' => 'legal/politique-cookies',
-    '/cgv' => 'legal/cgv',
-    '/plan-du-site' => 'core/plan-du-site',
-];
-
-$pageKey = $routeToPage[$uri] ?? null;
-if ($pageKey === null) {
-    http_response_code(404);
-    $pageTitle = 'Page introuvable';
-    $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>La page demandée est introuvable.</p></div></section>';
+// ── Helper : charge une page dans le layout ────────────────────
+function servePage(string $file): void {
+    if (!is_file($file)) {
+        http_response_code(404);
+        $pageTitle   = 'Page introuvable';
+        $pageContent = '<section class="section"><div class="container"><h1>404</h1><p>Cette page est introuvable.</p></div></section>';
+        require ROOT_PATH . '/public/templates/layout.php';
+        return;
+    }
+    ob_start();
+    require $file;
+    $pageContent = ob_get_clean();
     require ROOT_PATH . '/public/templates/layout.php';
 }
 
@@ -163,12 +143,41 @@ $router->get('/secteurs/{slug}', function(string $slug) {
 
 
 // ══════════════════════════════════════════════════════════════
-//  LANDING PAGES ADS
+//  LANDING PAGES — Funnels (nouveau système) + legacy
 // ══════════════════════════════════════════════════════════════
-$router->get('/lp/{slug}', function(string $slug) {
-    (new LandingPageController())->show($slug);
+
+// Thank you page funnel (avant la route générique /lp/{slug})
+$router->get('/lp/{slug}/merci', function(string $slug) {
+    require_once ROOT_PATH . '/core/controllers/FunnelPublicController.php';
+    (new FunnelPublicController())->thankyou(['slug' => $slug]);
 });
 
+// Soumission formulaire funnel
+$router->post('/lp/{slug}/submit', function(string $slug) {
+    require_once ROOT_PATH . '/core/controllers/FunnelPublicController.php';
+    (new FunnelPublicController())->submit(['slug' => $slug]);
+});
+
+// Téléchargement ressource sécurisé
+$router->get('/ressource/{token}', function(string $token) {
+    require_once ROOT_PATH . '/core/controllers/FunnelPublicController.php';
+    (new FunnelPublicController())->download(['token' => $token]);
+});
+
+// Affichage LP — tente le système Funnels, fallback legacy
+$router->get('/lp/{slug}', function(string $slug) {
+    require_once ROOT_PATH . '/core/controllers/FunnelPublicController.php';
+    require_once MODULES_PATH . '/funnels/repositories/FunnelRepository.php';
+    $repo   = new FunnelRepository(\Database::getInstance());
+    $funnel = $repo->findBySlug($slug);
+    if ($funnel) {
+        (new FunnelPublicController())->show(['slug' => $slug]);
+    } else {
+        (new LandingPageController())->show($slug);
+    }
+});
+
+// Legacy POST (ancien système)
 $router->post('/lp/{slug}', function(string $slug) {
     (new LandingPageController())->submit($slug);
 });

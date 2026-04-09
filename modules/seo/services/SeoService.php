@@ -37,7 +37,7 @@ class SeoService
 
     public function getHubStats(int $userId): array
     {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM seo_keywords WHERE user_id = ? AND (status IS NULL OR status <> 'archived')");
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM seo_keywords WHERE user_id = ? AND is_active = 1');
         $stmt->execute([$userId]);
         $keywordsCount = (int) $stmt->fetchColumn();
 
@@ -75,13 +75,13 @@ class SeoService
             'sitemap_last_generated' => $sitemap['last_generated_at'] ?? null,
             'sitemap_status' => $sitemap['status'] ?? 'idle',
             'sitemap_issues_count' => (int) ($sitemap['issues_count'] ?? 0),
-            'last_audit_score' => $lastAuditScore !== false ? (int) $lastAuditScore : null,
+            'last_audit_score' => $performanceSummary['score'],
         ];
     }
 
     private function countTop10(int $userId): int
     {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM seo_keywords WHERE user_id = ? AND current_position BETWEEN 1 AND 10 AND (status IS NULL OR status <> 'archived')");
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM seo_keywords WHERE user_id = ? AND current_position BETWEEN 1 AND 10 AND is_active = 1');
         $stmt->execute([$userId]);
         return (int)$stmt->fetchColumn();
     }

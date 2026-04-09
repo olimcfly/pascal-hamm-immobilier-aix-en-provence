@@ -269,4 +269,51 @@ return [
             'style' => 'Clair, pédagogique, rassurant, professionnel et accessible.',
         ],
     ],
+
+    // MODULE : Funnels & Landing Pages
+    'funnels' => [
+        'slug'        => 'funnels',
+        'title'       => 'FUNNELS & LANDING PAGES',
+        'section'     => 'Capturer',
+        'route'       => '/admin/index.php?module=funnels',
+        'icon'        => 'fa-filter',
+        'description' => 'Créez des funnels de conversion guidés : landing pages, formulaires, thank you pages et séquences email.',
+        'available'   => true,
+        'hub_order'   => 32,
+        'meta'        => [
+            'motivation'  => "Vos campagnes Ads dépensent, mais les visiteurs rebondissent. Sans landing page dédiée et cohérente avec vos annonces, vous gaspillez votre budget.",
+            'explanation' => "Un funnel performant = canal → landing page → formulaire → thank you page → séquence email. Le système génère tout automatiquement depuis vos paramètres de ciblage.",
+            'recipe'      => [
+                'Choisissez le canal (Google Ads, SEO, Social, RDV).',
+                'Sélectionnez un template verrouillé et optimisé.',
+                'Renseignez ville, persona, mot-clé et CTA.',
+                'Publiez — le slug, SEO title et meta sont générés automatiquement.',
+                'Suivez les conversions depuis le tableau de bord funnels.',
+            ],
+            'exercise'    => "Créez un funnel Google Ads pour votre ville principale avec le template 'Guide Vendeur'. Mesurez le taux de conversion après 100 visites.",
+        ],
+    ],
+
+    // MODULE : Ressources
+    'ressources' => [
+        'slug'        => 'ressources',
+        'title'       => 'RESSOURCES & GUIDES',
+        'section'     => 'Capturer',
+        'route'       => '/admin/index.php?module=ressources',
+        'icon'        => 'fa-file-pdf',
+        'description' => 'Gérez vos guides PDF, checklists et pages ressources. Liez-les à vos funnels pour une livraison automatique.',
+        'available'   => true,
+        'hub_order'   => 33,
+        'meta'        => [
+            'motivation'  => "Un bon lead magnet multiplié par 3 le taux de capture. Vos ressources doivent être ciblées, actionnables et livrées instantanément.",
+            'explanation' => "Chaque ressource est liée à un persona, une ville et un niveau de conscience. Elle est envoyée automatiquement après soumission du formulaire LP.",
+            'recipe'      => [
+                'Uploadez un guide PDF ou créez une page HTML ressource.',
+                'Associez-la à un persona et une ville.',
+                'Liez-la à un funnel.',
+                'Activez la livraison par email automatique.',
+            ],
+            'exercise'    => "Créez un guide 'Les 5 étapes pour vendre à [ville]' de 5 pages et liez-le à votre funnel Google Ads principal.",
+        ],
+    ],
 ];

@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ok = Auth::attempt($email, $password, ['admin', 'superadmin']);
 
             if ($ok) {
-                Session::flash('success', 'Bienvenue dans votre espace admin.');
+                $_SESSION['show_welcome_popup'] = true;
                 header('Location: /admin/');
                 exit;
             } else {

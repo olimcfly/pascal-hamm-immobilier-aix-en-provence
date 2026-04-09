@@ -128,8 +128,9 @@ $nbBiensTotal = count($biens);
                                  loading="lazy"
                                  onerror="this.onerror=null;this.src='<?= $placeholderFallback ?>'">
 
-                            <span class="bien-badge <?= strtolower($bien['transaction_type']) === 'vente' ? 'vente' : 'location' ?>">
-                                <?= htmlspecialchars($bien['transaction_type']) ?>
+                            <?php $txType = $bien['transaction_type'] ?? ''; ?>
+                            <span class="bien-badge <?= strtolower($txType) === 'vente' ? 'vente' : 'location' ?>">
+                                <?= htmlspecialchars($txType) ?>
                             </span>
 
                         </div>
@@ -153,7 +154,7 @@ $nbBiensTotal = count($biens);
 
                             <div class="bien-card__price">
                                 <?= number_format($bien['prix'], 0, ',', ' ') ?> €
-                                <?php if ($bien['transaction_type'] === 'Location'): ?>
+                                <?php if (($bien['transaction_type'] ?? '') === 'Location'): ?>
                                     <span>/mois</span>
                                 <?php endif; ?>
                             </div>

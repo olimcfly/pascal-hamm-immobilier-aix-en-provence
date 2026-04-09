@@ -98,4 +98,38 @@ $metaDesc = 'Découvrez les avis vérifiés de nos clients satisfaits. Pascal Ha
                     'date' => 'Avril 2024',
                     'service' => 'vente',
                     'ville' => 'Beaurecueil',
-                    'text' => 'Notre bastide provençale vendue en 10 jours au prix demandé ! Pascal a su mettre en valeur notre bien et trouver l\'acheteur idéal. Son approche clef en main nous a évité bien des tracas. Merci pour ce professionnalisme remarquable !'
+                    'text' => 'Notre bastide provençale vendue en 10 jours au prix demandé ! Pascal a su mettre en valeur notre bien et trouver l\'acheteur idéal. Son approche clef en main nous a évité bien des tracas. Merci pour ce professionnalisme remarquable !',
+                    'photo' => 'https://randomuser.me/api/portraits/men/32.jpg'
+                ],
+            ];
+            foreach ($avis as $a):
+            ?>
+            <div class="testimonial-card" data-filter="<?= htmlspecialchars($a['service']) ?>">
+                <div class="testimonial-header">
+                    <img src="<?= htmlspecialchars($a['photo']) ?>" alt="<?= htmlspecialchars($a['nom']) ?>"
+                         class="testimonial-avatar" loading="lazy"
+                         onerror="this.src='/assets/images/avatar-placeholder.svg'">
+                    <div>
+                        <div class="testimonial-name"><?= htmlspecialchars($a['nom']) ?></div>
+                        <div class="testimonial-meta"><?= htmlspecialchars($a['ville']) ?> · <?= htmlspecialchars($a['date']) ?></div>
+                    </div>
+                    <div class="testimonial-stars" style="margin-left:auto">
+                        <?= str_repeat('★', (int)$a['note']) ?>
+                    </div>
+                </div>
+                <p class="testimonial-text"><?= htmlspecialchars($a['text']) ?></p>
+                <span class="testimonial-badge"><?= htmlspecialchars(ucfirst($a['service'])) ?></span>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- CTA -->
+        <div class="section-cta" style="text-align:center;margin-top:3rem" data-animate>
+            <p style="margin-bottom:1.5rem;color:var(--muted)">Une expérience à partager ?</p>
+            <a href="https://g.page/r/Ce2xYJzQkZJMEAI" target="_blank" rel="noopener noreferrer" class="btn btn--primary">
+                Déposer mon avis Google
+            </a>
+        </div>
+
+    </div>
+</section>

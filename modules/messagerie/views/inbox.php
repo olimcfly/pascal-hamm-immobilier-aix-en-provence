@@ -7,8 +7,8 @@
 $isConfigured = $imap->isConfigured();
 $advisorEmail = $imap->getAdvisorEmail();
 $threadId     = isset($_GET['thread_id']) ? (int)$_GET['thread_id'] : 0;
-$threads      = $isConfigured ? $repo->getThreads($userId, 80) : [];
-$totalUnread  = $isConfigured ? $repo->getTotalUnread($userId) : 0;
+$threads      = $repo->getThreads($userId, 80);
+$totalUnread  = $repo->getTotalUnread($userId);
 $allTemplates = $tplRepo->getAll($userId);
 $categories   = $tplRepo->categories();
 

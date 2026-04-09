@@ -41,7 +41,14 @@ class LeadService
             ':consent' => !empty($payload['consent']) ? 1 : 0,
         ]);
 
-        return (int)db()->lastInsertId();
+        $leadId = (int)db()->lastInsertId();
+
+        // Créer un thread + message dans la messagerie CRM
+        if ($source === self::SOURCE_CONTACT) {
+            self::createMessageThread($leadId, $payload);
+        }
+
+        return $leadId;
     }
 
     public static function list(array $filters = []): array
@@ -344,5 +351,61 @@ class LeadService
     {
         $matrix = self::stageMatrix();
         return $matrix[$source][0] ?? 'nouveau';
+    }
+
+    private static function createMessageThread(int $leadId, array $payload): void
+    {
+        try {
+            $repoFile = ROOT_PATH . '/modules/messagerie/repositories/MessageRepository.php';
+            if (!is_file($repoFile)) return;
+            require_once $repoFile;
+
+            // Récupère le user_id du premier admin actif
+            $adminUser = db()->query(
+                "SELECT id FROM users WHERE role IN ('admin','superadmin') AND status='active' ORDER BY id ASC LIMIT 1"
+            )->fetch(PDO::FETCH_ASSOC);
+            $userId = (int)($adminUser['id'] ?? 1);
+
+            $repo        = new MessageRepository(db());
+            $email       = strtolower(trim((string)($payload['email'] ?? '')));
+            $firstName   = trim((string)($payload['first_name'] ?? ''));
+            $lastName    = trim((string)($payload['last_name'] ?? ''));
+            $name        = trim("$firstName $lastName") ?: $email;
+            $intent      = trim((string)($payload['intent'] ?? 'Contact général'));
+            $notes       = trim((string)($payload['notes'] ?? ''));
+            $phone       = trim((string)($payload['phone'] ?? ''));
+
+            $subject = $intent ?: 'Nouveau message de contact';
+            $snippet = mb_substr($notes, 0, 120);
+
+            $threadId = $repo->upsertThread($userId, $email, $name, $subject, $snippet);
+
+            $bodyParts = [];
+            if ($notes !== '')  $bodyParts[] = nl2br(htmlspecialchars($notes));
+            if ($phone !== '')  $bodyParts[] = '<p><strong>Téléphone :</strong> ' . htmlspecialchars($phone) . '</p>';
+
+            $bodyHtml = implode("\n", $bodyParts);
+            $bodyText = $notes . ($phone ? "\nTéléphone : $phone" : '');
+
+            $repo->insertMessage([
+                'thread_id'       => $threadId,
+                'user_id'         => $userId,
+                'gmail_message_id'=> 'contact_form_lead_' . $leadId,
+                'direction'       => 'inbound',
+                'from_email'      => $email,
+                'from_name'       => $name,
+                'to_email'        => (string)(setting('smtp_user', '') ?: APP_EMAIL ?? ''),
+                'subject'         => $subject,
+                'body_html'       => $bodyHtml,
+                'body_text'       => $bodyText,
+                'status'          => 'received',
+                'is_read'         => 0,
+                'sent_at'         => date('Y-m-d H:i:s'),
+            ]);
+
+            $repo->incrementUnread($threadId);
+        } catch (Throwable) {
+            // Ne jamais bloquer la soumission du formulaire
+        }
     }
 }

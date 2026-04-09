@@ -170,7 +170,7 @@ final class SitemapService
         }
 
         if ($this->tableExists('pages')) {
-            $stmt = $this->pdo->query("SELECT slug, DATE_FORMAT(COALESCE(updated_at, created_at), '%Y-%m-%d') AS lastmod FROM pages WHERE statut = 'publie'");
+            $stmt = $this->pdo->query("SELECT slug, DATE_FORMAT(COALESCE(updated_at, created_at), '%Y-%m-%d') AS lastmod FROM pages WHERE status = 'published'");
             foreach (($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) as $row) {
                 $slug = trim((string) ($row['slug'] ?? ''));
                 if ($slug === '' || $slug === 'home') {

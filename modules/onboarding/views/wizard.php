@@ -19,12 +19,14 @@ $activeKey = $stepKeys[$step] ?? '';
 $activeAnswers = $activeKey !== '' ? ($answers[$activeKey] ?? []) : [];
 
 $selectedOutputs = array_map('strval', (array) ($answers['goal']['outputs'] ?? []));
-$dashboard = is_array($viewData['dashboard'] ?? null) ? $viewData['dashboard'] : [];
-$dashboardItems = (array) ($dashboard['items'] ?? []);
-$dashboardCompleted = (int) ($dashboard['completed'] ?? 0);
-$dashboardTotal = (int) ($dashboard['total'] ?? count($dashboardItems));
-$dashboardProgress = (int) ($dashboard['global_progress'] ?? 0);
-$methodCards = (array) ($viewData['methodCards'] ?? []);
+$stratModules   = $viewData['stratModules'] ?? [];
+
+$_dashboard         = $viewData['dashboard'] ?? [];
+$dashboardCompleted = (int) ($_dashboard['completed'] ?? 0);
+$dashboardTotal     = (int) ($_dashboard['total'] ?? 0);
+$dashboardProgress  = (int) ($_dashboard['global_progress'] ?? 0);
+$dashboardItems     = $_dashboard['items'] ?? [];
+$methodCards        = $viewData['methodCards'] ?? [];
 ?>
 <style>
     .onboarding-shell { max-width: 1080px; margin: 0 auto; display:grid; gap:1rem; }
@@ -235,25 +237,304 @@ $methodCards = (array) ($viewData['methodCards'] ?? []);
         </form>
     </section>
     <?php else: ?>
-    <section class="onboarding-card">
-        <h2>Récapitulatif de votre onboarding</h2>
-        <div class="summary-grid">
-            <div class="summary-box"><h3>Identité</h3><p><strong>Nom:</strong> <?= e((string) ($answers['identity']['name'] ?? '')) ?></p><p><strong>Marque:</strong> <?= e((string) ($answers['identity']['brand'] ?? '')) ?></p><p><strong>Rôle:</strong> <?= e((string) ($answers['identity']['role'] ?? '')) ?></p></div>
-            <div class="summary-box"><h3>Cible</h3><p><strong>Persona:</strong> <?= e((string) ($answers['target']['persona'] ?? '')) ?></p><p><strong>Problème:</strong> <?= e((string) ($answers['target']['pain'] ?? '')) ?></p><p><strong>Désir:</strong> <?= e((string) ($answers['target']['desire'] ?? '')) ?></p></div>
-            <div class="summary-box"><h3>Offre</h3><p><strong>Type:</strong> <?= e((string) ($answers['offer']['type'] ?? '')) ?></p><p><strong>Promesse:</strong> <?= e((string) ($answers['offer']['promise'] ?? '')) ?></p><p><strong>Différenciateur:</strong> <?= e((string) ($answers['offer']['differentiator'] ?? '')) ?></p></div>
-            <div class="summary-box"><h3>Zone</h3><p><strong>Ville:</strong> <?= e((string) ($answers['territory']['city'] ?? '')) ?></p><p><strong>Quartiers:</strong> <?= e((string) ($answers['territory']['districts'] ?? '')) ?></p><p><strong>Rayon:</strong> <?= e((string) ($answers['territory']['radius_km'] ?? '0')) ?> km</p></div>
-            <div class="summary-box"><h3>Objectif</h3><p><strong>Objectif:</strong> <?= e((string) ($answers['goal']['primary_goal'] ?? '')) ?></p><p><strong>Canal:</strong> <?= e((string) ($answers['goal']['primary_channel'] ?? '')) ?></p><p><strong>Budget:</strong> <?= e((string) ($answers['goal']['budget_monthly'] ?? '')) ?></p></div>
-            <div class="summary-box" style="grid-column:1/-1"><h3>Blueprint JSON v1.0</h3><pre class="blueprint"><?= e((string) json_encode($blueprint, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?></pre></div>
+
+    <style>
+    /* ===== ÉCRAN STRATÉGIE ===== */
+    .str-wrap {
+        --s-navy:    #1a3c5e;
+        --s-navy-dk: #0f2237;
+        --s-gold:    #c9a84c;
+        --s-bg:      #f0f4f8;
+        --s-white:   #ffffff;
+        --s-border:  #dde3eb;
+        --s-text:    #1e293b;
+        --s-muted:   #64748b;
+        --s-green:   #16a34a;
+        --s-radius:  12px;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: var(--s-text);
+        max-width: 860px;
+        margin: 0 auto;
+    }
+
+    /* Intro recap */
+    .str-intro {
+        background: var(--s-white);
+        border: 1px solid var(--s-border);
+        border-radius: var(--s-radius);
+        padding: 20px 24px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .str-intro h1 {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--s-navy-dk);
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .str-intro h1 i { color: var(--s-gold); }
+    .str-intro p { font-size: .875rem; color: var(--s-muted); margin: 0; }
+    .str-intro-facts {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        font-size: .82rem;
+    }
+    .str-fact { text-align: center; }
+    .str-fact strong { display: block; font-size: 1.1rem; font-weight: 800; color: var(--s-navy); }
+    .str-fact span { color: var(--s-muted); }
+
+    /* Module card */
+    .str-module {
+        background: var(--s-white);
+        border: 1px solid var(--s-border);
+        border-radius: var(--s-radius);
+        overflow: hidden;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px rgba(26,60,94,.06);
+    }
+
+    /* Header foncé */
+    .str-module-head {
+        background: var(--s-navy-dk);
+        padding: 14px 22px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .str-module-head .str-num {
+        width: 30px; height: 30px;
+        background: var(--s-gold);
+        color: var(--s-navy-dk);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800;
+        font-size: .85rem;
+        flex-shrink: 0;
+    }
+    .str-module-head h2 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+    }
+    .str-module-head p {
+        font-size: .78rem;
+        color: #94a3b8;
+        margin: 2px 0 0;
+    }
+
+    /* Corps */
+    .str-module-body { padding: 20px 22px; display: grid; gap: 18px; }
+
+    /* Blocs Pourquoi / Explication / Recette */
+    .str-block-label {
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: var(--s-navy);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .str-block-label i { color: var(--s-gold); font-size: .75rem; }
+    .str-block-text {
+        font-size: .875rem;
+        color: var(--s-text);
+        line-height: 1.65;
+    }
+
+    /* Recette steps */
+    .str-recipe {
+        list-style: none;
+        padding: 0; margin: 0;
+        display: grid;
+        gap: 8px;
+    }
+    .str-recipe li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: .875rem;
+        color: var(--s-text);
+        line-height: 1.5;
+    }
+    .str-recipe-num {
+        width: 22px; height: 22px;
+        background: var(--s-navy);
+        color: #fff;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .72rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    /* CTA bas */
+    .str-cta {
+        background: var(--s-navy-dk);
+        border-radius: var(--s-radius);
+        padding: 24px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+    .str-cta-text h3 {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 4px;
+    }
+    .str-cta-text p { font-size: .84rem; color: #94a3b8; margin: 0; }
+    .str-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 22px;
+        border-radius: 8px;
+        font-size: .9rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        text-decoration: none;
+        transition: opacity .15s, transform .1s;
+        border: none;
+    }
+    .str-btn:hover { opacity: .88; transform: translateY(-1px); }
+    .str-btn-gold { background: var(--s-gold); color: var(--s-navy-dk); }
+    .str-btn-outline {
+        background: transparent;
+        border: 1.5px solid rgba(255,255,255,.25);
+        color: #e2e8f0;
+    }
+    </style>
+
+    <?php
+    $moduleIcons = [
+        'construire' => ['icon' => 'fas fa-layer-group', 'num' => 1],
+        'attirer'    => ['icon' => 'fas fa-bullseye',    'num' => 2],
+        'capturer'   => ['icon' => 'fas fa-inbox',       'num' => 3],
+        'convertir'  => ['icon' => 'fas fa-handshake',   'num' => 4],
+        'optimiser'  => ['icon' => 'fas fa-chart-line',  'num' => 5],
+    ];
+    ?>
+
+    <div class="str-wrap">
+
+        <!-- Intro avec données blueprint -->
+        <div class="str-intro">
+            <div>
+                <h1><i class="fas fa-rocket"></i> Votre plan stratégique est prêt</h1>
+                <p>Onboarding complété &mdash; voici votre feuille de route par module.</p>
+            </div>
+            <div class="str-intro-facts">
+                <?php if ($answers['identity']['name'] ?? ''): ?>
+                <div class="str-fact">
+                    <strong><?= e((string)($answers['identity']['name'] ?? '')) ?></strong>
+                    <span><?= e(ucfirst((string)($answers['identity']['role'] ?? ''))) ?></span>
+                </div>
+                <?php endif; ?>
+                <?php if ($answers['territory']['city'] ?? ''): ?>
+                <div class="str-fact">
+                    <strong><?= e((string)($answers['territory']['city'] ?? '')) ?></strong>
+                    <span>Zone principale</span>
+                </div>
+                <?php endif; ?>
+                <?php if ($answers['goal']['primary_goal'] ?? ''): ?>
+                <div class="str-fact">
+                    <strong><?= e((string)($answers['goal']['primary_goal'] ?? '')) ?></strong>
+                    <span>Objectif</span>
+                </div>
+                <?php endif; ?>
+            </div>
         </div>
 
-        <div class="onboarding-actions">
-            <a class="btn btn-secondary" href="/admin?module=onboarding&amp;step=5">Retour</a>
-            <form method="post" action="/admin?module=onboarding&amp;step=6">
-                <?= csrfField() ?>
-                <input type="hidden" name="intent" value="complete">
-                <button class="btn btn-primary" type="submit">Finaliser le Sprint 1</button>
-            </form>
+        <!-- Un module par bloc -->
+        <?php foreach ($stratModules as $slug => $mod):
+            if (empty($mod['meta']['motivation'])) continue;
+            $meta = $mod['meta'];
+            $info = $moduleIcons[$slug] ?? ['icon' => 'fas fa-circle', 'num' => '?'];
+        ?>
+        <div class="str-module">
+            <div class="str-module-head">
+                <div class="str-num"><?= $info['num'] ?></div>
+                <div>
+                    <h2><i class="<?= e($info['icon']) ?>" style="margin-right:6px"></i><?= e($mod['title'] ?? strtoupper($slug)) ?></h2>
+                    <p><?= e($mod['description'] ?? '') ?></p>
+                </div>
+            </div>
+            <div class="str-module-body">
+
+                <div>
+                    <div class="str-block-label"><i class="fas fa-circle-question"></i> Pourquoi</div>
+                    <p class="str-block-text"><?= e($meta['motivation']) ?></p>
+                </div>
+
+                <div>
+                    <div class="str-block-label"><i class="fas fa-lightbulb"></i> Explication</div>
+                    <p class="str-block-text"><?= e($meta['explanation']) ?></p>
+                </div>
+
+                <?php if (!empty($meta['recipe'])): ?>
+                <div>
+                    <div class="str-block-label"><i class="fas fa-list-check"></i> Recette</div>
+                    <ol class="str-recipe">
+                        <?php foreach ($meta['recipe'] as $i => $step): ?>
+                            <li>
+                                <span class="str-recipe-num"><?= $i + 1 ?></span>
+                                <span><?= e($step) ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+                <?php endif; ?>
+
+            </div>
         </div>
-    </section>
+        <?php endforeach; ?>
+
+        <!-- CTA final -->
+        <div class="str-cta">
+            <div class="str-cta-text">
+                <h3>Prêt à passer à l'action ?</h3>
+                <p>Votre configuration est enregistrée. Commencez par le Module 1 : Construire.</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <a class="str-btn str-btn-outline" href="/admin?module=onboarding&amp;step=5">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+                <?php if ($status !== 'completed'): ?>
+                <form method="post" action="/admin?module=onboarding&amp;step=6" style="display:inline">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="intent" value="complete">
+                    <button class="str-btn str-btn-gold" type="submit">
+                        <i class="fas fa-check"></i> Valider &amp; commencer
+                    </button>
+                </form>
+                <?php else: ?>
+                <a class="str-btn str-btn-gold" href="/admin?module=construire">
+                    <i class="fas fa-arrow-right"></i> Retour au plan d'action
+                </a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+    </div><!-- .str-wrap -->
+
     <?php endif; ?>
 </div>

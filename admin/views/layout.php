@@ -151,5 +151,132 @@ if ($advisorDisplayName === '') {
 </div>
 
 <script src="<?= e(asset_url('/admin/assets/js/dashboard.js')) ?>"></script>
+
+<?php if (!empty($_SESSION['show_welcome_popup'])): unset($_SESSION['show_welcome_popup']);
+$welcomeMessages = [
+    ['emoji'=>'🚀','title'=>'Prêt à conquérir le Pays d\'Aix ?','text'=>'Le marché immobilier n\'a qu\'à bien se tenir. Vous êtes là, et c\'est suffisant.'],
+    ['emoji'=>'☀️','title'=>'Bonjour patron !','text'=>'Les biens ne se vendent pas tout seuls. Mais avec vous derrière le clavier, c\'est presque pareil.'],
+    ['emoji'=>'🏡','title'=>'Maison. Appartement. Empire.','text'=>'La session est ouverte. Aix-en-Provence attend vos ordres.'],
+    ['emoji'=>'💼','title'=>'Connexion réussie. Mission : cartonner.','text'=>'Agenda chargé ou moment calme ? Dans tous les cas, bienvenue dans le QG.'],
+    ['emoji'=>'🎯','title'=>'Le chasseur est dans la place.','text'=>'Biens, leads, clients — tout ça ne sait pas encore ce qui l\'attend.'],
+    ['emoji'=>'🌟','title'=>'Une nouvelle journée, de nouvelles commissions.','text'=>'On ne va pas se mentir, c\'est pour ça qu\'on est là. Bonne session !'],
+    ['emoji'=>'⚡','title'=>'Alerte : expert immobilier connecté.','text'=>'Les autres conseillers du Pays d\'Aix peuvent commencer à s\'inquiéter.'],
+    ['emoji'=>'🦁','title'=>'Le roi est de retour dans son territoire.','text'=>'Aix-en-Provence, Luynes, Puyricard… Le Pays d\'Aix appartient à ceux qui le connaissent.'],
+    ['emoji'=>'🎪','title'=>'Et le show commence !','text'=>'Rideau ouvert, clients briefés, biens prêts. Il ne manquait plus que vous.'],
+    ['emoji'=>'🧠','title'=>'Connexion établie. Neurones en route.','text'=>'Statistiques, leads, contenus… votre cerveau immobilier est en ligne.'],
+    ['emoji'=>'🏆','title'=>'L\'équipe gagnante est de retour.','text'=>'Spoiler : l\'équipe gagnante, c\'est vous. Et votre ordinateur.'],
+    ['emoji'=>'🌅','title'=>'Une belle journée commence.','text'=>'Ou une belle soirée. Ou une belle nuit. L\'immobilier, ça ne dort jamais.'],
+];
+$msg = $welcomeMessages[array_rand($welcomeMessages)];
+?>
+<div id="welcome-popup" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="welcome-modal" data-animate-in>
+        <div class="welcome-modal__emoji" aria-hidden="true"><?= $msg['emoji'] ?></div>
+        <h2 class="welcome-modal__title" id="welcome-title"><?= htmlspecialchars($msg['title']) ?></h2>
+        <p class="welcome-modal__text"><?= htmlspecialchars($msg['text']) ?></p>
+        <button class="welcome-modal__close" id="welcome-close" autofocus>
+            C'est parti 👊
+        </button>
+    </div>
+</div>
+<style>
+.welcome-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(10, 20, 40, .55);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    animation: overlayIn .25s ease;
+}
+@keyframes overlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.welcome-modal {
+    background: #fff;
+    border-radius: 1.25rem;
+    padding: 2.5rem 2rem 2rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,.22);
+    animation: modalIn .35s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(32px) scale(.94); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.welcome-modal__emoji {
+    font-size: 3.5rem;
+    line-height: 1;
+    margin-bottom: 1rem;
+    display: block;
+}
+.welcome-modal__title {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a3c5e;
+    margin-bottom: .625rem;
+    line-height: 1.3;
+}
+.welcome-modal__text {
+    font-size: .95rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+}
+.welcome-modal__close {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: #1a3c5e;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: .75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+    font-family: inherit;
+}
+.welcome-modal__close:hover {
+    background: #c9a84c;
+    transform: scale(1.03);
+}
+.welcome-modal__close:active {
+    transform: scale(.98);
+}
+.welcome-overlay.closing {
+    animation: overlayOut .2s ease forwards;
+}
+@keyframes overlayOut {
+    to { opacity: 0; }
+}
+</style>
+<script>
+(function() {
+    var overlay = document.getElementById('welcome-popup');
+    var btn     = document.getElementById('welcome-close');
+    function closePopup() {
+        overlay.classList.add('closing');
+        setTimeout(function() { overlay.remove(); }, 200);
+    }
+    btn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closePopup();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closePopup();
+    });
+})();
+</script>
+<?php endif; ?>
 </body>
 </html>

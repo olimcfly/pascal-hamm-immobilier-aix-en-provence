@@ -76,13 +76,30 @@ try {
         <?php else: ?>
             <!-- Grille d'articles -->
             <div class="grid-3">
-                <?php foreach ($articles as $article): ?>
-                <article class="card" style="display:flex;flex-direction:column">
-                    <div style="padding:1.75rem;flex:1;display:flex;flex-direction:column">
-                        <h2 class="card__title" style="font-size:1.15rem;margin-bottom:.75rem">
+                <?php foreach ($articles as $article):
+                    $imgSrc = !empty($article['image'])
+                        ? e($article['image'])
+                        : '/assets/images/placeholder.php?type=article&label=' . rawurlencode($article['title']);
+                    $dateLabel = !empty($article['date']) ? date('d/m/Y', strtotime($article['date'])) : '';
+                ?>
+                <article class="card" style="display:flex;flex-direction:column;overflow:hidden">
+                    <a href="<?= url('/blog/' . rawurlencode((string) $article['slug'])) ?>" style="display:block;line-height:0;overflow:hidden">
+                        <img src="<?= $imgSrc ?>"
+                             alt="<?= e($article['title']) ?>"
+                             width="400" height="225"
+                             style="width:100%;height:200px;object-fit:cover;transition:transform .3s"
+                             loading="lazy"
+                             onmouseover="this.style.transform='scale(1.04)'"
+                             onmouseout="this.style.transform='scale(1)'">
+                    </a>
+                    <div style="padding:1.5rem;flex:1;display:flex;flex-direction:column">
+                        <?php if ($dateLabel): ?>
+                        <div style="font-size:.75rem;color:var(--clr-text-muted);margin-bottom:.5rem"><?= e($dateLabel) ?></div>
+                        <?php endif; ?>
+                        <h2 class="card__title" style="font-size:1.05rem;margin-bottom:.65rem">
                             <?= e($article['title']) ?>
                         </h2>
-                        <p class="card__text" style="flex:1;margin-bottom:1.25rem">
+                        <p class="card__text" style="flex:1;margin-bottom:1.25rem;font-size:.875rem">
                             <?= e($article['excerpt']) ?>
                         </p>
                         <a href="<?= url('/blog/' . rawurlencode((string) $article['slug'])) ?>"

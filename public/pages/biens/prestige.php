@@ -38,11 +38,18 @@ $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($biens as $bien): ?>
                     <article class="card property-card-premium">
 
+                        <?php
+                            $ph_prestige = '/assets/images/placeholder.php?type=bien&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
+                            $src_prestige = (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false)
+                                ? e($bien['photo_principale'])
+                                : ((!empty($bien['image'])) ? '/uploads/' . e($bien['image']) : $ph_prestige);
+                        ?>
                         <img
                             class="card__img"
-                            src="<?= !empty($bien['photo_principale']) ? e($bien['photo_principale']) : (!empty($bien['image']) ? '/uploads/' . e($bien['image']) : '/assets/images/placeholder.php?type=bien&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0)) ?>"
+                            src="<?= $src_prestige ?>"
                             alt="<?= e($bien['titre'] ?? 'Bien immobilier de prestige') ?>"
                             loading="lazy"
+                            onerror="this.onerror=null;this.src='<?= $ph_prestige ?>'"
                         >
 
                         <div class="card__body">

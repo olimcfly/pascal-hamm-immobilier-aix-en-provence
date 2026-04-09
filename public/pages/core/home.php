@@ -92,7 +92,7 @@ $featuredProperties = [
             <a href="/a-propos" class="btn btn--outline">Découvrir son parcours</a>
         </div>
         <figure class="about-photo">
-            <img src="/assets/images/about.jpg" alt="Pascal Hamm, conseiller immobilier au Pays d'Aix" loading="lazy">
+            <img src="/assets/images/pascal-hamm-immobiliier.jpeg" alt="Pascal Hamm, conseiller immobilier au Pays d'Aix" loading="lazy">
         </figure>
     </div>
 </section>

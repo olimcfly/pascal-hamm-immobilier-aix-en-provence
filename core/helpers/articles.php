@@ -14,7 +14,7 @@ if (!function_exists('get_articles_list')) {
 
         $pdo = db();
         $stmt = $pdo->prepare(
-            "SELECT titre, slug, contenu, meta_desc
+            "SELECT titre, slug, contenu, meta_desc, image, date_publication
              FROM blog_articles
              WHERE website_id = :website_id
                AND statut = 'publié'
@@ -33,13 +33,40 @@ if (!function_exists('get_articles_list')) {
                 $meta = trim((string) ($row['meta_desc'] ?? ''));
                 $content = trim(strip_tags((string) ($row['contenu'] ?? '')));
 
+                $image = trim((string) ($row['image'] ?? ''));
+
                 return [
-                    'title' => $title,
-                    'slug' => $slug,
+                    'title'   => $title,
+                    'slug'    => $slug,
                     'excerpt' => $meta !== '' ? $meta : truncate($content, 160),
+                    'image'   => $image !== '' ? $image : null,
+                    'date'    => $row['date_publication'] ?? null,
                 ];
             },
             $rows
         );
+    }
+}
+
+if (!function_exists('get_article_by_slug')) {
+    /**
+     * Retourne un article publié par son slug.
+     */
+    function get_article_by_slug(string $slug, int $websiteId = 1): ?array
+    {
+        $pdo  = db();
+        $stmt = $pdo->prepare(
+            "SELECT titre, slug, h1, contenu, meta_desc, seo_title, type,
+                    image, date_publication, created_at, mots
+             FROM blog_articles
+             WHERE website_id = :website_id
+               AND slug = :slug
+               AND statut = 'publié'
+             LIMIT 1"
+        );
+        $stmt->execute([':website_id' => $websiteId, ':slug' => $slug]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ?: null;
     }
 }

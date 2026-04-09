@@ -10,7 +10,7 @@ if (Auth::check()) {
 db()->exec("
     CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
         `id`         BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
-        `user_id`    INT UNSIGNED     NOT NULL,
+        `user_id`    BIGINT UNSIGNED  NOT NULL,
         `token_hash` VARCHAR(255)     NOT NULL,
         `expires_at` DATETIME         NOT NULL,
         `used_at`    DATETIME         DEFAULT NULL,

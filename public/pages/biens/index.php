@@ -78,8 +78,8 @@ $nbBiensTotal = count($biens);
 ?>
 
 <!-- HERO -->
-<section class="hero hero--premium">
-    <div class="hero__bg" style="background-image:linear-gradient(110deg, rgba(26,60,94,.92), rgba(15,38,68,.86)), url('/assets/images/hero-bg.jpg');"></div>
+<section class="hero hero--premium hero--biens">
+    <div class="hero__bg" style="background-image:linear-gradient(110deg, rgba(26,60,94,.92), rgba(15,38,68,.86)), url(‘/assets/images/hero-bg.jpg’);"></div>
     <div class="container">
         <div class="hero__content">
             <span class="section-label">Biens immobiliers</span>
@@ -87,17 +87,11 @@ $nbBiensTotal = count($biens);
             <p class="hero__subtitle">
                 Découvrez notre sélection de biens disponibles à la vente et à la location dans le Pays d’Aix.
             </p>
-        </div>
-    </div>
-</section>
-
-<!-- STATS -->
-<section class="section page-biens-header">
-    <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number"><?= $nbBiensTotal ?></div>
-                <div class="stat-label">Biens disponibles</div>
+            <div class="hero__stats">
+                <div class="stat-item">
+                    <span class="stat-value"><?= $nbBiensTotal ?></span>
+                    <span class="stat-label">Biens disponibles</span>
+                </div>
             </div>
         </div>
     </div>

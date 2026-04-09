@@ -41,11 +41,18 @@ $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <article class="card property-card-premium property-card--sold">
 
                         <div class="card__img-wrapper">
+                            <?php
+                                $ph_vendu = '/assets/images/placeholder.php?type=bien&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
+                                $src_vendu = (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false)
+                                    ? e($bien['photo_principale'])
+                                    : ((!empty($bien['image'])) ? '/uploads/' . e($bien['image']) : $ph_vendu);
+                            ?>
                             <img
                                 class="card__img"
-                                src="<?= !empty($bien['photo_principale']) ? e($bien['photo_principale']) : (!empty($bien['image']) ? '/uploads/' . e($bien['image']) : '/assets/images/placeholder.php?type=bien&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0)) ?>"
+                                src="<?= $src_vendu ?>"
                                 alt="<?= e($bien['titre'] ?? 'Bien immobilier') ?>"
                                 loading="lazy"
+                                onerror="this.onerror=null;this.src='<?= $ph_vendu ?>'"
                             >
                             <span class="property-badge property-badge--sold">Vendu</span>
                         </div>

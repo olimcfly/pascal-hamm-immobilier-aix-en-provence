@@ -15,7 +15,8 @@ $tokenData = null;
 if ($tokenHash !== '') {
     try {
         $stmt = db()->prepare("
-            SELECT prt.id, prt.user_id, prt.expires_at, prt.used_at, u.email, u.name
+            SELECT prt.id, prt.user_id, prt.expires_at, prt.used_at, u.email,
+                   CONCAT(COALESCE(u.firstname,''), ' ', COALESCE(u.lastname,'')) AS name
             FROM   password_reset_tokens prt
             JOIN   users u ON u.id = prt.user_id
             WHERE  prt.token_hash = ?

@@ -17,9 +17,11 @@ $metaDesc = 'Découvrez Pascal Hamm, expert immobilier clef en main à Aix-en-Pr
         <div class="grid-2" style="gap:4rem;align-items:center">
             <div data-animate>
                 <div class="about-portrait-container">
-                    <img src="https://nhkxpqunzawllesgatth.supabase.co/storage/v1/object/public/agent-images/1771872652134-8tuqxqy2kpo.jpeg"
+                    <img src="/assets/images/pascal-hamm.jpeg"
                          alt="Pascal Hamm - Expert immobilier Aix-en-Provence"
-                         class="about-portrait">
+                         width="600" height="1009"
+                         class="about-portrait"
+                         loading="eager">
                 </div>
             </div>
             <div data-animate>

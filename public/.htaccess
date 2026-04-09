@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # robots.txt dynamique basé sur APP_URL
+    RewriteRule ^robots\.txt$ robots.php [L]
+
     # Si le fichier ou le dossier existe physiquement, on le charge normalement
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

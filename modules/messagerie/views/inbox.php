@@ -598,4 +598,18 @@ function toast(msg, err=false) {
 // Scroll messages au bas
 const msgs = document.getElementById('msgMessages');
 if (msgs) msgs.scrollTop = msgs.scrollHeight;
+
+// Pré-remplissage du compose via URL (depuis CRM, etc.)
+(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('compose') !== '1') return;
+
+    openCompose();
+    const to = params.get('to') || '';
+    const subject = params.get('subject') || '';
+    const body = params.get('body') || '';
+    if (to) document.getElementById('composeTo').value = to;
+    if (subject) document.getElementById('composeSubject').value = subject;
+    if (body) document.getElementById('composeBody').value = body;
+})();
 </script>

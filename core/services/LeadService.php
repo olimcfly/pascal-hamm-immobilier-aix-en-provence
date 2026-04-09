@@ -9,6 +9,7 @@ class LeadService
     public const SOURCE_AUTRE = 'autre';
 
     private static bool $tableReady = false;
+    private static bool $interactionTableReady = false;
 
     public static function capture(array $payload): int
     {
@@ -217,6 +218,95 @@ class LeadService
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
         self::$tableReady = true;
+    }
+
+    public static function logInteraction(int $leadId, string $type, string $note = '', array $meta = []): bool
+    {
+        self::ensureTable();
+        self::ensureInteractionTable();
+
+        if ($leadId <= 0) {
+            return false;
+        }
+
+        $type = self::sanitizeInteractionType($type);
+        $note = trim($note);
+        $oldValue = isset($meta['old']) ? (string)$meta['old'] : null;
+        $newValue = isset($meta['new']) ? (string)$meta['new'] : null;
+
+        $stmt = db()->prepare('INSERT INTO crm_lead_interactions
+            (lead_id, interaction_type, old_value, new_value, note, created_at)
+            VALUES (:lead_id, :interaction_type, :old_value, :new_value, :note, NOW())');
+
+        return $stmt->execute([
+            ':lead_id' => $leadId,
+            ':interaction_type' => $type,
+            ':old_value' => $oldValue,
+            ':new_value' => $newValue,
+            ':note' => $note !== '' ? $note : null,
+        ]);
+    }
+
+    public static function latestInteractionsByLead(array $leadIds, string $type = 'appel'): array
+    {
+        self::ensureTable();
+        self::ensureInteractionTable();
+
+        $leadIds = array_values(array_filter(array_map('intval', $leadIds), static fn(int $id): bool => $id > 0));
+        if ($leadIds === []) {
+            return [];
+        }
+
+        $type = self::sanitizeInteractionType($type);
+        $placeholders = implode(',', array_fill(0, count($leadIds), '?'));
+
+        $sql = 'SELECT i.*
+                FROM crm_lead_interactions i
+                INNER JOIN (
+                    SELECT lead_id, MAX(id) AS max_id
+                    FROM crm_lead_interactions
+                    WHERE lead_id IN (' . $placeholders . ') AND interaction_type = ?
+                    GROUP BY lead_id
+                ) latest ON latest.max_id = i.id';
+
+        $stmt = db()->prepare($sql);
+        $stmt->execute([...$leadIds, $type]);
+        $rows = $stmt->fetchAll();
+
+        $indexed = [];
+        foreach ($rows as $row) {
+            $indexed[(int)$row['lead_id']] = $row;
+        }
+
+        return $indexed;
+    }
+
+    private static function ensureInteractionTable(): void
+    {
+        if (self::$interactionTableReady) {
+            return;
+        }
+
+        db()->exec('CREATE TABLE IF NOT EXISTS crm_lead_interactions (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            lead_id INT UNSIGNED NOT NULL,
+            interaction_type VARCHAR(20) NOT NULL,
+            old_value VARCHAR(80) NULL,
+            new_value VARCHAR(80) NULL,
+            note TEXT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_lead_created (lead_id, created_at),
+            INDEX idx_lead_type (lead_id, interaction_type, created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+        self::$interactionTableReady = true;
+    }
+
+    private static function sanitizeInteractionType(string $type): string
+    {
+        $type = strtolower(trim($type));
+        $allowed = ['status', 'note', 'email', 'appel', 'sms', 'rdv', 'autre'];
+        return in_array($type, $allowed, true) ? $type : 'autre';
     }
 
     private static function sanitizeSource(string $source): string

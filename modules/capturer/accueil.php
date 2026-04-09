@@ -11,7 +11,32 @@ if ($pipeline !== '' && !isset($pipelines[$pipeline])) {
     $pipeline = '';
 }
 
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && (string)($_POST['action'] ?? '') === 'log_call') {
+    verifyCsrf();
+
+    $leadId = (int)($_POST['lead_id'] ?? 0);
+    $note = trim((string)($_POST['call_note'] ?? ''));
+    if ($note === '') {
+        $note = 'Appel effectué depuis CRM Capturer.';
+    }
+
+    if ($leadId > 0 && LeadService::logInteraction($leadId, 'appel', $note)) {
+        flash('success', 'Appel journalisé dans la boîte de log.');
+    } else {
+        flash('error', 'Impossible de journaliser cet appel.');
+    }
+
+    $redirect = '/admin?module=capturer&view=' . urlencode($view);
+    if ($pipeline !== '') {
+        $redirect .= '&pipeline=' . urlencode($pipeline);
+    }
+    header('Location: ' . $redirect);
+    exit;
+}
+
 $leads = LeadService::list($pipeline ? ['pipeline' => $pipeline] : []);
+$leadIds = array_values(array_filter(array_map(static fn(array $lead): int => (int)($lead['id'] ?? 0), $leads)));
+$latestCallByLead = LeadService::latestInteractionsByLead($leadIds, 'appel');
 
 $now = new DateTimeImmutable('now');
 $todayStart = $now->setTime(0, 0, 0);
@@ -104,7 +129,7 @@ foreach ($leads as $lead) {
 function renderContent(): void
 {
     global $view, $pipeline, $pipelines, $leads, $stats, $smartMessage,
-           $priorityLeads, $stageColor, $intentLabel, $stageCountByPipeline;
+           $priorityLeads, $stageColor, $intentLabel, $stageCountByPipeline, $latestCallByLead;
     ?>
     <style>
     /* ===== VARIABLES ===== */
@@ -308,6 +333,34 @@ function renderContent(): void
         color: var(--c-muted);
         line-height: 1.5;
     }
+    .crm-call-log {
+        margin-top: 8px;
+        background: #f8fafc;
+        border: 1px solid var(--c-border);
+        border-radius: 10px;
+        padding: 10px;
+    }
+    .crm-call-log-head {
+        font-size: .74rem;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 6px;
+    }
+    .crm-call-log textarea {
+        width: 100%;
+        min-height: 56px;
+        border: 1px solid #d6dee8;
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        font-size: .8rem;
+        resize: vertical;
+        font-family: inherit;
+    }
+    .crm-call-log .crm-btn {
+        width: 100%;
+        justify-content: center;
+    }
 
     /* ===== LEAD CARDS ===== */
     .crm-cards-grid {
@@ -490,6 +543,10 @@ function renderContent(): void
                         $fullName = trim(($lead['first_name'] ?? '') . ' ' . ($lead['last_name'] ?? '')) ?: 'Lead sans nom';
                         $stage = (string)($lead['stage'] ?? 'nouveau');
                         $tone = $stageColor($stage);
+                        $leadId = (int)($lead['id'] ?? 0);
+                        $latestCall = $leadId > 0 ? ($latestCallByLead[$leadId] ?? null) : null;
+                        $composeLink = '/admin?module=messagerie&view=inbox&compose=1&to=' . urlencode((string)($lead['email'] ?? ''))
+                                     . '&subject=' . urlencode('Suivi - ' . $fullName);
                     ?>
                         <div class="crm-priority-card">
                             <strong><?= e($fullName) ?></strong>
@@ -507,13 +564,28 @@ function renderContent(): void
                                         <i class="fas fa-phone"></i> Appeler
                                     </a>
                                 <?php endif; ?>
-                                <a class="crm-btn" href="mailto:<?= e((string)($lead['email'] ?? '')) ?>">
-                                    <i class="fas fa-envelope"></i> Email
+                                <a class="crm-btn" href="<?= e($composeLink) ?>">
+                                    <i class="fas fa-envelope"></i> Email (Messagerie)
                                 </a>
                                 <a class="crm-btn" href="#">
                                     <i class="fas fa-calendar"></i> RDV
                                 </a>
                             </div>
+                            <form class="crm-call-log" method="post">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="action" value="log_call">
+                                <input type="hidden" name="lead_id" value="<?= $leadId ?>">
+                                <div class="crm-call-log-head">
+                                    <i class="fas fa-phone-volume"></i> Boîte log d'appel
+                                    <?php if (is_array($latestCall) && !empty($latestCall['created_at'])): ?>
+                                        — dernier: <?= e((string)$latestCall['created_at']) ?>
+                                    <?php endif; ?>
+                                </div>
+                                <textarea name="call_note" placeholder="Ex: Appel sortant, relance demain 10h."><?=
+                                    e((string)($latestCall['note'] ?? ''))
+                                ?></textarea>
+                                <button class="crm-btn" type="submit"><i class="fas fa-floppy-disk"></i> Enregistrer le log</button>
+                            </form>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -560,6 +632,10 @@ function renderContent(): void
                     $fullName = trim(($lead['first_name'] ?? '') . ' ' . ($lead['last_name'] ?? '')) ?: 'Lead sans nom';
                     $stage    = (string)($lead['stage'] ?? 'nouveau');
                     $tone     = $stageColor($stage);
+                    $leadId   = (int)($lead['id'] ?? 0);
+                    $latestCall = $leadId > 0 ? ($latestCallByLead[$leadId] ?? null) : null;
+                    $composeLink = '/admin?module=messagerie&view=inbox&compose=1&to=' . urlencode((string)($lead['email'] ?? ''))
+                                 . '&subject=' . urlencode('Suivi - ' . $fullName);
                 ?>
                     <div class="crm-lead-card">
                         <div class="crm-lead-head">
@@ -596,13 +672,28 @@ function renderContent(): void
                                     <i class="fas fa-phone"></i> Appeler
                                 </a>
                             <?php endif; ?>
-                            <a class="crm-btn" href="mailto:<?= e((string)($lead['email'] ?? '')) ?>">
-                                <i class="fas fa-envelope"></i>
+                            <a class="crm-btn" href="<?= e($composeLink) ?>" title="Envoyer depuis la messagerie">
+                                <i class="fas fa-envelope"></i> Email
                             </a>
                             <a class="crm-btn" href="#">
                                 <i class="fas fa-calendar"></i> RDV
                             </a>
                         </div>
+                        <form class="crm-call-log" method="post">
+                            <?= csrfField() ?>
+                            <input type="hidden" name="action" value="log_call">
+                            <input type="hidden" name="lead_id" value="<?= $leadId ?>">
+                            <div class="crm-call-log-head">
+                                <i class="fas fa-phone-volume"></i> Boîte log d'appel
+                                <?php if (is_array($latestCall) && !empty($latestCall['created_at'])): ?>
+                                    — dernier: <?= e((string)$latestCall['created_at']) ?>
+                                <?php endif; ?>
+                            </div>
+                            <textarea name="call_note" placeholder="Ex: Appel entrant, proposition envoyée."><?=
+                                e((string)($latestCall['note'] ?? ''))
+                            ?></textarea>
+                            <button class="crm-btn" type="submit"><i class="fas fa-floppy-disk"></i> Enregistrer le log</button>
+                        </form>
                     </div>
                 <?php endforeach; ?>
             </div>

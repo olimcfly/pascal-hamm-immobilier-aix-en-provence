@@ -89,7 +89,7 @@ function renderBiensHubCards(): void
 
 function biensFetchCatalogue(): array
 {
-    $sql = 'SELECT id, titre, ville, prix, type, statut, created_at FROM biens ORDER BY created_at DESC LIMIT 200';
+    $sql = 'SELECT id, titre, ville, prix, type_bien AS type, statut, created_at FROM biens ORDER BY created_at DESC LIMIT 200';
     $stmt = db()->query($sql);
 
     return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];

@@ -15,315 +15,629 @@ $leads = LeadService::list($pipeline ? ['pipeline' => $pipeline] : []);
 
 $now = new DateTimeImmutable('now');
 $todayStart = $now->setTime(0, 0, 0);
-$todayEnd = $now->setTime(23, 59, 59);
+$todayEnd   = $now->setTime(23, 59, 59);
 
-$closedStages = ['converti', 'perdu', 'archive', 'inactif', 'traite'];
-$rdvStages = ['rdv_a_planifier', 'rdv_propose'];
+$closedStages      = ['converti', 'perdu', 'archive', 'inactif', 'traite'];
+$rdvStages         = ['rdv_a_planifier', 'rdv_propose'];
 $hotIntentKeywords = ['urgent', 'vite', 'rapid', 'achat', 'vendre', 'rdv', 'visite', 'estimer', 'financement'];
 
-$stats = [
-    'active' => 0,
-    'hot' => 0,
-    'rdv' => 0,
-    'cold' => 0,
-    'today_todo' => 0,
-];
-
+$stats = ['active' => 0, 'hot' => 0, 'rdv' => 0, 'cold' => 0, 'today_todo' => 0];
 $rankedLeads = [];
 
 foreach ($leads as $lead) {
-    $stage = strtolower((string)($lead['stage'] ?? 'nouveau'));
-    $intent = strtolower((string)($lead['intent'] ?? ''));
+    $stage    = strtolower((string)($lead['stage']    ?? 'nouveau'));
+    $intent   = strtolower((string)($lead['intent']   ?? ''));
     $priority = strtolower((string)($lead['priority'] ?? 'normal'));
 
     $isClosed = in_array($stage, $closedStages, true);
-    $isRdv = in_array($stage, $rdvStages, true);
-    $isHot = $priority === 'haute' || $isRdv || $stage === 'a_traiter';
+    $isRdv    = in_array($stage, $rdvStages, true);
+    $isHot    = $priority === 'haute' || $isRdv || $stage === 'a_traiter';
 
-    foreach ($hotIntentKeywords as $keyword) {
-        if (str_contains($intent, $keyword)) {
-            $isHot = true;
-            break;
-        }
+    foreach ($hotIntentKeywords as $kw) {
+        if (str_contains($intent, $kw)) { $isHot = true; break; }
     }
 
-    if (!$isClosed) {
-        $stats['active']++;
-    }
-
-    if ($isHot && !$isClosed) {
-        $stats['hot']++;
-    }
-
-    if ($isRdv) {
-        $stats['rdv']++;
-    }
-
-    if ($isClosed || (!$isHot && !$isRdv)) {
-        $stats['cold']++;
-    }
+    if (!$isClosed)              $stats['active']++;
+    if ($isHot && !$isClosed)    $stats['hot']++;
+    if ($isRdv)                  $stats['rdv']++;
+    if ($isClosed || (!$isHot && !$isRdv)) $stats['cold']++;
 
     $createdAt = null;
     if (!empty($lead['created_at'])) {
-        try {
-            $createdAt = new DateTimeImmutable((string)$lead['created_at']);
-        } catch (Throwable) {
-            $createdAt = null;
-        }
+        try { $createdAt = new DateTimeImmutable((string)$lead['created_at']); } catch (Throwable) {}
     }
 
     $needsActionToday = !$isClosed && (
-        $isRdv
-        || $stage === 'a_traiter'
+        $isRdv || $stage === 'a_traiter'
         || ($createdAt instanceof DateTimeImmutable && $createdAt >= $todayStart && $createdAt <= $todayEnd)
     );
+    if ($needsActionToday) $stats['today_todo']++;
 
-    if ($needsActionToday) {
-        $stats['today_todo']++;
-    }
+    $score  = ($priority === 'haute' ? 30 : ($priority === 'normal' ? 10 : 5));
+    $score += $isRdv ? 30 : 0;
+    $score += $stage === 'a_traiter' ? 20 : 0;
+    $score += $isHot ? 25 : 0;
 
-    $urgencyScore = 0;
-    $urgencyScore += $priority === 'haute' ? 30 : ($priority === 'normal' ? 10 : 5);
-    $urgencyScore += $isRdv ? 30 : 0;
-    $urgencyScore += $stage === 'a_traiter' ? 20 : 0;
-    $urgencyScore += $isHot ? 25 : 0;
-
-    $lead['_is_hot'] = $isHot;
-    $lead['_is_closed'] = $isClosed;
-    $lead['_is_rdv'] = $isRdv;
-    $lead['_needs_action_today'] = $needsActionToday;
-    $lead['_urgency'] = $urgencyScore;
+    $lead['_is_hot']            = $isHot;
+    $lead['_is_closed']         = $isClosed;
+    $lead['_is_rdv']            = $isRdv;
+    $lead['_needs_action_today']= $needsActionToday;
+    $lead['_urgency']           = $score;
     $rankedLeads[] = $lead;
 }
 
-usort($rankedLeads, static fn(array $a, array $b): int => ($b['_urgency'] ?? 0) <=> ($a['_urgency'] ?? 0));
-$priorityLeads = array_values(array_filter($rankedLeads, static fn(array $lead): bool => !empty($lead['_needs_action_today']) || !empty($lead['_is_hot'])));
-$priorityLeads = array_slice($priorityLeads, 0, 5);
+usort($rankedLeads, static fn($a, $b) => ($b['_urgency'] ?? 0) <=> ($a['_urgency'] ?? 0));
+$priorityLeads = array_slice(
+    array_values(array_filter($rankedLeads, static fn($l) => !empty($l['_needs_action_today']) || !empty($l['_is_hot']))),
+    0, 5
+);
 
-$smartMessage = 'Pipeline stable : continuez le suivi.';
-if ($stats['rdv'] > 0) {
-    $smartMessage = $stats['rdv'] . ' RDV à planifier aujourd\'hui.';
-} elseif ($stats['today_todo'] > 0) {
-    $smartMessage = $stats['today_todo'] . ' leads à traiter aujourd\'hui.';
-} elseif ($stats['hot'] > 0) {
-    $smartMessage = $stats['hot'] . ' leads chauds à contacter en priorité.';
-}
+$smartMessage = 'Pipeline stable — continuez le suivi.';
+if ($stats['rdv'] > 0)          $smartMessage = $stats['rdv'] . ' RDV à planifier aujourd\'hui.';
+elseif ($stats['today_todo'] > 0) $smartMessage = $stats['today_todo'] . ' leads à traiter aujourd\'hui.';
+elseif ($stats['hot'] > 0)      $smartMessage = $stats['hot'] . ' leads chauds à contacter en priorité.';
 
-$stageColor = static function (string $stage): string {
-    if (in_array($stage, ['rdv_a_planifier', 'a_traiter', 'perdu'], true)) {
-        return 'danger';
-    }
-    if (in_array($stage, ['a_qualifier', 'en_discussion', 'nurturing', 'rdv_propose', 'en_cours', 'a_relancer'], true)) {
-        return 'follow';
-    }
-    return 'ok';
+$stageColor = static function (string $s): string {
+    if (in_array($s, ['rdv_a_planifier','a_traiter','perdu'], true))                           return 'danger';
+    if (in_array($s, ['a_qualifier','en_discussion','nurturing','rdv_propose','en_cours','a_relancer'], true)) return 'warning';
+    return 'success';
 };
 
-$intentLevel = static function (array $lead): string {
-    if (!empty($lead['_is_hot'])) {
-        return 'Forte';
-    }
-    if (!empty($lead['_is_closed'])) {
-        return 'Faible';
-    }
+$intentLabel = static function (array $lead): string {
+    if (!empty($lead['_is_hot']))    return 'Forte';
+    if (!empty($lead['_is_closed'])) return 'Faible';
     return 'Moyenne';
 };
 
 $stageCountByPipeline = [];
 foreach ($pipelines as $source => $stages) {
-    foreach ($stages as $stage) {
-        $stageCountByPipeline[$source][$stage] = 0;
-    }
+    foreach ($stages as $stage) $stageCountByPipeline[$source][$stage] = 0;
 }
-
 foreach ($leads as $lead) {
-    $source = (string)($lead['pipeline'] ?? LeadService::SOURCE_AUTRE);
-    $stage = (string)($lead['stage'] ?? 'nouveau');
-    if (!isset($stageCountByPipeline[$source])) {
-        $stageCountByPipeline[$source] = [];
-    }
-    if (!isset($stageCountByPipeline[$source][$stage])) {
-        $stageCountByPipeline[$source][$stage] = 0;
-    }
-    $stageCountByPipeline[$source][$stage]++;
+    $src   = (string)($lead['pipeline'] ?? LeadService::SOURCE_AUTRE);
+    $stage = (string)($lead['stage']    ?? 'nouveau');
+    if (!isset($stageCountByPipeline[$src]))        $stageCountByPipeline[$src] = [];
+    if (!isset($stageCountByPipeline[$src][$stage])) $stageCountByPipeline[$src][$stage] = 0;
+    $stageCountByPipeline[$src][$stage]++;
 }
 
 function renderContent(): void
 {
-    global $view, $pipeline, $pipelines, $leads, $stats, $smartMessage, $priorityLeads, $stageColor, $intentLevel, $stageCountByPipeline;
+    global $view, $pipeline, $pipelines, $leads, $stats, $smartMessage,
+           $priorityLeads, $stageColor, $intentLabel, $stageCountByPipeline;
     ?>
     <style>
-        .crm-shell{color:#e2e8f0;background:#0f172a;padding:1rem 0 2.5rem;}
-        .crm-shell a{color:inherit;text-decoration:none;}
-        .crm-header{background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,41,59,.9));border:1px solid #1f2937;border-radius:16px;padding:1.15rem;box-shadow:0 12px 35px rgba(2,6,23,.35);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-        .crm-header h1{margin:0;font-size:1.35rem;color:#f8fafc;}
-        .crm-header p{margin:.35rem 0 0;color:#94a3b8;}
-        .crm-smart{padding:.65rem .9rem;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.45);border-radius:999px;color:#bbf7d0;font-weight:700;font-size:.88rem;}
+    /* ===== VARIABLES ===== */
+    .crm {
+        --c-navy:    #2c3e50;
+        --c-blue:    #3498db;
+        --c-blue-lt: #ebf5fb;
+        --c-gold:    #c9a84c;
+        --c-green:   #27ae60;
+        --c-green-lt:#eafaf1;
+        --c-orange:  #e67e22;
+        --c-orange-lt:#fef5ec;
+        --c-red:     #e74c3c;
+        --c-red-lt:  #fdf0ee;
+        --c-bg:      #f5f7fa;
+        --c-white:   #ffffff;
+        --c-border:  #e0e6ed;
+        --c-text:    #2c3e50;
+        --c-muted:   #7f8c8d;
+        --c-shadow:  0 2px 10px rgba(0,0,0,.07);
+        --c-shadow-md:0 6px 20px rgba(0,0,0,.1);
+        --c-radius:  10px;
+        --c-radius-lg:14px;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: var(--c-text);
+    }
 
-        .crm-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.85rem;margin:1rem 0;}
-        .crm-kpi{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:1rem;box-shadow:0 8px 30px rgba(0,0,0,.28);}
-        .crm-kpi__label{display:block;color:#94a3b8;font-size:.82rem;margin-bottom:.35rem;}
-        .crm-kpi__value{display:block;font-size:1.7rem;font-weight:800;color:#f8fafc;}
-        .crm-kpi.danger{border-color:rgba(239,68,68,.45);box-shadow:0 8px 26px rgba(239,68,68,.2);}
-        .crm-kpi.follow{border-color:rgba(249,115,22,.45);box-shadow:0 8px 26px rgba(249,115,22,.17);}
-        .crm-kpi.ok{border-color:rgba(34,197,94,.35);box-shadow:0 8px 26px rgba(34,197,94,.14);}
+    /* ===== PAGE HEADER ===== */
+    .crm-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+    .crm-header h1 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--c-navy);
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .crm-header h1 i { color: var(--c-blue); }
+    .crm-header p { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .crm-smart-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        background: var(--c-blue-lt);
+        border: 1px solid rgba(52,152,219,.3);
+        border-radius: 999px;
+        color: #1a5276;
+        font-weight: 700;
+        font-size: .84rem;
+        white-space: nowrap;
+    }
+    .crm-smart-badge i { color: var(--c-blue); }
 
-        .crm-toolbar{display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:0 0 1rem;}
-        .crm-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem .85rem;border-radius:999px;border:1px solid #374151;background:#111827;color:#cbd5e1;font-weight:700;font-size:.85rem;}
-        .crm-pill.active{background:#2563eb;border-color:#2563eb;color:#eff6ff;}
+    /* ===== KPI ROW ===== */
+    .crm-kpi-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+    .crm-kpi {
+        background: var(--c-white);
+        border-radius: var(--c-radius-lg);
+        box-shadow: var(--c-shadow);
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border-left: 4px solid var(--c-blue);
+        transition: box-shadow .2s, transform .15s;
+    }
+    .crm-kpi:hover { box-shadow: var(--c-shadow-md); transform: translateY(-2px); }
+    .crm-kpi.kpi-green  { border-left-color: var(--c-green); }
+    .crm-kpi.kpi-red    { border-left-color: var(--c-red); }
+    .crm-kpi.kpi-orange { border-left-color: var(--c-orange); }
+    .crm-kpi.kpi-blue   { border-left-color: var(--c-blue); }
+    .crm-kpi-icon {
+        width: 42px; height: 42px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .kpi-green  .crm-kpi-icon { background: var(--c-green-lt);  color: var(--c-green); }
+    .kpi-red    .crm-kpi-icon { background: var(--c-red-lt);    color: var(--c-red); }
+    .kpi-orange .crm-kpi-icon { background: var(--c-orange-lt); color: var(--c-orange); }
+    .kpi-blue   .crm-kpi-icon { background: var(--c-blue-lt);   color: var(--c-blue); }
+    .crm-kpi-body {}
+    .crm-kpi-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--c-navy);
+        line-height: 1;
+    }
+    .crm-kpi-label {
+        font-size: .78rem;
+        color: var(--c-muted);
+        margin-top: 3px;
+    }
 
-        .crm-priority{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:1rem;box-shadow:0 8px 30px rgba(0,0,0,.25);margin:0 0 1rem;}
-        .crm-priority h2{margin:0 0 .7rem;font-size:1.05rem;color:#f8fafc;}
-        .crm-priority-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;}
-        .crm-priority-card{background:#0b1220;border:1px solid #243041;border-radius:14px;padding:.8rem;}
-        .crm-priority-card strong{color:#f8fafc;display:block;margin-bottom:.3rem;}
+    /* ===== SECTION CARD ===== */
+    .crm-section {
+        background: var(--c-white);
+        border-radius: var(--c-radius-lg);
+        box-shadow: var(--c-shadow);
+        border: 1px solid var(--c-border);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .crm-section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--c-border);
+        background: #fafbfd;
+    }
+    .crm-section-head h2 {
+        font-size: .95rem;
+        font-weight: 700;
+        color: var(--c-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .crm-section-head h2 i { color: var(--c-blue); }
+    .crm-section-body { padding: 18px 20px; }
 
-        .crm-actions{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.6rem;}
-        .crm-btn{display:inline-flex;align-items:center;justify-content:center;padding:.46rem .7rem;border-radius:10px;background:#1e293b;border:1px solid #334155;color:#e2e8f0;font-size:.78rem;font-weight:700;}
-        .crm-btn:hover{background:#334155;}
+    /* ===== TOOLBAR ===== */
+    .crm-toolbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+    .crm-toolbar-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .crm-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: 1.5px solid var(--c-border);
+        background: var(--c-white);
+        color: var(--c-navy);
+        font-weight: 600;
+        font-size: .82rem;
+        text-decoration: none;
+        transition: all .15s;
+    }
+    .crm-pill:hover { border-color: var(--c-blue); color: var(--c-blue); background: var(--c-blue-lt); }
+    .crm-pill.active { background: var(--c-blue); border-color: var(--c-blue); color: #fff; }
 
-        .crm-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;}
-        .crm-lead{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:.95rem;box-shadow:0 8px 30px rgba(2,6,23,.28);}
-        .crm-lead__head{display:flex;justify-content:space-between;gap:.5rem;align-items:flex-start;}
-        .crm-badge{display:inline-flex;padding:.22rem .6rem;border-radius:999px;font-size:.72rem;font-weight:800;}
-        .crm-badge.danger{background:rgba(239,68,68,.2);color:#fca5a5;}
-        .crm-badge.follow{background:rgba(249,115,22,.2);color:#fdba74;}
-        .crm-badge.ok{background:rgba(34,197,94,.2);color:#86efac;}
-        .crm-meta{color:#94a3b8;font-size:.8rem;}
+    /* ===== BADGES ===== */
+    .crm-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: .73rem;
+        font-weight: 700;
+    }
+    .crm-badge.danger  { background: var(--c-red-lt);    color: var(--c-red); }
+    .crm-badge.warning { background: var(--c-orange-lt); color: var(--c-orange); }
+    .crm-badge.success { background: var(--c-green-lt);  color: var(--c-green); }
 
-        .crm-pipeline-grid{display:grid;gap:1rem;}
-        .crm-pipeline{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:1rem;overflow:auto;}
-        .crm-pipeline h3{margin:0 0 .75rem;color:#f8fafc;}
-        .crm-track{display:flex;gap:.65rem;min-width:max-content;}
-        .crm-stage{width:170px;flex:0 0 auto;background:#0b1220;border:1px dashed #334155;border-radius:14px;padding:.65rem;}
-        .crm-stage strong{display:block;color:#f8fafc;font-size:.86rem;}
-        .crm-stage small{display:block;color:#94a3b8;font-size:.75rem;margin-top:.25rem;}
+    /* ===== PRIORITY LIST ===== */
+    .crm-priority-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+    }
+    .crm-priority-card {
+        background: var(--c-bg);
+        border: 1px solid var(--c-border);
+        border-radius: var(--c-radius);
+        padding: 14px 16px;
+        transition: box-shadow .15s;
+    }
+    .crm-priority-card:hover { box-shadow: var(--c-shadow-md); }
+    .crm-priority-card strong {
+        display: block;
+        font-size: .95rem;
+        color: var(--c-navy);
+        margin-bottom: 4px;
+    }
+    .crm-meta {
+        font-size: .8rem;
+        color: var(--c-muted);
+        line-height: 1.5;
+    }
 
-        .crm-floating{position:fixed;right:1rem;bottom:1rem;display:none;gap:.5rem;z-index:40;}
-        .crm-fab{width:52px;height:52px;border-radius:999px;background:#2563eb;border:1px solid #60a5fa;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 10px 30px rgba(37,99,235,.35);font-size:1rem;}
+    /* ===== LEAD CARDS ===== */
+    .crm-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 14px;
+    }
+    .crm-lead-card {
+        background: var(--c-white);
+        border: 1px solid var(--c-border);
+        border-radius: var(--c-radius-lg);
+        box-shadow: var(--c-shadow);
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition: box-shadow .15s, transform .15s;
+    }
+    .crm-lead-card:hover { box-shadow: var(--c-shadow-md); transform: translateY(-2px); }
+    .crm-lead-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .crm-lead-name {
+        font-weight: 700;
+        font-size: .95rem;
+        color: var(--c-navy);
+    }
+    .crm-lead-source {
+        font-size: .78rem;
+        color: var(--c-muted);
+        margin-top: 1px;
+    }
 
-        @media (max-width: 720px){
-            .crm-shell{padding-bottom:5rem;}
-            .crm-cards{grid-template-columns:1fr;}
-            .crm-priority-list{grid-template-columns:1fr;}
-            .crm-floating{display:flex;}
-            .crm-header{padding:1rem;}
-            .crm-kpi__value{font-size:1.45rem;}
-        }
+    /* ===== ACTION BUTTONS ===== */
+    .crm-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .crm-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 7px;
+        background: var(--c-bg);
+        border: 1px solid var(--c-border);
+        color: var(--c-navy);
+        font-size: .78rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .15s;
+    }
+    .crm-btn:hover { background: var(--c-blue-lt); border-color: var(--c-blue); color: var(--c-blue); }
+    .crm-btn.primary { background: var(--c-blue); border-color: var(--c-blue); color: #fff; }
+    .crm-btn.primary:hover { opacity: .87; }
+
+    /* ===== PIPELINE VIEW ===== */
+    .crm-pipeline-wrap { display: grid; gap: 16px; }
+    .crm-pipeline-section {
+        background: var(--c-white);
+        border: 1px solid var(--c-border);
+        border-radius: var(--c-radius-lg);
+        box-shadow: var(--c-shadow);
+        overflow: hidden;
+    }
+    .crm-pipeline-title {
+        padding: 12px 18px;
+        background: #fafbfd;
+        border-bottom: 1px solid var(--c-border);
+        font-weight: 700;
+        font-size: .9rem;
+        color: var(--c-navy);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .crm-pipeline-track {
+        display: flex;
+        gap: 10px;
+        padding: 14px 18px;
+        overflow-x: auto;
+    }
+    .crm-stage-col {
+        flex: 0 0 auto;
+        width: 160px;
+        background: var(--c-bg);
+        border: 1px solid var(--c-border);
+        border-radius: var(--c-radius);
+        padding: 12px;
+        text-align: center;
+    }
+    .crm-stage-col .crm-badge { margin-bottom: 8px; }
+    .crm-stage-count {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--c-navy);
+        display: block;
+    }
+    .crm-stage-label {
+        font-size: .72rem;
+        color: var(--c-muted);
+        margin-top: 2px;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .crm-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--c-muted);
+        font-size: .9rem;
+    }
+    .crm-empty i { font-size: 2rem; margin-bottom: 10px; display: block; opacity: .3; }
+
+    @media (max-width: 700px) {
+        .crm-cards-grid { grid-template-columns: 1fr; }
+        .crm-priority-list { grid-template-columns: 1fr; }
+        .crm-kpi-row { grid-template-columns: 1fr 1fr; }
+        .crm-toolbar { flex-direction: column; }
+    }
     </style>
 
-    <div class="crm-shell">
+    <div class="crm">
+
+        <!-- HEADER -->
         <div class="crm-header">
             <div>
-                <h1><i class="fas fa-bolt"></i> CRM Leads • Cockpit</h1>
-                <p><?= e($stats['active']) ?> opportunités actives • <?= e($stats['today_todo']) ?> leads à traiter aujourd'hui</p>
+                <h1><i class="fas fa-bolt"></i> CRM Leads — Cockpit</h1>
+                <p><?= e((string)$stats['active']) ?> opportunités actives &bull; <?= e((string)$stats['today_todo']) ?> à traiter aujourd'hui</p>
             </div>
-            <div class="crm-smart"><?= e($smartMessage) ?></div>
-        </div>
-
-        <section class="crm-kpis">
-            <article class="crm-kpi ok"><span class="crm-kpi__label">Opportunités actives</span><span class="crm-kpi__value"><?= e((string)$stats['active']) ?></span></article>
-            <article class="crm-kpi danger"><span class="crm-kpi__label">Leads chauds</span><span class="crm-kpi__value"><?= e((string)$stats['hot']) ?></span></article>
-            <article class="crm-kpi follow"><span class="crm-kpi__label">RDV à planifier</span><span class="crm-kpi__value"><?= e((string)$stats['rdv']) ?></span></article>
-            <article class="crm-kpi ok"><span class="crm-kpi__label">Leads froids</span><span class="crm-kpi__value"><?= e((string)$stats['cold']) ?></span></article>
-        </section>
-
-        <section class="crm-priority">
-            <h2>À faire maintenant</h2>
-            <div class="crm-priority-list">
-                <?php if (!$priorityLeads): ?>
-                    <div class="crm-meta">Aucune urgence immédiate. Le pipeline est propre.</div>
-                <?php endif; ?>
-                <?php foreach ($priorityLeads as $lead): ?>
-                    <?php $fullName = trim(($lead['first_name'] ?? '') . ' ' . ($lead['last_name'] ?? '')) ?: 'Lead sans nom'; ?>
-                    <article class="crm-priority-card">
-                        <strong><?= e($fullName) ?></strong>
-                        <div class="crm-meta"><?= e(LeadService::sourceLabel((string)($lead['source_type'] ?? 'autre'))) ?> • <?= e(LeadService::stageLabel((string)($lead['stage'] ?? 'nouveau'))) ?></div>
-                        <div class="crm-meta">Intention <?= e($intentLevel($lead)) ?></div>
-                        <div class="crm-actions">
-                            <?php if (!empty($lead['phone'])): ?>
-                                <a class="crm-btn" href="tel:<?= e((string)$lead['phone']) ?>"><i class="fas fa-phone"></i>&nbsp;Appeler</a>
-                            <?php endif; ?>
-                            <a class="crm-btn" href="mailto:<?= e((string)($lead['email'] ?? '')) ?>"><i class="fas fa-envelope"></i>&nbsp;Message</a>
-                            <a class="crm-btn" href="#"><i class="fas fa-calendar"></i>&nbsp;Planifier RDV</a>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
-        <div class="crm-toolbar">
-            <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-                <a class="crm-pill <?= $view === 'cards' ? 'active' : '' ?>" href="?module=capturer&view=cards<?= $pipeline ? '&pipeline=' . urlencode($pipeline) : '' ?>">Vue Cards</a>
-                <a class="crm-pill <?= $view === 'pipeline' ? 'active' : '' ?>" href="?module=capturer&view=pipeline<?= $pipeline ? '&pipeline=' . urlencode($pipeline) : '' ?>">Pipeline visuel</a>
-            </div>
-            <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-                <a class="crm-pill <?= $pipeline === '' ? 'active' : '' ?>" href="?module=capturer&view=<?= urlencode($view) ?>">Tous les pipelines</a>
-                <?php foreach (array_keys($pipelines) as $pipe): ?>
-                    <a class="crm-pill <?= $pipeline === $pipe ? 'active' : '' ?>" href="?module=capturer&view=<?= urlencode($view) ?>&pipeline=<?= urlencode($pipe) ?>"><?= e(LeadService::sourceLabel($pipe)) ?></a>
-                <?php endforeach; ?>
+            <div class="crm-smart-badge">
+                <i class="fas fa-circle-info"></i>
+                <?= e($smartMessage) ?>
             </div>
         </div>
 
-        <?php if ($view === 'cards'): ?>
-            <section class="crm-cards">
-                <?php if (!$leads): ?>
-                    <article class="crm-lead"><div class="crm-meta">Aucun lead capturé pour l'instant.</div></article>
-                <?php endif; ?>
-                <?php foreach ($leads as $lead): ?>
-                    <?php
-                    $fullName = trim(($lead['first_name'] ?? '') . ' ' . ($lead['last_name'] ?? '')) ?: 'Lead sans nom';
-                    $stage = (string)($lead['stage'] ?? 'nouveau');
-                    $tone = $stageColor($stage);
+        <!-- KPI ROW -->
+        <div class="crm-kpi-row">
+            <div class="crm-kpi kpi-green">
+                <div class="crm-kpi-icon"><i class="fas fa-users"></i></div>
+                <div class="crm-kpi-body">
+                    <div class="crm-kpi-value"><?= e((string)$stats['active']) ?></div>
+                    <div class="crm-kpi-label">Opportunités actives</div>
+                </div>
+            </div>
+            <div class="crm-kpi kpi-red">
+                <div class="crm-kpi-icon"><i class="fas fa-fire"></i></div>
+                <div class="crm-kpi-body">
+                    <div class="crm-kpi-value"><?= e((string)$stats['hot']) ?></div>
+                    <div class="crm-kpi-label">Leads chauds</div>
+                </div>
+            </div>
+            <div class="crm-kpi kpi-orange">
+                <div class="crm-kpi-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="crm-kpi-body">
+                    <div class="crm-kpi-value"><?= e((string)$stats['rdv']) ?></div>
+                    <div class="crm-kpi-label">RDV à planifier</div>
+                </div>
+            </div>
+            <div class="crm-kpi kpi-blue">
+                <div class="crm-kpi-icon"><i class="fas fa-snowflake"></i></div>
+                <div class="crm-kpi-body">
+                    <div class="crm-kpi-value"><?= e((string)$stats['cold']) ?></div>
+                    <div class="crm-kpi-label">Leads froids / clos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRIORITY SECTION -->
+        <?php if ($priorityLeads): ?>
+        <div class="crm-section">
+            <div class="crm-section-head">
+                <h2><i class="fas fa-triangle-exclamation"></i> À faire maintenant</h2>
+                <span class="crm-badge danger"><?= count($priorityLeads) ?> urgent<?= count($priorityLeads) > 1 ? 's' : '' ?></span>
+            </div>
+            <div class="crm-section-body">
+                <div class="crm-priority-list">
+                    <?php foreach ($priorityLeads as $lead):
+                        $fullName = trim(($lead['first_name'] ?? '') . ' ' . ($lead['last_name'] ?? '')) ?: 'Lead sans nom';
+                        $stage = (string)($lead['stage'] ?? 'nouveau');
+                        $tone = $stageColor($stage);
                     ?>
-                    <article class="crm-lead">
-                        <div class="crm-lead__head">
+                        <div class="crm-priority-card">
+                            <strong><?= e($fullName) ?></strong>
+                            <div class="crm-meta">
+                                <?= e(LeadService::sourceLabel((string)($lead['source_type'] ?? 'autre'))) ?>
+                                &bull; <?= e(LeadService::stageLabel($stage)) ?>
+                            </div>
+                            <div class="crm-meta" style="margin-top:4px">
+                                <span class="crm-badge <?= e($tone) ?>"><?= e(LeadService::stageLabel($stage)) ?></span>
+                                &nbsp;Intention <strong><?= e($intentLabel($lead)) ?></strong>
+                            </div>
+                            <div class="crm-actions">
+                                <?php if (!empty($lead['phone'])): ?>
+                                    <a class="crm-btn primary" href="tel:<?= e((string)$lead['phone']) ?>">
+                                        <i class="fas fa-phone"></i> Appeler
+                                    </a>
+                                <?php endif; ?>
+                                <a class="crm-btn" href="mailto:<?= e((string)($lead['email'] ?? '')) ?>">
+                                    <i class="fas fa-envelope"></i> Email
+                                </a>
+                                <a class="crm-btn" href="#">
+                                    <i class="fas fa-calendar"></i> RDV
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- TOOLBAR -->
+        <div class="crm-toolbar">
+            <div class="crm-toolbar-group">
+                <a class="crm-pill <?= $view === 'cards' ? 'active' : '' ?>"
+                   href="?module=capturer&view=cards<?= $pipeline ? '&pipeline=' . urlencode($pipeline) : '' ?>">
+                    <i class="fas fa-th-large"></i> Vue cards
+                </a>
+                <a class="crm-pill <?= $view === 'pipeline' ? 'active' : '' ?>"
+                   href="?module=capturer&view=pipeline<?= $pipeline ? '&pipeline=' . urlencode($pipeline) : '' ?>">
+                    <i class="fas fa-columns"></i> Pipeline
+                </a>
+            </div>
+            <div class="crm-toolbar-group">
+                <a class="crm-pill <?= $pipeline === '' ? 'active' : '' ?>"
+                   href="?module=capturer&view=<?= urlencode($view) ?>">
+                    Tous
+                </a>
+                <?php foreach (array_keys($pipelines) as $pipe): ?>
+                    <a class="crm-pill <?= $pipeline === $pipe ? 'active' : '' ?>"
+                       href="?module=capturer&view=<?= urlencode($view) ?>&pipeline=<?= urlencode($pipe) ?>">
+                        <?= e(LeadService::sourceLabel($pipe)) ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <!-- CARDS VIEW -->
+        <?php if ($view === 'cards'): ?>
+            <?php if (!$leads): ?>
+                <div class="crm-empty">
+                    <i class="fas fa-inbox"></i>
+                    Aucun lead capturé pour l'instant.
+                </div>
+            <?php else: ?>
+            <div class="crm-cards-grid">
+                <?php foreach ($leads as $lead):
+                    $fullName = trim(($lead['first_name'] ?? '') . ' ' . ($lead['last_name'] ?? '')) ?: 'Lead sans nom';
+                    $stage    = (string)($lead['stage'] ?? 'nouveau');
+                    $tone     = $stageColor($stage);
+                ?>
+                    <div class="crm-lead-card">
+                        <div class="crm-lead-head">
                             <div>
-                                <strong><?= e($fullName) ?></strong>
-                                <div class="crm-meta"><?= e(LeadService::sourceLabel((string)($lead['source_type'] ?? 'autre'))) ?></div>
+                                <div class="crm-lead-name"><?= e($fullName) ?></div>
+                                <div class="crm-lead-source">
+                                    <?= e(LeadService::sourceLabel((string)($lead['source_type'] ?? 'autre'))) ?>
+                                </div>
                             </div>
                             <span class="crm-badge <?= e($tone) ?>"><?= e(LeadService::stageLabel($stage)) ?></span>
                         </div>
-                        <p class="crm-meta" style="margin:.45rem 0 .6rem;">Intention : <?= e($intentLevel($lead)) ?><?= !empty($lead['intent']) ? ' • ' . e((string)$lead['intent']) : '' ?></p>
-                        <div class="crm-meta"><?= e((string)($lead['email'] ?? '')) ?></div>
-                        <div class="crm-meta"><?= e((string)($lead['phone'] ?? '')) ?></div>
+
+                        <?php if (!empty($lead['email']) || !empty($lead['phone'])): ?>
+                        <div class="crm-meta">
+                            <?php if (!empty($lead['email'])): ?>
+                                <div><i class="fas fa-envelope" style="width:14px"></i> <?= e((string)$lead['email']) ?></div>
+                            <?php endif; ?>
+                            <?php if (!empty($lead['phone'])): ?>
+                                <div><i class="fas fa-phone" style="width:14px"></i> <?= e((string)$lead['phone']) ?></div>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+
+                        <div class="crm-meta">
+                            Intention : <strong style="color:#2c3e50"><?= e($intentLabel($lead)) ?></strong>
+                            <?php if (!empty($lead['intent'])): ?>
+                                &bull; <?= e((string)$lead['intent']) ?>
+                            <?php endif; ?>
+                        </div>
+
                         <div class="crm-actions">
                             <?php if (!empty($lead['phone'])): ?>
-                                <a class="crm-btn" href="tel:<?= e((string)$lead['phone']) ?>">Appeler</a>
+                                <a class="crm-btn primary" href="tel:<?= e((string)$lead['phone']) ?>">
+                                    <i class="fas fa-phone"></i> Appeler
+                                </a>
                             <?php endif; ?>
-                            <a class="crm-btn" href="mailto:<?= e((string)($lead['email'] ?? '')) ?>">Message</a>
-                            <a class="crm-btn" href="#">Planifier RDV</a>
+                            <a class="crm-btn" href="mailto:<?= e((string)($lead['email'] ?? '')) ?>">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            <a class="crm-btn" href="#">
+                                <i class="fas fa-calendar"></i> RDV
+                            </a>
                         </div>
-                    </article>
+                    </div>
                 <?php endforeach; ?>
-            </section>
+            </div>
+            <?php endif; ?>
+
+        <!-- PIPELINE VIEW -->
         <?php else: ?>
-            <section class="crm-pipeline-grid">
-                <?php foreach ($pipelines as $source => $stages): ?>
-                    <?php if ($pipeline !== '' && $pipeline !== $source) {
-                        continue;
-                    } ?>
-                    <article class="crm-pipeline">
-                        <h3><?= e(LeadService::sourceLabel($source)) ?> <small class="crm-meta">(drag & drop ready)</small></h3>
-                        <div class="crm-track">
-                            <?php foreach ($stages as $stage): ?>
-                                <?php $tone = $stageColor((string)$stage); ?>
-                                <div class="crm-stage">
-                                    <span class="crm-badge <?= e($tone) ?>"><?= e(LeadService::stageLabel((string)$stage)) ?></span>
-                                    <strong><?= e((string)($stageCountByPipeline[$source][$stage] ?? 0)) ?> lead(s)</strong>
-                                    <small>Statut <?= e($tone === 'danger' ? 'Urgent' : ($tone === 'follow' ? 'Suivi' : 'OK')) ?></small>
+            <div class="crm-pipeline-wrap">
+                <?php foreach ($pipelines as $source => $stages):
+                    if ($pipeline !== '' && $pipeline !== $source) continue;
+                ?>
+                    <div class="crm-pipeline-section">
+                        <div class="crm-pipeline-title">
+                            <i class="fas fa-code-branch"></i>
+                            <?= e(LeadService::sourceLabel($source)) ?>
+                        </div>
+                        <div class="crm-pipeline-track">
+                            <?php foreach ($stages as $stage):
+                                $tone  = $stageColor((string)$stage);
+                                $count = (int)($stageCountByPipeline[$source][$stage] ?? 0);
+                            ?>
+                                <div class="crm-stage-col">
+                                    <div><span class="crm-badge <?= e($tone) ?>"><?= e(LeadService::stageLabel((string)$stage)) ?></span></div>
+                                    <span class="crm-stage-count"><?= $count ?></span>
+                                    <div class="crm-stage-label">
+                                        <?= $tone === 'danger' ? 'Urgent' : ($tone === 'warning' ? 'Suivi' : 'OK') ?>
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                    </article>
+                    </div>
                 <?php endforeach; ?>
-            </section>
+            </div>
         <?php endif; ?>
 
-        <div class="crm-floating" aria-hidden="true">
-            <a class="crm-fab" href="tel:+33400000000" title="Appeler"><i class="fas fa-phone"></i></a>
-            <a class="crm-fab" href="mailto:contact@pascal-hamm-immobilier-aix-en-provence.fr" title="Envoyer un message"><i class="fas fa-comment-dots"></i></a>
-        </div>
     </div>
     <?php
 }

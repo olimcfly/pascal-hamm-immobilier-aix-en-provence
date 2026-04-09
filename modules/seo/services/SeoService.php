@@ -13,6 +13,25 @@ class SeoService
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
+        $this->ensureSchema();
+    }
+
+    private function ensureSchema(): void
+    {
+        $sql = file_get_contents(__DIR__ . '/../sql/seo.sql');
+        if ($sql === false) {
+            return;
+        }
+        // Exécute chaque statement séparément
+        foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
+            if ($stmt !== '') {
+                try {
+                    $this->pdo->exec($stmt);
+                } catch (PDOException) {
+                    // Ignore les erreurs non bloquantes (ex: FK déjà existante)
+                }
+            }
+        }
     }
 
     public function getHubStats(int $userId): array

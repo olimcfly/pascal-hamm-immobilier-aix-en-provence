@@ -229,10 +229,10 @@ if (count($breadcrumbItems) >= 2) {
         'email' => $advisorEmail,
         'address' => [
             '@type' => 'PostalAddress',
-            ‘streetAddress’ => $contactAddress !== ‘’ ? $contactAddress : $zoneCity . ‘, France’,
-            ‘addressLocality’ => $zoneCity,
-            ‘postalCode’ => trim((string) setting(‘zone_postal_code’, defined(‘APP_POSTAL_CODE’) ? APP_POSTAL_CODE : ‘’)),
-            ‘addressRegion’ => trim((string) setting(‘zone_region’, defined(‘APP_REGION’) ? APP_REGION : ‘France’)),
+            'streetAddress' => $contactAddress !== '' ? $contactAddress : $zoneCity . ', France',
+            'addressLocality' => $zoneCity,
+            'postalCode' => trim((string) setting('zone_postal_code', defined('APP_POSTAL_CODE') ? APP_POSTAL_CODE : '')),
+            'addressRegion' => trim((string) setting('zone_region', defined('APP_REGION') ? APP_REGION : 'France')),
             'addressCountry' => 'FR',
         ],
         'openingHoursSpecification' => [

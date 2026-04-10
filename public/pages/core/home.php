@@ -419,7 +419,7 @@ $featuredProperties = [
         <div class="cta-banner__actions">
             <a href="/estimation-gratuite" class="btn btn--accent btn--lg">Demander une estimation gratuite</a>
             <a href="/contact" class="btn btn--outline-white btn--lg">Prendre contact</a>
-            <a href="tel:+33667198366" class="btn btn--outline-white btn--lg">Appeler Pascal</a>
+            <?php if (!empty($advisorPhone)): ?><a href="tel:<?= e($advisorPhone) ?>" class="btn btn--outline-white btn--lg">Appeler <?= e($advisorName) ?></a><?php endif; ?>
         </div>
         <div class="cta-banner__actions cta-banner__actions--secondary">
             <a href="/biens" class="btn btn--outline-white">Voir les biens</a>

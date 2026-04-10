@@ -100,7 +100,7 @@
                 <path d="M9 21V12h6v9"/>
             </svg>
         </div>
-        <h1>Pascal Hamm Immobilier</h1>
+        <h1><?= htmlspecialchars(defined('APP_NAME') ? APP_NAME : 'Administration') ?></h1>
         <p>Espace d'administration</p>
     </div>
 
@@ -160,9 +160,11 @@
     <div class="login-footer">
         <a href="/">&larr; Retour au site</a>
         &nbsp;&nbsp;·&nbsp;&nbsp;
-        <a href="https://pascal-hamm-immobilier-aix-en-provence.fr/webmail" target="_blank" rel="noopener" style="opacity:.5;font-size:.72rem">
+        <?php if (defined('APP_URL') && APP_URL !== ''): ?>
+        <a href="<?= htmlspecialchars(rtrim(APP_URL, '/') . '/webmail') ?>" target="_blank" rel="noopener" style="opacity:.5;font-size:.72rem">
             Webmail
         </a>
+        <?php endif; ?>
     </div>
 
 </div>

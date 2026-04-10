@@ -66,7 +66,7 @@ if ($step === 8) {
 }
 
 $tempPassword = $_POST['admin_password'] ?? generateRandomPassword();
-$defaultEmail = $_SESSION['app_email'] ?? 'admin@pascal-hamm-immobilier.fr';
+$defaultEmail = $_SESSION['app_email'] ?? (defined('APP_EMAIL') ? APP_EMAIL : '');
 ?>
 <!doctype html>
 <html lang="fr">

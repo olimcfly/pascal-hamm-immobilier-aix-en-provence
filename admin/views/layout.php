@@ -1,5 +1,7 @@
 <?php
 $advisorDisplayName = trim((string) setting('advisor_firstname', '') . ' ' . (string) setting('advisor_lastname', ''));
+$helpContext = preg_replace('/[^a-z0-9_-]/', '', (string) ($module ?? 'dashboard'));
+$helpLink = '/admin?module=aide&context=' . rawurlencode($helpContext);
 if ($advisorDisplayName === '') {
     $advisorDisplayName = ADVISOR_NAME ?: APP_NAME;
 }
@@ -88,9 +90,9 @@ if ($advisorDisplayName === '') {
                 <a href="/" target="_blank" class="topbar-btn" title="Voir le site public">
                     <i class="fas fa-arrow-up-right-from-square"></i>
                 </a>
-                <button class="topbar-btn" title="Aide & documentation" aria-label="Aide et documentation">
+                <a href="<?= htmlspecialchars($helpLink) ?>" class="topbar-btn" title="Comprendre ce module" aria-label="Comprendre ce module">
                     <i class="fas fa-circle-question"></i>
-                </button>
+                </a>
                 <button class="topbar-btn" title="Notifications" id="notif-btn" aria-label="Notifications">
                     <i class="fas fa-bell"></i>
                     <span class="notif-badge">2</span>
@@ -143,6 +145,26 @@ if ($advisorDisplayName === '') {
                 <?php ob_start(); renderContent(); $adminContent = ob_get_clean(); echo replacePlaceholders($adminContent); ?>
             </div>
         </main>
+
+        <?php
+        $aiHelpWidgetPath = ROOT_PATH . '/modules/ai-help-chat/widget.php';
+        $aiHelpServicePath = ROOT_PATH . '/modules/ai-help-chat/service.php';
+        $aiHelpPermissionsPath = ROOT_PATH . '/modules/ai-help-chat/permissions.php';
+        if (is_file($aiHelpWidgetPath) && is_file($aiHelpServicePath) && is_file($aiHelpPermissionsPath)) {
+            require_once $aiHelpPermissionsPath;
+            require_once $aiHelpServicePath;
+            require_once $aiHelpWidgetPath;
+
+            if (function_exists('renderAiHelpChatWidget')) {
+                $aiHelpContext = [
+                    'module' => (string) ($module ?? 'dashboard'),
+                    'page' => (string) ($_SERVER['REQUEST_URI'] ?? ''),
+                ];
+                $aiHelpService = new AiHelpChatService(db());
+                renderAiHelpChatWidget($aiHelpService, $aiHelpContext);
+            }
+        }
+        ?>
 
         <!-- FOOTER -->
         <?php require_once __DIR__ . '/partials/footer.php'; ?>

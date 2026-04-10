@@ -41,12 +41,26 @@ $b['type_label']   = ucfirst($b['type_bien'] ?? 'Bien');
 $typeIcons = ['appartement'=>'fa-building','maison'=>'fa-home','terrain'=>'fa-mountain','local'=>'fa-store','autre'=>'fa-key'];
 $b['type_icon']    = $typeIcons[$b['type_bien'] ?? ''] ?? 'fa-home';
 $b['sdb']          = $b['salles_de_bain'] ?? null;
-// Advisor fixe — Pascal Hamm
-$b['advisor_name']  = 'Pascal Hamm';
-$b['advisor_title'] = 'Expert immobilier — Aix-en-Provence';
-$b['advisor_phone'] = '06 XX XX XX XX';
-$b['advisor_photo'] = '/assets/images/pascal-hamm.jpeg';
-$b['advisor_email'] = defined('CONTACT_EMAIL') ? CONTACT_EMAIL : '';
+// Advisor — chargé depuis les settings
+$_advFirst = trim((string) setting('advisor_firstname', ''));
+$_advLast  = trim((string) setting('advisor_lastname',  ''));
+$_advFull  = trim($_advFirst . ' ' . $_advLast);
+if ($_advFull === '') {
+    $_advFull = isset($advisorName) && $advisorName !== ''
+        ? $advisorName
+        : (defined('ADVISOR_NAME') ? ADVISOR_NAME : 'Votre conseiller');
+}
+$_advCity = isset($zoneCity) && $zoneCity !== '' ? $zoneCity : (defined('APP_CITY') ? APP_CITY : '');
+
+$b['advisor_name']  = $_advFull;
+$b['advisor_title'] = trim((string) setting('advisor_title', 'Expert immobilier'))
+    . ($_advCity !== '' ? ' — ' . $_advCity : '');
+$b['advisor_phone'] = isset($advisorPhoneDisplay) && $advisorPhoneDisplay !== ''
+    ? $advisorPhoneDisplay
+    : trim((string) setting('advisor_phone', defined('APP_PHONE') ? APP_PHONE : ''));
+$b['advisor_photo'] = trim((string) setting('advisor_photo', '/assets/images/advisor-photo.jpg'));
+$b['advisor_email'] = defined('CONTACT_EMAIL') ? CONTACT_EMAIL
+    : (defined('APP_EMAIL') ? APP_EMAIL : '');
 
 // ── DPE — couleurs ────────────────────────────────────────────
 $dpeColors = [

@@ -40,9 +40,10 @@ $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <?php
                             $ph_prestige = '/assets/images/placeholder.php?type=bien&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
-                            $src_prestige = (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false)
-                                ? e($bien['photo_principale'])
-                                : ((!empty($bien['image'])) ? '/uploads/' . e($bien['image']) : $ph_prestige);
+                            $photoPrincipalePrestige = trim((string) ($bien['photo_principale'] ?? ''));
+                            $src_prestige = ($photoPrincipalePrestige !== '' && stripos($photoPrincipalePrestige, 'default.jpg') === false)
+                                ? e($photoPrincipalePrestige)
+                                : $ph_prestige;
                         ?>
                         <img
                             class="card__img"

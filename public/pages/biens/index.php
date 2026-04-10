@@ -115,12 +115,11 @@ $nbBiensTotal = count($biens);
                         <div class="bien-card__header">
 
                             <?php
-                                $photoSrc = (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false)
-                                    ? htmlspecialchars($bien['photo_principale'])
-                                    : '/assets/images/placeholder.php?type=' . urlencode($bien['type_bien'] ?? 'bien') . '&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
-                            ?>
-                            <?php
                                 $placeholderFallback = '/assets/images/placeholder.php?type=' . urlencode($bien['type_bien'] ?? 'bien') . '&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
+                                $photoPrincipale = trim((string) ($bien['photo_principale'] ?? ''));
+                                $photoSrc = ($photoPrincipale !== '' && stripos($photoPrincipale, 'default.jpg') === false)
+                                    ? htmlspecialchars($photoPrincipale)
+                                    : $placeholderFallback;
                             ?>
                             <img class="bien-card__img"
                                  src="<?= $photoSrc ?>"

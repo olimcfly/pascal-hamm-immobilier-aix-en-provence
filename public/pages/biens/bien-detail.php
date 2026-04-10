@@ -774,12 +774,19 @@ $extraJs  = ['/assets/js/bien-detail.js'];
                 <article class="bien-card">
                     <a href="/biens/<?= htmlspecialchars($s['slug']) ?>"
                        class="bien-card__img-link">
+                        <?php
+                            $similarPlaceholder = '/assets/images/placeholder.php?type=' . urlencode($s['type_bien'] ?? 'bien') . '&surface=' . (int)($s['surface'] ?? 0) . '&pieces=' . (int)($s['pieces'] ?? 0);
+                            $similarPhoto = trim((string) ($s['photo_principale'] ?? ''));
+                            $similarPhotoSrc = ($similarPhoto !== '' && stripos($similarPhoto, 'default.jpg') === false)
+                                ? htmlspecialchars($similarPhoto)
+                                : $similarPlaceholder;
+                        ?>
                         <img
-                            src="<?= !empty($s['photo_principale']) ? htmlspecialchars($s['photo_principale']) : '/assets/images/placeholder.php?type=' . urlencode($s['type_bien'] ?? 'bien') . '&surface=' . (int)($s['surface'] ?? 0) . '&pieces=' . (int)($s['pieces'] ?? 0) ?>"
+                            src="<?= $similarPhotoSrc ?>"
                             alt="<?= htmlspecialchars($s['titre']) ?>"
                             loading="lazy"
                             class="bien-card__img"
-                            onerror="this.onerror=null;this.src='/assets/images/placeholder.php?type=<?= urlencode($s['type_bien'] ?? 'bien') ?>'">
+                            onerror="this.onerror=null;this.src='<?= $similarPlaceholder ?>'">
                         <span class="bien-card__type">
                             <?= htmlspecialchars(ucfirst($s['type_bien'] ?? 'Bien')) ?>
                         </span>
@@ -816,4 +823,3 @@ $extraJs  = ['/assets/js/bien-detail.js'];
     <?php endif; ?>
 
 </div><!-- /.bien-detail-page -->
-

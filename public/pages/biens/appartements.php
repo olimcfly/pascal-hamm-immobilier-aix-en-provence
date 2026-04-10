@@ -42,9 +42,10 @@ $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <?php
                             $ph_appt = '/assets/images/placeholder.php?type=appartement&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
-                            $src_appt = (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false)
-                                ? e($bien['photo_principale'])
-                                : ((!empty($bien['image'])) ? '/uploads/' . e($bien['image']) : $ph_appt);
+                            $photoPrincipaleAppt = trim((string) ($bien['photo_principale'] ?? ''));
+                            $src_appt = ($photoPrincipaleAppt !== '' && stripos($photoPrincipaleAppt, 'default.jpg') === false)
+                                ? e($photoPrincipaleAppt)
+                                : $ph_appt;
                         ?>
                         <img
                             class="card__img"

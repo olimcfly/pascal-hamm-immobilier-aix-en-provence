@@ -5,7 +5,7 @@
  * Cron : traite les emails de séquences CRM dus
  *
  * Planification recommandée :
- *   */1 * * * * php /home/cool1019/site/script/process_sequences.php >> /var/log/sequences_crm.log 2>&1
+ *   Toutes les minutes: php /home/cool1019/site/script/process_sequences.php >> /var/log/sequences_crm.log 2>&1
  *
  * Usage manuel :
  *   php script/process_sequences.php [--dry-run]

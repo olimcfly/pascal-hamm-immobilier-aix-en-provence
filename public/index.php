@@ -196,6 +196,23 @@ $router->get('/secteurs/{slug}', function(string $slug) {
 });
 
 
+
+// ══════════════════════════════════════════════════════════════
+//  GUIDE LOCAL / PARTENAIRES
+// ══════════════════════════════════════════════════════════════
+$router->get('/guide-local', function() {
+    servePage(ROOT_PATH . '/public/pages/guide-local/index.php');
+});
+
+$router->get('/guide-local/{slug}', function(string $slug) {
+    $GLOBALS['guideLocalSlug'] = $slug;
+    servePage(ROOT_PATH . '/public/pages/guide-local/ville.php');
+});
+
+$router->get('/api/guide-local/partners', function() {
+    require ROOT_PATH . '/public/api/guide-local/partners.php';
+});
+
 // ══════════════════════════════════════════════════════════════
 //  LANDING PAGES — Funnels (nouveau système) + legacy
 // ══════════════════════════════════════════════════════════════

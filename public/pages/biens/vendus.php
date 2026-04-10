@@ -43,9 +43,10 @@ $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="card__img-wrapper">
                             <?php
                                 $ph_vendu = '/assets/images/placeholder.php?type=bien&surface=' . (int)($bien['surface'] ?? 0) . '&pieces=' . (int)($bien['pieces'] ?? 0);
-                                $src_vendu = (!empty($bien['photo_principale']) && strpos($bien['photo_principale'], 'default.jpg') === false)
-                                    ? e($bien['photo_principale'])
-                                    : ((!empty($bien['image'])) ? '/uploads/' . e($bien['image']) : $ph_vendu);
+                                $photoPrincipaleVendu = trim((string) ($bien['photo_principale'] ?? ''));
+                                $src_vendu = ($photoPrincipaleVendu !== '' && stripos($photoPrincipaleVendu, 'default.jpg') === false)
+                                    ? e($photoPrincipaleVendu)
+                                    : $ph_vendu;
                             ?>
                             <img
                                 class="card__img"

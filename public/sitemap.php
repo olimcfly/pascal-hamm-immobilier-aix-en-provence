@@ -113,6 +113,7 @@ try {
         '/prendre-rendez-vous',
         '/financement',
         '/blog',
+        '/guide-local',
         '/secteurs',
         '/avis-clients',
         '/mentions-legales',
@@ -212,6 +213,26 @@ try {
             }
 
             addSitemapUrl($urls, $baseUrl, '/blog/' . $slug, (string) ($row['lastmod'] ?? $today));
+        }
+    }
+
+
+    if (tableExists($pdo, 'local_partners')) {
+        $stmt = $pdo->query(
+            "SELECT slug, DATE_FORMAT(COALESCE(updated_at, created_at), '%Y-%m-%d') AS lastmod
+             FROM local_partners
+             WHERE slug IS NOT NULL
+               AND slug <> ''
+               AND statut_actif = 1"
+        );
+
+        foreach (($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) as $row) {
+            $slug = trim((string) ($row['slug'] ?? ''));
+            if ($slug === '') {
+                continue;
+            }
+
+            addSitemapUrl($urls, $baseUrl, '/guide-local/' . $slug, (string) ($row['lastmod'] ?? $today));
         }
     }
 

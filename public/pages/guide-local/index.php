@@ -1,106 +1,133 @@
 <?php
-$pageTitle = 'Guide local Aix-en-Provence — Pascal Hamm Immobilier';
-$metaDesc  = 'Découvrez les communes autour d’Aix-en-Provence, les secteurs majeurs aixois et les villes proches pertinentes pour votre recherche immobilière.';
-$extraCss  = ['/assets/css/guide.css'];
 
-$communesRayon10 = [
-    ['nom' => 'Le Tholonet', 'cp' => '13100', 'note' => 'Commune résidentielle aux portes de la Sainte-Victoire.'],
-    ['nom' => 'Beaurecueil', 'cp' => '13100', 'note' => 'Cadre naturel recherché, faible densité urbaine.'],
-    ['nom' => 'Saint-Marc-Jaumegarde', 'cp' => '13100', 'note' => 'Village prisé pour son calme et sa proximité immédiate d’Aix.'],
-    ['nom' => 'Meyreuil', 'cp' => '13590', 'note' => 'Accès rapide à Aix et aux axes vers Marseille.'],
-    ['nom' => 'Éguilles', 'cp' => '13510', 'note' => 'Village provençal très demandé par les familles.'],
-    ['nom' => 'Venelles', 'cp' => '13770', 'note' => 'Secteur dynamique au nord d’Aix, apprécié pour sa qualité de vie.'],
-    ['nom' => 'Gardanne', 'cp' => '13120', 'note' => 'Environ 9,5 km du centre d’Aix-en-Provence.'],
-    ['nom' => 'Bouc-Bel-Air', 'cp' => '13320', 'note' => 'En limite du rayon d’environ 10 km.'],
-    ['nom' => 'Simiane-Collongue', 'cp' => '13109', 'note' => 'Certaines zones se situent autour des 10 km d’Aix.'],
-];
+declare(strict_types=1);
 
-$secteursAix = [
-    'Puyricard',
-    'Les Milles',
-    'Luynes',
-    'Jas-de-Bouffan',
-];
+require_once ROOT_PATH . '/core/services/LocalPartnerService.php';
 
-$communesProches = [
-    ['nom' => 'Le Puy-Sainte-Réparade', 'cp' => '13610', 'note' => 'Ville voisine agréable, réputée pour ses domaines viticoles et son cadre recherché.'],
-    ['nom' => 'Saint-Cannat', 'cp' => '13760', 'note' => 'Commune résidentielle cohérente dans une recherche autour d’Aix.'],
-    ['nom' => 'Rognes', 'cp' => '13840', 'note' => 'Village provençal recherché, légèrement hors rayon strict.'],
-    ['nom' => 'Lambesc', 'cp' => '13410', 'note' => 'Secteur pertinent pour élargir la recherche au nord-ouest d’Aix.'],
-];
+$pageTitle = 'Guide local & partenaires à Aix-en-Provence';
+$metaDesc = 'Découvrez les partenaires locaux recommandés autour d’Aix-en-Provence, filtrez par rayon et visualisez la zone sur Google Maps.';
+
+$service = new LocalPartnerService();
+$service->ensureSchema();
+
+$availableRadii = [1, 2, 3, 5, 10, 15];
+$selectedRadius = isset($_GET['rayon']) ? (float) $_GET['rayon'] : 5.0;
+if (!in_array((int) $selectedRadius, $availableRadii, true)) {
+    $selectedRadius = 5.0;
+}
+
+$centerLat = isset($_GET['lat']) ? (float) $_GET['lat'] : (float) setting('zone_lat', 43.529742);
+$centerLng = isset($_GET['lng']) ? (float) $_GET['lng'] : (float) setting('zone_lng', 5.447427);
+
+$partners = $service->getPublicList($centerLat, $centerLng, $selectedRadius);
+$googleMapsApiKey = trim((string) setting('api_google_maps', ''));
 ?>
-
-<section class="blog-hero">
-    <div class="container blog-hero__grid">
-        <div>
-            <nav class="breadcrumb"><a href="/">Accueil</a><span>Guide local</span></nav>
-            <span class="section-label">Aix-en-Provence &amp; alentours</span>
-            <h1>Guide local des communes autour d’Aix-en-Provence</h1>
-            <p>Retrouvez les localités à privilégier dans un rayon proche d’Aix, avec les secteurs aixois majeurs et les communes voisines pertinentes pour votre projet immobilier.</p>
-            <div class="blog-hero__actions">
-                <a href="/estimation-gratuite" class="btn btn--accent">Estimer mon bien</a>
-                <a href="/biens" class="btn btn--outline">Voir les annonces</a>
-            </div>
-        </div>
-        <div class="blog-hero__card" aria-hidden="true">
-            <div class="blog-hero__metric"><strong><?= count($communesRayon10) ?></strong><span>communes ~10 km</span></div>
-            <div class="blog-hero__metric"><strong><?= count($secteursAix) ?></strong><span>secteurs aixois majeurs</span></div>
-            <div class="blog-hero__metric"><strong><?= count($communesProches) ?></strong><span>communes proches en plus</span></div>
-        </div>
-    </div>
-</section>
 
 <section class="section">
     <div class="container">
-        <div class="section__header text-center">
-            <span class="section-label">Sélection locale</span>
-            <h2 class="section-title">📍 Communes dans un rayon d’environ 10 km autour d’Aix-en-Provence</h2>
-            <p class="section-subtitle">Une base solide pour cibler rapidement les communes les plus cohérentes autour du centre d’Aix.</p>
+        <nav class="breadcrumb"><a href="/">Accueil</a><span>Guide local</span></nav>
+        <div class="section__header">
+            <span class="section-label">Partenaires locaux</span>
+            <h1 class="section-title">Guide local autour d’Aix-en-Provence</h1>
+            <p class="section-subtitle">Sélectionnez un rayon et visualisez immédiatement les partenaires disponibles dans la zone.</p>
         </div>
 
-        <div class="comparatif-cards" data-animate>
-            <?php foreach ($communesRayon10 as $commune): ?>
-                <article class="comparatif-card" style="cursor:default">
-                    <div class="comparatif-card__nom"><?= e($commune['nom']) ?> (<?= e($commune['cp']) ?>)</div>
-                    <div class="comparatif-card__row"><strong><?= e($commune['note']) ?></strong></div>
+        <form method="get" class="filter-bar" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
+            <label>Rayon
+                <select name="rayon" onchange="this.form.submit()">
+                    <?php foreach ($availableRadii as $radius): ?>
+                        <option value="<?= $radius ?>" <?= (int) $selectedRadius === $radius ? 'selected' : '' ?>><?= $radius ?> km</option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <input type="hidden" name="lat" value="<?= e((string) $centerLat) ?>">
+            <input type="hidden" name="lng" value="<?= e((string) $centerLng) ?>">
+            <span style="color:#64748b;"><?= count($partners) ?> partenaire(s) trouvé(s)</span>
+        </form>
+
+        <div id="guide-local-map" style="height:420px;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;background:#f8fafc;">
+            <?php if ($googleMapsApiKey === ''): ?>
+                <div style="height:100%;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#b45309;">Google Maps n’est pas configuré (clé API manquante).</div>
+            <?php endif; ?>
+        </div>
+
+        <div class="comparatif-cards" style="margin-top:20px;">
+            <?php if ($partners === []): ?>
+                <article class="comparatif-card"><div class="comparatif-card__nom">Aucun partenaire dans ce rayon</div><div class="comparatif-card__row">Essayez un rayon plus large.</div></article>
+            <?php endif; ?>
+            <?php foreach ($partners as $partner): ?>
+                <article class="comparatif-card">
+                    <div class="comparatif-card__nom"><?= e((string) $partner['nom']) ?></div>
+                    <div class="comparatif-card__row"><strong><?= e((string) ($partner['categorie'] ?? 'Partenaire local')) ?></strong></div>
+                    <div class="comparatif-card__row"><?= e(trim((string) (($partner['adresse'] ?? '') . ', ' . ($partner['code_postal'] ?? '') . ' ' . ($partner['ville'] ?? '')))) ?></div>
+                    <div class="comparatif-card__row">Distance : <?= number_format((float) ($partner['distance_km'] ?? 0), 1, ',', ' ') ?> km</div>
+                    <div class="comparatif-card__row" style="margin-top:8px;"><a href="/guide-local/<?= e((string) $partner['slug']) ?>" class="btn btn--outline">Voir la fiche</a></div>
                 </article>
             <?php endforeach; ?>
         </div>
-
-        <div class="comparatif-section" data-animate>
-            <h2>⭐ Particularités importantes</h2>
-            <p class="section-subtitle" style="margin-bottom:1rem">
-                <strong>Puyricard, Les Milles, Luynes, Jas-de-Bouffan</strong> sont des quartiers d’Aix-en-Provence (et non des communes indépendantes), mais ils restent incontournables car très recherchés.
-            </p>
-            <div class="comparatif-cards">
-                <?php foreach ($secteursAix as $secteur): ?>
-                    <article class="comparatif-card" style="cursor:default">
-                        <div class="comparatif-card__nom"><?= e($secteur) ?></div>
-                        <div class="comparatif-card__row"><strong>Secteur majeur d’Aix-en-Provence</strong></div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
-        <div class="comparatif-section" data-animate>
-            <h2>➕ Communes proches à ajouter (hors rayon strict mais pertinentes)</h2>
-            <p class="section-subtitle" style="margin-bottom:1rem">Ces communes dépassent légèrement les ~10 km, mais restent très cohérentes pour une recherche immobilière autour d’Aix-en-Provence.</p>
-            <div class="comparatif-cards">
-                <?php foreach ($communesProches as $commune): ?>
-                    <article class="comparatif-card" style="cursor:default">
-                        <div class="comparatif-card__nom"><?= e($commune['nom']) ?> (<?= e($commune['cp']) ?>)</div>
-                        <div class="comparatif-card__row"><strong><?= e($commune['note']) ?></strong></div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
-        <div class="blog-cta" data-animate>
-            <div>
-                <h3>Vous cherchez dans une commune précise ?</h3>
-                <p>Parlez de votre projet avec Pascal Hamm et obtenez une orientation personnalisée selon votre budget, votre style de vie et vos délais.</p>
-            </div>
-            <a href="/contact" class="btn btn--accent">Prendre contact</a>
-        </div>
     </div>
 </section>
+
+<?php if ($googleMapsApiKey !== ''): ?>
+<script>
+(function(){
+    const center = { lat: <?= json_encode($centerLat) ?>, lng: <?= json_encode($centerLng) ?> };
+    const radiusKm = <?= json_encode((float) $selectedRadius) ?>;
+    const points = <?= json_encode($partners, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+
+    window.initLocalGuideMap = function () {
+        const container = document.getElementById('guide-local-map');
+        if (!container || !window.google || !google.maps) return;
+
+        const map = new google.maps.Map(container, {
+            center,
+            zoom: 12,
+            mapTypeControl: false,
+            streetViewControl: false,
+        });
+
+        const circle = new google.maps.Circle({
+            map,
+            center,
+            radius: radiusKm * 1000,
+            fillColor: '#2563eb',
+            fillOpacity: 0.12,
+            strokeColor: '#2563eb',
+            strokeOpacity: 0.65,
+            strokeWeight: 2,
+        });
+
+        const bounds = new google.maps.LatLngBounds();
+        bounds.extend(center);
+
+        new google.maps.Marker({
+            position: center,
+            map,
+            title: 'Point central',
+            icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+        });
+
+        const info = new google.maps.InfoWindow();
+        points.forEach((partner) => {
+            const marker = new google.maps.Marker({
+                position: { lat: Number(partner.latitude), lng: Number(partner.longitude) },
+                map,
+                title: partner.nom,
+            });
+
+            marker.addListener('click', () => {
+                info.setContent(`<strong>${partner.nom}</strong><br>${partner.categorie || ''}<br><a href="/guide-local/${partner.slug}">Voir la fiche</a>`);
+                info.open({ map, anchor: marker });
+            });
+
+            bounds.extend(marker.getPosition());
+        });
+
+        if (points.length > 0) {
+            map.fitBounds(bounds, 50);
+        }
+    };
+})();
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?= e($googleMapsApiKey) ?>&callback=initLocalGuideMap" async defer></script>
+<?php endif; ?>

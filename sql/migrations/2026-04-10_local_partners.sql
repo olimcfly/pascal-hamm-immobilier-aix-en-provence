@@ -1,0 +1,38 @@
+CREATE TABLE IF NOT EXISTS local_partner_categories (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  nom VARCHAR(120) NOT NULL,
+  slug VARCHAR(150) NOT NULL UNIQUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS local_partners (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  nom VARCHAR(180) NOT NULL,
+  slug VARCHAR(200) NOT NULL UNIQUE,
+  categorie_id INT UNSIGNED DEFAULT NULL,
+  description_courte VARCHAR(320) DEFAULT NULL,
+  description_longue MEDIUMTEXT DEFAULT NULL,
+  adresse VARCHAR(255) DEFAULT NULL,
+  ville VARCHAR(120) DEFAULT NULL,
+  code_postal VARCHAR(20) DEFAULT NULL,
+  telephone VARCHAR(40) DEFAULT NULL,
+  email VARCHAR(160) DEFAULT NULL,
+  site_web VARCHAR(255) DEFAULT NULL,
+  logo VARCHAR(255) DEFAULT NULL,
+  latitude DECIMAL(10,8) DEFAULT NULL,
+  longitude DECIMAL(11,8) DEFAULT NULL,
+  place_id VARCHAR(200) DEFAULT NULL,
+  google_maps_url VARCHAR(255) DEFAULT NULL,
+  horaires JSON DEFAULT NULL,
+  reseaux_sociaux JSON DEFAULT NULL,
+  statut_actif TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_local_partners_status (statut_actif),
+  KEY idx_local_partners_geo (latitude, longitude),
+  KEY idx_local_partners_category (categorie_id),
+  CONSTRAINT fk_local_partners_category FOREIGN KEY (categorie_id) REFERENCES local_partner_categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

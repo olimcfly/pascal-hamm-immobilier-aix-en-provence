@@ -222,15 +222,19 @@
   }
 
   // ── CTAs de conversion ────────────────────────────────────────
+  const _advisorName = (window.__APP_SETTINGS__ && window.__APP_SETTINGS__.advisorName)
+    ? window.__APP_SETTINGS__.advisorName
+    : 'votre conseiller';
+
   const ctaTitles = {
     email_report:    'Recevoir le rapport par email',
-    contact_request: 'Être rappelé par Pascal Hamm',
+    contact_request: 'Être rappelé par ' + _advisorName,
     rdv_request:     'Prendre rendez-vous',
   };
   const ctaSubs = {
     email_report:    'Indiquez votre email pour recevoir votre rapport d\'estimation détaillé.',
-    contact_request: 'Indiquez vos coordonnées et Pascal Hamm vous contactera rapidement.',
-    rdv_request:     'Indiquez vos coordonnées pour confirmer un créneau avec Pascal Hamm.',
+    contact_request: 'Indiquez vos coordonnées et ' + _advisorName + ' vous contactera rapidement.',
+    rdv_request:     'Indiquez vos coordonnées pour confirmer un créneau avec ' + _advisorName + '.',
   };
   const ctaSubmitLabels = {
     email_report:    'Envoyer le rapport',
@@ -244,8 +248,8 @@
   };
   const ctaSuccessMessages = {
     email_report:    'Vérifiez votre boîte email (pensez aux spams si vous ne le voyez pas).',
-    contact_request: 'Pascal Hamm vous contactera dans les meilleurs délais.',
-    rdv_request:     'Pascal Hamm reviendra vers vous pour confirmer un créneau.',
+    contact_request: _advisorName + ' vous contactera dans les meilleurs délais.',
+    rdv_request:     _advisorName + ' reviendra vers vous pour confirmer un créneau.',
   };
 
   $$('.cta-trigger').forEach(btn => {

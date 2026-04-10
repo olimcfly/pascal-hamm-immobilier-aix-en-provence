@@ -49,7 +49,7 @@
                 <path d="M9 21V12h6v9"/>
             </svg>
         </div>
-        <h1>Pascal Hamm Immobilier</h1>
+        <h1><?= htmlspecialchars(defined('APP_NAME') ? APP_NAME : 'Administration') ?></h1>
         <p>Réinitialisation du mot de passe</p>
     </div>
 

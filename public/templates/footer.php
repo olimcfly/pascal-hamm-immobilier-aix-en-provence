@@ -1,7 +1,21 @@
 <?php
-$advisorName    = 'Pascal Hamm';
-$advisorTitle   = 'Expert Immobilier 360°';
-$advisorTagline = 'Expert immobilier indépendant dans le Pays d\'Aix. Accompagnement premium en vente, achat et financement, avec méthode et discrétion.';
+// Ces vars sont déjà définies par layout.php si le footer est inclus via lui.
+// Si inclus indépendamment, on les reconstruit depuis les settings.
+if (!isset($advisorName) || $advisorName === '') {
+    $_fn = trim((string) setting('advisor_firstname', ''));
+    $_ln = trim((string) setting('advisor_lastname',  ''));
+    $advisorName = trim($_fn . ' ' . $_ln);
+    if ($advisorName === '') {
+        $advisorName = defined('APP_NAME')
+            ? (string) preg_replace('/\s+Immobilier\b.*/iu', '', APP_NAME)
+            : 'Votre Conseiller';
+    }
+}
+$advisorTitle   = trim((string) setting('advisor_title',   'Expert Immobilier'));
+$_taglineFallback = isset($zoneCity) && $zoneCity !== ''
+    ? "Expert immobilier indépendant à {$zoneCity}. Accompagnement en vente, achat et financement."
+    : "Expert immobilier indépendant. Accompagnement en vente, achat et financement.";
+$advisorTagline = trim((string) setting('advisor_tagline', $_taglineFallback));
 
 $socialLinks = [
     'Facebook'  => '',  // ex: https://facebook.com/pascalhamm

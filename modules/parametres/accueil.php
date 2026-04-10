@@ -10,9 +10,9 @@ $pageDescription = 'Compte et préférences';
 function renderContent(): void
 {
     $profil_prenom = setting('profil_prenom', '');
-    $profil_nom    = setting('profil_nom', 'Pascal Hamm');
-    $profil_email  = setting('profil_email', '');
-    $profil_ville  = setting('profil_ville', 'Aix-en-Provence');
+    $profil_nom    = setting('profil_nom', defined('ADVISOR_NAME') ? ADVISOR_NAME : '');
+    $profil_email  = setting('profil_email', defined('APP_EMAIL') ? APP_EMAIL : '');
+    $profil_ville  = setting('profil_ville', defined('APP_CITY') ? APP_CITY : '');
     $profil_photo  = setting('profil_photo', '');
 
     // Vérification clés API configurées

@@ -28,7 +28,7 @@ if ($advisorName === '') {
 }
 $advisorPhoto = setting('advisor_photo', '');
 if (empty($advisorPhoto)) {
-    $advisorPhoto = '/assets/images/pascal-hamm.jpeg';
+    $advisorPhoto = '/assets/images/advisor-photo.jpg';
 }
 ?>
 <!DOCTYPE html>

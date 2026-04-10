@@ -1,14 +1,45 @@
 <?php
-$zoneCity            = 'Aix-en-Provence';
-$siteMetaDescription = 'Expert immobilier 360° indépendant dans le Pays d\'Aix — achat, vente, estimation, viager.';
-$advisorName         = 'Pascal Hamm';
-$advisorPhone        = '+33667198366';
-$advisorPhoneDisplay = '06 67 19 83 66';
-$advisorEmail        = defined('APP_EMAIL') ? APP_EMAIL : '';
-$appUrl              = defined('APP_URL')   ? APP_URL   : 'https://pascalhamm.fr';
-$appName             = 'Pascal Hamm | Expert Immobilier 360°';
-$contactAddress      = trim((string) setting('contact_address', defined('APP_ADDRESS') ? APP_ADDRESS : ''));
-$contactPhone        = trim((string) setting('contact_phone', defined('APP_PHONE') ? APP_PHONE : ''));
+// ── Ville / zone géographique ─────────────────────────────────
+$zoneCity = trim((string) setting('zone_city', defined('APP_CITY') ? APP_CITY : ''));
+if ($zoneCity === '') {
+    $zoneCity = 'votre ville';
+}
+
+// ── Nom du conseiller (settings DB > constante ADVISOR_NAME > extrait de APP_NAME) ──
+$_advisorFirstname = trim((string) setting('advisor_firstname', ''));
+$_advisorLastname  = trim((string) setting('advisor_lastname',  ''));
+$advisorName       = trim($_advisorFirstname . ' ' . $_advisorLastname);
+if ($advisorName === '') {
+    if (defined('ADVISOR_NAME') && ADVISOR_NAME !== '') {
+        $advisorName = ADVISOR_NAME;
+    } elseif (defined('APP_NAME') && APP_NAME !== '') {
+        $advisorName = (string) preg_replace('/\s+Immobilier\b.*/iu', '', APP_NAME);
+    }
+}
+
+// ── Téléphone ─────────────────────────────────────────────────
+$_advisorPhoneRaw    = trim((string) setting('advisor_phone', defined('APP_PHONE') ? APP_PHONE : ''));
+$advisorPhone        = preg_replace('/[\s\.\-\(\)]/', '', $_advisorPhoneRaw);
+$advisorPhoneDisplay = $_advisorPhoneRaw;
+
+// ── Nom de l'agence / appName ─────────────────────────────────
+$_agencyName   = trim((string) setting('agency_name', defined('APP_NAME') ? APP_NAME : ''));
+$_advisorTitle = trim((string) setting('advisor_title', 'Expert Immobilier'));
+$appName = $_agencyName !== ''
+    ? $_agencyName
+    : ($advisorName !== '' ? $advisorName . ' — ' . $_advisorTitle : 'Expert Immobilier');
+
+// ── Description SEO ───────────────────────────────────────────
+$_metaDescSetting    = trim((string) setting('site_meta_description', ''));
+$siteMetaDescription = $_metaDescSetting !== ''
+    ? $_metaDescSetting
+    : "Expert immobilier indépendant à {$zoneCity} — achat, vente, estimation.";
+
+// ── Email / URL ───────────────────────────────────────────────
+$advisorEmail   = defined('APP_EMAIL') ? APP_EMAIL : '';
+$appUrl         = defined('APP_URL')   ? APP_URL   : '';
+$contactAddress = trim((string) setting('contact_address', defined('APP_ADDRESS') ? APP_ADDRESS : ''));
+$contactPhone   = trim((string) setting('contact_phone', defined('APP_PHONE') ? APP_PHONE : ''));
 $requestUri          = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
 $gaMeasurementId     = trim((string) setting('google_analytics_id', ''));
 $canonical           = $canonical ?? ($appUrl . $requestUri);
@@ -198,10 +229,10 @@ if (count($breadcrumbItems) >= 2) {
         'email' => $advisorEmail,
         'address' => [
             '@type' => 'PostalAddress',
-            'streetAddress' => $contactAddress !== '' ? $contactAddress : 'Aix-en-Provence, France',
-            'addressLocality' => $zoneCity,
-            'postalCode' => '13100',
-            'addressRegion' => 'Provence-Alpes-Côte d’Azur',
+            ‘streetAddress’ => $contactAddress !== ‘’ ? $contactAddress : $zoneCity . ‘, France’,
+            ‘addressLocality’ => $zoneCity,
+            ‘postalCode’ => trim((string) setting(‘zone_postal_code’, defined(‘APP_POSTAL_CODE’) ? APP_POSTAL_CODE : ‘’)),
+            ‘addressRegion’ => trim((string) setting(‘zone_region’, defined(‘APP_REGION’) ? APP_REGION : ‘France’)),
             'addressCountry' => 'FR',
         ],
         'openingHoursSpecification' => [
@@ -220,7 +251,7 @@ if (count($breadcrumbItems) >= 2) {
         ],
         'areaServed' => [
             '@type' => 'AdministrativeArea',
-            'name' => 'Aix-en-Provence',
+            'name' => $zoneCity,
         ],
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
     </script>

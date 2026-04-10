@@ -18,7 +18,7 @@ $metaDesc = 'Plan du site HTML de Pascal Hamm Immobilier : accès rapide à tout
             <li><a href="<?= e(url('/ressources')) ?>">Ressources</a></li>
             <li><a href="<?= e(url('/blog')) ?>">Blog</a></li>
             <li><a href="<?= e(url('/actualites')) ?>">Actualités</a></li>
-            <li><a href="<?= e(url('/avis')) ?>">Avis clients</a></li>
+            <li><a href="<?= e(url('/avis-clients')) ?>">Avis clients</a></li>
         </ul>
 
         <h2>Pages légales</h2>

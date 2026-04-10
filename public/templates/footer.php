@@ -31,23 +31,23 @@ $socialIcons = [
 
 $navColumns = [
     'Découvrir' => [
-        ['label' => 'Nos biens',  'href' => '/biens'],
+        ['label' => 'Biens à vendre',  'href' => '/biens'],
         ['label' => 'Secteurs',   'href' => '/guide-local'],
-        ['label' => 'Acheter',    'href' => '/acheter'],
+        ['label' => 'Acheter',    'href' => '/biens'],
     ],
     'Vendre' => [
-        ['label' => 'Vendre un bien',      'href' => '/vendre'],
+        ['label' => 'Vendre un bien',      'href' => '/estimation-gratuite'],
         ['label' => 'Estimation gratuite', 'href' => '/estimation-gratuite'],
         ['label' => 'Méthode de vente',    'href' => '/ressources/guide-vendeur'],
     ],
     'Acheter' => [
-        ['label' => 'Acheter un bien',        'href' => '/acheter'],
+        ['label' => 'Acheter un bien',        'href' => '/biens'],
         ['label' => 'Financement',            'href' => '/financement'],
         ['label' => 'Recherche personnalisée','href' => '/contact?sujet=Recherche+personnalisee'],
     ],
     'Entreprise' => [
         ['label' => 'À propos',     'href' => '/a-propos'],
-        ['label' => 'Avis clients', 'href' => '/avis'],
+        ['label' => 'Avis clients', 'href' => '/avis-clients'],
         ['label' => 'Contact',      'href' => '/contact'],
     ],
 ];

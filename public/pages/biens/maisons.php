@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../../core/Database.php';
 $pdo = Database::getInstance();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$stmt = $pdo->query("SELECT * FROM biens ORDER BY created_at DESC");
+$stmt = $pdo->query("SELECT * FROM biens WHERE photo_principale IS NOT NULL AND photo_principale != '' AND photo_principale NOT LIKE '%default.jpg%' ORDER BY created_at DESC");
 $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

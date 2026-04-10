@@ -273,6 +273,18 @@ $router->get('/blog/{slug}', function(string $slug) {
 });
 
 // ══════════════════════════════════════════════════════════════
+//  GUIDE LOCAL
+// ══════════════════════════════════════════════════════════════
+$router->get('/guide-local', function() {
+    servePage(ROOT_PATH . '/public/pages/guide-local/index.php');
+});
+
+$router->get('/guide-local/{slug}', function(string $slug) {
+    $GLOBALS['slug'] = $slug;
+    servePage(ROOT_PATH . '/public/pages/guide-local/ville.php');
+});
+
+// ══════════════════════════════════════════════════════════════
 //  AVIS CLIENTS
 // ══════════════════════════════════════════════════════════════
 $router->get('/avis-clients', function() {

@@ -1,8 +1,8 @@
-.hero--premium {
+.hero--home {
   min-height: calc(96vh - var(--header-h));
   padding-block: clamp(5.5rem, 11vw, 9rem);
 }
-.hero--premium .hero__content {
+.hero--home .hero__content {
   max-width: 840px;
 }
 .hero__pillars {
@@ -330,7 +330,7 @@
 }
 
 @media (max-width: 768px) {
-  .hero--premium { min-height: auto; }
+  .hero--home { min-height: auto; }
   .hero__pillars { gap: .5rem; }
 }
 /* ================================

@@ -39,7 +39,7 @@ $featuredProperties = [
      MERE:M — Hero : accroche, promesse, CTA
      Objectif : créer le désir, poser la promesse, inviter.
      ═══════════════════════════════════════════════════════════ -->
-<section class="hero hero--premium" aria-labelledby="home-hero-title">
+<section class="hero hero--premium hero--home" aria-labelledby="home-hero-title">
     <div class="hero__bg" style="background-image:linear-gradient(110deg, rgba(26,60,94,.92) 0%, rgba(15,38,68,.86) 58%, rgba(26,60,94,.92) 100%), url('/assets/images/hero-bg.jpg');"></div>
     <div class="container">
         <div class="hero__content" data-animate>

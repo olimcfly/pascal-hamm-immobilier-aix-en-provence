@@ -36,9 +36,12 @@ if (preg_match('/^\d+\-\d+$/', $searchBudget) === 1) {
 }
 
 try {
-    $sql = "SELECT id, slug, titre, type_bien, prix, surface, pieces, chambres, ville, secteur, photo_principale, statut
+    $sql = "SELECT id, slug, titre, type_bien, transaction_type, prix, surface, pieces, chambres, ville, secteur, photo_principale, statut
             FROM biens
-            WHERE statut <> 'archive'";
+            WHERE statut <> 'archive'
+            AND photo_principale IS NOT NULL
+            AND photo_principale != ''
+            AND photo_principale NOT LIKE '%default.jpg%'";
 
     $params = [];
     if ($searchQuery !== '') {

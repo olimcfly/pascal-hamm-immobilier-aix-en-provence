@@ -443,12 +443,14 @@ p, li, dd, dt { font-size: clamp(1rem, 0.96rem + .22vw, 1.08rem); }
 /* ── Hero ───────────────────────────────────────────────────── */
 .hero {
   position: relative;
-  min-height: calc(90vh - var(--header-h));
+  /* Pages intérieures : hauteur compacte — la home écrase via home.css */
+  min-height: 42vh;
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding-top: 20px !important;
+  padding: 3.5rem 0 3rem;
   background: linear-gradient(135deg, var(--clr-primary) 0%, #0f2644 100%);
+  color: #fff;
 }
 .hero img,
 .hero-section img {
@@ -465,23 +467,54 @@ p, li, dd, dt { font-size: clamp(1rem, 0.96rem + .22vw, 1.08rem); }
   background-size: cover;
   background-position: center;
   opacity: .25;
+  z-index: 0;
 }
 .hero__content {
   position: relative;
   z-index: 1;
-  color: var(--clr-white);
+  color: #fff;
   max-width: 700px;
 }
-.hero__label { color: var(--clr-accent); }
-.hero h1 { color: var(--clr-white); margin-bottom: 1.25rem; }
+.hero__label { color: var(--clr-accent); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: .8rem; display: block; margin-bottom: .5rem; }
+.hero h1,
+.hero__content h1 { color: #fff; margin-bottom: 1.25rem; }
 .hero__subtitle {
-  font-size: clamp(1rem, .94rem + .45vw, 1.2rem);
-  opacity: .88;
-  margin-bottom: 2rem;
+  font-size: clamp(1rem, .94rem + .45vw, 1.15rem);
+  color: rgba(255,255,255,.85);
+  margin-bottom: 1.75rem;
   max-width: 55ch;
   line-height: 1.6;
 }
-.hero__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .875rem;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+/* Boutons dans le hero — assure la lisibilité sur fond sombre */
+.hero__actions .btn--primary {
+  background: var(--clr-accent);
+  color: var(--clr-primary);
+  border-color: var(--clr-accent);
+  font-weight: 700;
+}
+.hero__actions .btn--primary:hover {
+  background: #b8923a;
+  border-color: #b8923a;
+}
+.hero__actions .btn--outline,
+.hero__actions .btn--secondary {
+  border: 2px solid rgba(255,255,255,.75);
+  color: #fff;
+  background: transparent;
+}
+.hero__actions .btn--outline:hover,
+.hero__actions .btn--secondary:hover {
+  background: rgba(255,255,255,.12);
+  border-color: #fff;
+}
 
 .hero__trust {
   display: flex;
@@ -705,7 +738,7 @@ th, td {
   .cta-banner__actions .btn { width: 100%; }
   .footer__grid { grid-template-columns: 1fr; gap: 2rem; padding-block: 3rem; }
   .footer__bottom-inner { flex-direction: column; text-align: center; }
-  .hero { min-height: 80vh; }
+  .hero { min-height: 48vh; padding: 2.5rem 0 2rem; }
   .hero__trust { gap: 1.5rem; }
   .section { padding-block: 3.5rem; }
   .section__header { margin-bottom: 2rem; }

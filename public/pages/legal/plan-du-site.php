@@ -16,8 +16,8 @@ $metaRobots = 'noindex, follow';
             <ul>
                 <li><a href="/biens">Nos biens</a></li>
                 <li><a href="/guide-local">Secteurs</a></li>
-                <li><a href="/vendre">Vendre</a></li>
-                <li><a href="/acheter">Acheter</a></li>
+                <li><a href="/estimation-gratuite">Vendre</a></li>
+                <li><a href="/biens">Acheter</a></li>
                 <li><a href="/financement">Financement</a></li>
                 <li><a href="/estimation-gratuite">Estimation gratuite</a></li>
             </ul>
@@ -25,7 +25,7 @@ $metaRobots = 'noindex, follow';
             <h2>Entreprise</h2>
             <ul>
                 <li><a href="/a-propos">À propos</a></li>
-                <li><a href="/avis">Avis clients</a></li>
+                <li><a href="/avis-clients">Avis clients</a></li>
                 <li><a href="/contact">Contact</a></li>
             </ul>
 

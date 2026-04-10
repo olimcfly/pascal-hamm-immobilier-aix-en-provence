@@ -35,7 +35,7 @@ $navItems = [
     [
         'path'  => '/biens',
         'href'  => url('/biens'),
-        'label' => 'Nos biens',
+        'label' => 'Biens à vendre',
         'sub'   => [
             ['path' => '/biens',              'href' => url('/biens'),              'label' => 'Tous les biens'],
             ['path' => '/biens/maisons',      'href' => url('/biens/maisons'),      'label' => 'Maisons'],
@@ -78,7 +78,7 @@ $navItems = [
         'href'  => false,
         'label' => 'Vendre',
         'sub' => [
-            ['path' => '/vendre', 'href' => url('/vendre'), 'label' => 'Vendre mon bien'],
+            ['path' => '/estimation-gratuite', 'href' => url('/estimation-gratuite'), 'label' => 'Vendre mon bien'],
             ['path' => '/estimation-gratuite', 'href' => url('/estimation-gratuite'), 'label' => 'Estimation gratuite'],
             ['path' => '/services', 'href' => url('/ressources/guide-vendeur'), 'label' => 'Méthode de vente'],
             ['path' => '/services', 'href' => url('/services'), 'label' => 'Mise en valeur du bien'],
@@ -86,15 +86,14 @@ $navItems = [
         ],
     ],
     [
-        'path' => '/acheter',
-        'href' => url('/acheter'),
+        'path' => '/biens',
+        'href' => false,
         'label' => 'Acheter',
         'sub' => [
-            ['path' => '/acheter', 'href' => url('/acheter'), 'label' => 'Acheter un bien'],
+            ['path' => '/biens', 'href' => url('/biens'), 'label' => 'Acheter un bien'],
             ['path' => '/biens', 'href' => url('/biens'), 'label' => 'Nos biens disponibles'],
-            ['path' => '/acheter', 'href' => url('/ressources/guide-acheteur'), 'label' => 'Accompagnement acquéreur'],
-            ['path' => '/acheter', 'href' => url('/contact?sujet=Recherche+personnalisee'), 'label' => 'Recherche personnalisée'],
-            ['path' => '/acheter', 'href' => url('/acheter#faq-acheteur'), 'label' => 'FAQ acheteur'],
+            ['path' => '/ressources/guide-acheteur', 'href' => url('/ressources/guide-acheteur'), 'label' => 'Accompagnement acquéreur'],
+            ['path' => '/contact', 'href' => url('/contact?sujet=Recherche+personnalisee'), 'label' => 'Recherche personnalisée'],
         ],
     ],
     [

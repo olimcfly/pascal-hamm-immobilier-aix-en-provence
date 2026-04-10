@@ -2,67 +2,86 @@
 require_once __DIR__ . '/../../core/bootstrap.php';
 ?>
 
-<div class="gmb-dashboard gmb-hub">
-    <header class="gmb-hero">
+<section class="hub-page">
+
+    <header class="hub-hero">
+        <div class="hub-hero-badge"><i class="fab fa-google"></i> Google My Business</div>
         <h1>Recevez plus d'appels depuis Google</h1>
-        <p class="gmb-hero-subtitle">Activez votre présence locale pour convertir les recherches en rendez-vous.</p>
+        <p>Activez votre présence locale pour convertir les recherches en rendez-vous.</p>
     </header>
 
-    <section class="gmb-panel gmb-mere-block" aria-labelledby="mere-title">
-        <h2 id="mere-title">Méthode</h2>
-        <div class="gmb-mere-grid">
-            <article class="gmb-mere-item">
-                <h3>Problème utilisateur</h3>
-                <p>Votre fiche locale ne transforme pas assez de vues en contacts.</p>
-            </article>
-            <article class="gmb-mere-item">
-                <h3>Logique simple</h3>
-                <p>Profil complet, avis réguliers, publications utiles.</p>
-            </article>
-            <article class="gmb-mere-item">
-                <h3>Bénéfice clair</h3>
-                <p>Vous gagnez en confiance locale et en demandes entrantes.</p>
-            </article>
-            <article class="gmb-mere-item">
-                <h3>Action</h3>
-                <p><a class="btn-gmb" href="/admin?module=gmb&view=fiche">Commencer</a></p>
-            </article>
-        </div>
+    <section class="hub-narrative" aria-label="Méthode GMB">
+        <article class="hub-narrative-card hub-narrative-card--motivation">
+            <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Problème</h3>
+            <p>Votre fiche locale ne transforme pas assez de vues en contacts.</p>
+        </article>
+        <article class="hub-narrative-card hub-narrative-card--explanation">
+            <h3><i class="fas fa-diagram-project" style="color:#3b82f6;"></i> Logique</h3>
+            <p>Profil complet, avis réguliers, publications utiles.</p>
+        </article>
+        <article class="hub-narrative-card hub-narrative-card--resultat">
+            <h3><i class="fas fa-chart-line" style="color:#10b981;"></i> Bénéfice</h3>
+            <p>Vous gagnez en confiance locale et en demandes entrantes.</p>
+        </article>
+        <article class="hub-narrative-card hub-narrative-card--action">
+            <h3><i class="fas fa-play-circle" style="color:#f59e0b;"></i> Action</h3>
+            <p>Commencez par compléter votre fiche dès aujourd'hui.</p>
+        </article>
     </section>
 
-    <section aria-labelledby="gmb-modules-title">
-        <h2 id="gmb-modules-title" class="gmb-section-title">Zone action</h2>
-        <div class="gmb-cards-grid">
-            <a class="gmb-card" href="/admin?module=gmb&view=fiche">
-                <p class="gmb-card-index">1</p>
+    <div class="hub-modules-grid">
+        <a class="hub-module-card" href="/admin?module=gmb&view=fiche">
+            <div class="hub-module-card-head">
+                <div class="hub-module-card-icon" style="background:#eafaf1;color:#16a34a;"><i class="fas fa-id-card"></i></div>
                 <h3>Compléter la fiche</h3>
-                <p class="gmb-card-module">Renseignez les infos essentielles</p>
-            </a>
-            <a class="gmb-card" href="/admin?module=gmb&view=avis">
-                <p class="gmb-card-index">2</p>
+            </div>
+            <p>Renseignez les infos essentielles de votre établissement.</p>
+            <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+        </a>
+
+        <a class="hub-module-card" href="/admin?module=gmb&view=avis">
+            <div class="hub-module-card-head">
+                <div class="hub-module-card-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas fa-star"></i></div>
                 <h3>Répondre aux avis</h3>
-                <p class="gmb-card-module">Montrez votre réactivité</p>
-            </a>
-            <a class="gmb-card" href="/admin?module=gmb&view=demande-avis">
-                <p class="gmb-card-index">3</p>
+            </div>
+            <p>Montrez votre réactivité et renforcez votre image.</p>
+            <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+        </a>
+
+        <a class="hub-module-card" href="/admin?module=gmb&view=demande-avis">
+            <div class="hub-module-card-head">
+                <div class="hub-module-card-icon" style="background:#fef3c7;color:#d97706;"><i class="fas fa-envelope-open-text"></i></div>
                 <h3>Demander des avis</h3>
-                <p class="gmb-card-module">Augmentez les retours clients</p>
-            </a>
-            <a class="gmb-card" href="/admin?module=redaction&action=pool_gmb">
-                <p class="gmb-card-index">4</p>
+            </div>
+            <p>Augmentez les retours clients après chaque transaction.</p>
+            <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+        </a>
+
+        <a class="hub-module-card" href="/admin?module=redaction&action=pool_gmb">
+            <div class="hub-module-card-head">
+                <div class="hub-module-card-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fas fa-pen-nib"></i></div>
                 <h3>Publier chaque semaine</h3>
-                <p class="gmb-card-module">Restez visible localement</p>
-            </a>
-            <a class="gmb-card" href="/admin?module=gmb&view=statistiques">
-                <p class="gmb-card-index">5</p>
+            </div>
+            <p>Restez visible localement avec des posts réguliers.</p>
+            <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+        </a>
+
+        <a class="hub-module-card" href="/admin?module=gmb&view=statistiques">
+            <div class="hub-module-card-head">
+                <div class="hub-module-card-icon" style="background:#fdedec;color:#dc2626;"><i class="fas fa-chart-bar"></i></div>
                 <h3>Suivre les résultats</h3>
-                <p class="gmb-card-module">Mesurez les appels et clics</p>
-            </a>
+            </div>
+            <p>Mesurez les appels, clics et vues générés par votre fiche.</p>
+            <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+        </a>
+    </div>
+
+    <section class="hub-final-cta" aria-label="Progression GMB">
+        <div>
+            <h2>Progression : Fiche → Avis → Demandes → Publications → Résultats</h2>
+            <p>Commencez par un levier, puis activez les suivants.</p>
         </div>
+        <a class="hub-btn hub-btn--gold" href="/admin?module=gmb&view=fiche"><i class="fas fa-arrow-trend-up"></i> Lancer la première étape</a>
     </section>
 
-    <section class="gmb-panel gmb-final-cta" aria-labelledby="gmb-cta-title">
-        <h2 id="gmb-cta-title">Progression : Fiche → Avis → Demandes → Publications → Résultats</h2>
-        <a class="btn-gmb" href="/admin?module=gmb&view=fiche">Lancer la première étape</a>
-    </section>
-</div>
+</section>

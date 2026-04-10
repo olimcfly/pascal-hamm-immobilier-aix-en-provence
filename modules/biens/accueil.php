@@ -36,79 +36,79 @@ function biensFetchPhotosByBien(array $biens): array
 function renderBiensHubCards(): void
 {
     ?>
-    <div class="page-header">
-        <h1><i class="fas fa-house page-icon"></i> Vendez plus vite avec des fiches claires</h1>
-        <p>Centralisez vos annonces pour gagner du temps à chaque étape.</p>
-    </div>
+    <section class="hub-page">
 
-    <section class="optimiser-mere-card" aria-label="Méthode biens">
-        <div class="optimiser-cycle" role="list" aria-label="Méthode en quatre points">
-            <div class="optimiser-cycle-step" role="listitem">
-                <span class="optimiser-cycle-badge">1</span>
-                <strong>Problème utilisateur</strong>
-                <small>Les infos sont dispersées et lentes à retrouver.</small>
-            </div>
-            <div class="optimiser-cycle-step" role="listitem">
-                <span class="optimiser-cycle-badge">2</span>
-                <strong>Logique simple</strong>
-                <small>Une fiche unique, des photos rangées, un suivi clair.</small>
-            </div>
-            <div class="optimiser-cycle-step" role="listitem">
-                <span class="optimiser-cycle-badge">3</span>
-                <strong>Bénéfice clair</strong>
-                <small>Vous répondez plus vite et inspirez confiance.</small>
-            </div>
-            <div class="optimiser-cycle-step" role="listitem">
-                <span class="optimiser-cycle-badge">4</span>
-                <strong>Action</strong>
-                <small>Créez une nouvelle fiche dès maintenant.</small>
+        <header class="hub-hero">
+            <div class="hub-hero-badge"><i class="fas fa-house"></i> Portefeuille</div>
+            <h1>Vendez plus vite avec des fiches claires</h1>
+            <p>Centralisez vos annonces pour gagner du temps à chaque étape.</p>
+        </header>
+
+        <section class="hub-narrative" aria-label="Méthode biens">
+            <article class="hub-narrative-card hub-narrative-card--motivation">
+                <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Problème</h3>
+                <p>Les infos sont dispersées et lentes à retrouver.</p>
+            </article>
+            <article class="hub-narrative-card hub-narrative-card--explanation">
+                <h3><i class="fas fa-diagram-project" style="color:#3b82f6;"></i> Logique</h3>
+                <p>Une fiche unique, des photos rangées, un suivi clair.</p>
+            </article>
+            <article class="hub-narrative-card hub-narrative-card--resultat">
+                <h3><i class="fas fa-chart-line" style="color:#10b981;"></i> Bénéfice</h3>
+                <p>Vous répondez plus vite et inspirez confiance.</p>
+            </article>
+            <article class="hub-narrative-card hub-narrative-card--action">
+                <h3><i class="fas fa-play-circle" style="color:#f59e0b;"></i> Action</h3>
+                <p>Créez une nouvelle fiche dès maintenant.</p>
+            </article>
+        </section>
+
+        <div class="hub-modules-grid">
+            <a href="/admin/biens/nouveau" class="hub-module-card">
+                <div class="hub-module-card-head">
+                    <div class="hub-module-card-icon" style="background:#eafaf1;color:#16a34a;"><i class="fas fa-plus-circle"></i></div>
+                    <h3>Ajouter une fiche</h3>
+                </div>
+                <p>Créez rapidement une annonce complète.</p>
+                <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Créer</span>
+            </a>
+
+            <a href="/admin?module=biens&view=catalogue" class="hub-module-card">
+                <div class="hub-module-card-head">
+                    <div class="hub-module-card-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas fa-list"></i></div>
+                    <h3>Suivre le portefeuille</h3>
+                </div>
+                <p>Retrouvez chaque annonce en quelques secondes.</p>
+                <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+            </a>
+
+            <a href="/admin?module=biens&view=photos" class="hub-module-card">
+                <div class="hub-module-card-head">
+                    <div class="hub-module-card-icon" style="background:#fef3c7;color:#d97706;"><i class="fas fa-images"></i></div>
+                    <h3>Organiser les photos</h3>
+                </div>
+                <p>Mettez en avant les meilleurs visuels.</p>
+                <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+            </a>
+
+            <div class="hub-module-card hub-module-card--soon">
+                <div class="hub-module-card-head">
+                    <div class="hub-module-card-icon" style="background:#fdedec;color:#dc2626;"><i class="fas fa-tags"></i></div>
+                    <h3>Diffuser plus largement</h3>
+                </div>
+                <p>Préparez la diffusion de vos annonces sur d'autres canaux.</p>
+                <span class="hub-state hub-state--soon"><i class="fas fa-clock"></i> Bientôt</span>
             </div>
         </div>
-    </section>
 
-    <div class="cards-container">
-
-        <a class="card" href="/admin/biens/nouveau" style="--card-accent:#27ae60; --card-icon-bg:#eafaf1; text-decoration:none; color:inherit; display:block;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-plus-circle"></i></div>
-                <h3 class="card-title">Ajouter une fiche</h3>
+        <section class="hub-final-cta" aria-label="Progression biens">
+            <div>
+                <h2>Progression : Créer → Compléter → Illustrer → Diffuser</h2>
+                <p>Commencez par un levier, puis développez votre portefeuille.</p>
             </div>
-            <p class="card-description">Créez rapidement une annonce complète.</p>
-            <span class="card-action"><i class="fas fa-arrow-right"></i> Créer</span>
-        </a>
+            <a href="/admin/biens/nouveau" class="hub-btn hub-btn--gold"><i class="fas fa-rocket"></i> Démarrer</a>
+        </section>
 
-        <a class="card" href="/admin?module=biens&amp;view=catalogue" style="--card-accent:#3498db; --card-icon-bg:#e3f2fd; text-decoration:none; color:inherit; display:block;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-list"></i></div>
-                <h3 class="card-title">Suivre le portefeuille</h3>
-            </div>
-            <p class="card-description">Retrouvez chaque annonce en quelques secondes.</p>
-            <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
-        </a>
-
-        <a class="card" href="/admin?module=biens&amp;view=photos" style="--card-accent:#f39c12; --card-icon-bg:#fef9e7; text-decoration:none; color:inherit; display:block;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-images"></i></div>
-                <h3 class="card-title">Organiser les photos</h3>
-            </div>
-            <p class="card-description">Mettez en avant les meilleurs visuels.</p>
-            <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
-        </a>
-
-        <div class="card" style="--card-accent:#e74c3c; --card-icon-bg:#fdedec;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-tags"></i></div>
-                <h3 class="card-title">Diffuser plus largement</h3>
-            </div>
-            <p class="card-description">Préparez la diffusion de vos annonces sur d'autres canaux.</p>
-            <span class="card-soon"><i class="fas fa-clock"></i> Bientôt</span>
-        </div>
-
-    </div>
-
-    <section class="optimiser-final-cta" aria-label="Progression biens">
-        <h2>Progression : Créer → Compléter → Illustrer → Diffuser</h2>
-        <a href="/admin/biens/nouveau" class="btn btn-primary"><i class="fas fa-rocket"></i> Démarrer</a>
     </section>
     <?php
 }

@@ -35,10 +35,11 @@ $menuGroups = [
         ['module' => 'optimiser',   'label' => 'Optimiser',         'hint' => 'Améliorer les résultats',    'icon' => 'fas fa-chart-line'],
     ],
     'Outils' => [
-        ['module' => 'messagerie',  'label' => 'Messagerie',        'hint' => 'Emails & contacts',          'icon' => 'fas fa-envelope'],
-        ['module' => 'financement', 'label' => 'Demandes de financement', 'hint' => 'Leads financement',  'icon' => 'fas fa-hand-holding-dollar'],
-        ['module' => 'biens',       'label' => 'Biens',             'hint' => 'Catalogue & mandats',        'icon' => 'fas fa-house'],
-        ['module' => 'assistant',   'label' => 'Assistant IA',      'hint' => 'IA à votre service',         'icon' => 'fas fa-robot'],
+        ['module' => 'messagerie',   'label' => 'Messagerie',        'hint' => 'Emails & contacts',          'icon' => 'fas fa-envelope'],
+        ['module' => 'financement',  'label' => 'Demandes de financement', 'hint' => 'Leads financement',  'icon' => 'fas fa-hand-holding-dollar'],
+        ['module' => 'biens',        'label' => 'Biens',             'hint' => 'Catalogue & mandats',        'icon' => 'fas fa-house'],
+        ['module' => 'partenaires',  'label' => 'Partenaires',       'hint' => 'Réseau local Google',        'icon' => 'fas fa-handshake'],
+        ['module' => 'assistant',    'label' => 'Assistant IA',      'hint' => 'IA à votre service',         'icon' => 'fas fa-robot'],
     ],
     'Compte' => [
         ['module' => 'parametres',  'label' => 'Paramètres',        'hint' => 'Compte et préférences',      'icon' => 'fas fa-gear'],

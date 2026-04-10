@@ -13,6 +13,7 @@ if ($advisorDisplayName === '') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/dashboard.css')) ?>">
     <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/settings.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/hub-unified.css')) ?>">
 </head>
 <body data-current-module="<?= htmlspecialchars($module ?? 'dashboard') ?>">
 <div class="dashboard-container" id="dashboard-container">

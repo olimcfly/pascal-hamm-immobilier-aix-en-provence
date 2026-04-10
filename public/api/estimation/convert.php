@@ -190,10 +190,22 @@ try {
 }
 
 // ── Réponse ───────────────────────────────────────────────────
+// Nom du conseiller dynamique (settings DB > constante > fallback générique)
+if (function_exists('setting')) {
+    $_advFirst = trim((string) setting('advisor_firstname', ''));
+    $_advLast  = trim((string) setting('advisor_lastname',  ''));
+    $_advName  = trim($_advFirst . ' ' . $_advLast);
+}
+if (empty($_advName)) {
+    $_advName = defined('ADVISOR_NAME') && ADVISOR_NAME !== ''
+        ? ADVISOR_NAME
+        : (defined('APP_NAME') ? (string) preg_replace('/\s+Immobilier\b.*/iu', '', APP_NAME) : 'Votre conseiller');
+}
+
 $successMessages = [
     'email_report'    => 'Votre rapport d\'estimation a été envoyé à ' . htmlspecialchars($email) . '.',
-    'contact_request' => 'Pascal Hamm vous contactera dans les meilleurs délais.',
-    'rdv_request'     => 'Votre demande de rendez-vous a bien été reçue. Pascal Hamm reviendra vers vous pour confirmer un créneau.',
+    'contact_request' => $_advName . ' vous contactera dans les meilleurs délais.',
+    'rdv_request'     => 'Votre demande de rendez-vous a bien été reçue. ' . $_advName . ' reviendra vers vous pour confirmer un créneau.',
 ];
 
 echo json_encode([

@@ -1,14 +1,19 @@
 <?php
-$pageTitle = 'Avis clients — Pascal Hamm | Expert Immobilier 360° Aix-en-Provence';
-$metaDesc = 'Découvrez les avis vérifiés de nos clients satisfaits. Pascal Hamm, expert immobilier 360° à Aix-en-Provence, noté 4.9/5 pour son accompagnement clef en main.';
+$_siteName  = defined('APP_NAME') ? APP_NAME : (defined('ADVISOR_NAME') ? ADVISOR_NAME . ' Immobilier' : 'Expert Immobilier');
+$_siteCity  = isset($zoneCity) && $zoneCity !== '' ? $zoneCity : (defined('APP_CITY') ? APP_CITY : '');
+$_siteUrl   = defined('APP_URL')  ? APP_URL  : '';
+$pageTitle  = 'Avis clients — ' . $_siteName . ($_siteCity !== '' ? ' | ' . $_siteCity : '');
+$metaDesc   = 'Découvrez les avis vérifiés de nos clients satisfaits. ' . $_siteName
+    . ($_siteCity !== '' ? ', expert immobilier à ' . $_siteCity : ', expert immobilier')
+    . ', noté 4.9/5 pour son accompagnement clef en main.';
 ?>
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
-  "name": "Pascal Hamm",
-  "url": "https://www.pascal-hamm.com/social-proof/avis",
+  "name": "<?= htmlspecialchars($_siteName, ENT_QUOTES) ?>",
+  "url": "<?= htmlspecialchars(rtrim($_siteUrl, '/') . '/avis', ENT_QUOTES) ?>",
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.9",

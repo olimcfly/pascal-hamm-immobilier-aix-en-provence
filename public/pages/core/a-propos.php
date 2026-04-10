@@ -52,12 +52,16 @@ $metaDesc = 'Découvrez Pascal Hamm, expert immobilier clef en main à Aix-en-Pr
                 </div>
 
                 <div class="contact-info">
-                    <a href="tel:+33667198366" class="contact-link">
-                        <span class="contact-icon">📞</span> +33 6 67 19 83 66
+                    <?php if (!empty($advisorPhone)): ?>
+                    <a href="tel:<?= e($advisorPhone) ?>" class="contact-link">
+                        <span class="contact-icon">📞</span> <?= e($advisorPhoneDisplay) ?>
                     </a>
-                    <a href="mailto:pascal.hamm@expfrance.fr" class="contact-link">
-                        <span class="contact-icon">✉️</span> pascal.hamm@expfrance.fr
+                    <?php endif; ?>
+                    <?php if (!empty($advisorEmail)): ?>
+                    <a href="mailto:<?= e($advisorEmail) ?>" class="contact-link">
+                        <span class="contact-icon">✉️</span> <?= e($advisorEmail) ?>
                     </a>
+                    <?php endif; ?>
                 </div>
                 <a href="/contact" class="btn btn--primary">Discutons de votre projet</a>
             </div>

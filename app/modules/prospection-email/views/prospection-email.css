@@ -1,0 +1,75 @@
+:root {
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --accent: #174ea6;
+    --text: #162030;
+    --muted: #6f7b8d;
+}
+
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+}
+
+.prospection-layout {
+    padding: 1rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.hero-card,
+.mere-card,
+.panel {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.hero-card h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.35rem;
+}
+
+.hero-card p { margin: 0; color: var(--muted); }
+
+.mere-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.mere-card h2 {
+    margin-top: 0;
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+.mere-card p {
+    margin-bottom: 0;
+    color: var(--muted);
+}
+
+.panel h2 { margin-top: 0; }
+.panel ol {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: var(--muted);
+}
+
+@media (min-width: 768px) {
+    .prospection-layout {
+        padding: 1.5rem;
+    }
+
+    .mere-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero-card h1 {
+        font-size: 1.8rem;
+    }
+}

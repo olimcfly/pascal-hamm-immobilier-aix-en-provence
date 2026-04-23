@@ -1,40 +1,158 @@
 <?php
+
+declare(strict_types=1);
+
 require_once __DIR__ . '/includes/_bootstrap.php';
+require_once __DIR__ . '/repositories/SequenceRepository.php';
+require_once __DIR__ . '/repositories/PostRepository.php';
+require_once __DIR__ . '/services/StrategyService.php';
+require_once __DIR__ . '/services/PublishService.php';
+require_once __DIR__ . '/services/SchedulerService.php';
+require_once __DIR__ . '/services/SequenceService.php';
+require_once __DIR__ . '/services/MediaService.php';
+require_once __DIR__ . '/controllers/SequenceController.php';
+require_once __DIR__ . '/controllers/PostController.php';
+require_once __DIR__ . '/controllers/SocialController.php';
+
 $pageTitle = 'Social';
-$pageDescription = 'Gérez vos publications et réseaux sociaux';
-$stats = (new SocialService())->getHubStats(socialUserId());
+$pageDescription = 'Séquences, publication et journal social';
+
+$sequenceRepository = new SequenceRepository(db());
+$postRepository = new PostRepository(db());
+$strategyService = new StrategyService();
+$sequenceController = new SequenceController($sequenceRepository, $postRepository);
+$postController = new PostController($postRepository, $strategyService);
+$socialController = new SocialController($sequenceRepository, $postRepository, $strategyService);
+
+$action = preg_replace('/[^a-z-]/', '', (string) ($_GET['action'] ?? 'index'));
+$allowedActions = ['index', 'sequences', 'journal', 'post', 'post-form', 'kit', 'save-sequence', 'save-post', 'delete-post', 'toggle-sequence', 'duplicate-sequence'];
+if (!in_array($action, $allowedActions, true)) {
+    $action = 'index';
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (in_array($action, ['save-sequence', 'toggle-sequence', 'duplicate-sequence'], true)) {
+        $sequenceController->handle($action);
+    }
+    if (in_array($action, ['save-post', 'delete-post'], true)) {
+        $postController->handle($action);
+    }
+}
+
 require_once __DIR__ . '/../../admin/views/layout.php';
 
-function renderContent()
+function renderSocialHub(): void
 {
-    global $stats;
     ?>
-    <link rel="stylesheet" href="/modules/social/assets/social.css">
-    <div class="social-header">
-        <div class="breadcrumb"><a href="/admin/">Accueil</a> &gt; Social</div>
-        <h1><span class="icon-blue">↔</span> <span class="hub">HUB</span> <span class="social">Social</span></h1>
-        <p>Gérez vos publications et réseaux sociaux</p>
-    </div>
-    <div class="social-search"><input type="text" id="social-hub-search" placeholder="Rechercher un module social..."></div>
-    <div class="social-cards" id="social-cards">
-        <?php socialHubCard('facebook', 'Facebook', '#1877f2', 'Posts', 'Reels', 'Gérer', '/admin/?module=social&action=facebook', 'Planifiez et publiez vos posts sur votre page Facebook professionnelle.', (int) ($stats['facebook']['posts_ce_mois'] ?? 0), (int) ($stats['facebook']['abonnes'] ?? 0), 'abonnés'); ?>
-        <?php socialHubCard('instagram', 'Instagram', '#e1306c', 'Stories', 'Carrousels', 'Gérer', '/admin/?module=social&action=instagram', 'Partagez vos biens et votre expertise sur Instagram.', (int) ($stats['instagram']['posts_ce_mois'] ?? 0), (int) ($stats['instagram']['abonnes'] ?? 0), 'abonnés'); ?>
-        <?php socialHubCard('linkedin', 'LinkedIn', '#0077b5', 'Articles', 'Réseau', 'Gérer', '/admin/?module=social&action=linkedin', 'Développez votre réseau professionnel et votre personal branding.', (int) ($stats['linkedin']['posts_ce_mois'] ?? 0), (int) ($stats['linkedin']['abonnes'] ?? 0), 'relations'); ?>
-        <?php socialHubCard('calendrier', 'Calendrier éditorial', '#f59e0b', 'Planning', 'Multi-réseau', 'Planifier', '/admin/?module=social&action=calendrier', 'Planifiez vos publications sur tous les réseaux depuis un seul endroit.', (int) ($stats['facebook']['planifies_a_venir'] + $stats['instagram']['planifies_a_venir'] + $stats['linkedin']['planifies_a_venir']), 0, 'planifiés à venir', true); ?>
-    </div>
-    <script src="/modules/social/assets/social.js"></script>
+    <section class="hub-page">
+
+        <header class="hub-hero">
+            <div class="hub-hero-badge"><i class="fas fa-share-nodes"></i> Réseaux sociaux</div>
+            <h1>Publiez régulièrement pour rester visible</h1>
+            <p>Planifiez vos contenus, automatisez vos séquences et entretenez la relation avec votre audience locale.</p>
+        </header>
+
+        <section class="hub-narrative" aria-label="Méthode social">
+            <article class="hub-narrative-card hub-narrative-card--motivation">
+                <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Problème</h3>
+                <p>Publier manuellement prend du temps et manque de régularité.</p>
+            </article>
+            <article class="hub-narrative-card hub-narrative-card--explanation">
+                <h3><i class="fas fa-diagram-project" style="color:#3b82f6;"></i> Logique</h3>
+                <p>Des séquences planifiées, un journal de bord, un kit de contenus réutilisables.</p>
+            </article>
+            <article class="hub-narrative-card hub-narrative-card--resultat">
+                <h3><i class="fas fa-chart-line" style="color:#10b981;"></i> Bénéfice</h3>
+                <p>Vous restez visible chaque semaine sans effort supplémentaire.</p>
+            </article>
+            <article class="hub-narrative-card hub-narrative-card--action">
+                <h3><i class="fas fa-play-circle" style="color:#f59e0b;"></i> Action</h3>
+                <p>Créez votre première séquence ou rédigez un post maintenant.</p>
+            </article>
+        </section>
+
+        <div class="hub-modules-grid">
+            <a href="?module=social&action=sequences" class="hub-module-card">
+                <div class="hub-module-card-head">
+                    <div class="hub-module-card-icon" style="background:#eafaf1;color:#16a34a;"><i class="fas fa-layer-group"></i></div>
+                    <h3>Séquences</h3>
+                </div>
+                <p>Planifiez des séries de posts automatiques sur vos réseaux.</p>
+                <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+            </a>
+
+            <a href="?module=social&action=journal" class="hub-module-card">
+                <div class="hub-module-card-head">
+                    <div class="hub-module-card-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas fa-newspaper"></i></div>
+                    <h3>Journal</h3>
+                </div>
+                <p>Suivez tous vos posts publiés et leur historique.</p>
+                <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+            </a>
+
+            <a href="?module=social&action=post-form" class="hub-module-card">
+                <div class="hub-module-card-head">
+                    <div class="hub-module-card-icon" style="background:#fef3c7;color:#d97706;"><i class="fas fa-pen-to-square"></i></div>
+                    <h3>Nouveau post</h3>
+                </div>
+                <p>Rédigez et planifiez un post en quelques secondes.</p>
+                <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Créer</span>
+            </a>
+
+            <a href="?module=social&action=kit" class="hub-module-card">
+                <div class="hub-module-card-head">
+                    <div class="hub-module-card-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fas fa-toolbox"></i></div>
+                    <h3>Kit de contenus</h3>
+                </div>
+                <p>Accédez à des modèles et inspirations pour vos publications.</p>
+                <span class="hub-module-card-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>
+            </a>
+        </div>
+
+        <section class="hub-final-cta" aria-label="Progression social">
+            <div>
+                <h2>Progression : Séquences → Posts → Journal → Amplifier</h2>
+                <p>Commencez par une séquence, puis publiez régulièrement.</p>
+            </div>
+            <a href="?module=social&action=sequences" class="hub-btn hub-btn--gold"><i class="fas fa-rocket"></i> Créer ma première séquence</a>
+        </section>
+
+    </section>
     <?php
 }
 
-function socialHubCard(string $slug, string $title, string $color, string $tag1, string $tag2, string $action, string $href, string $description, int $postsMonth, int $followers, string $followersLabel, bool $calendar = false): void
+function renderContent(): void
 {
-    ?>
-    <article class="social-card" data-network="<?= e($slug) ?>" style="--card-color:<?= e($color) ?>">
-        <h3><?= e($title) ?></h3>
-        <p><?= e($description) ?></p>
-        <div class="badges"><span><?= e($tag1) ?></span><span><?= e($tag2) ?></span></div>
-        <a class="go" href="<?= e($href) ?>">→ <?= e($action) ?></a>
-        <div class="stats"><?= $postsMonth ?> publiés ce mois<?= $calendar ? '' : ' / ' . $followers . ' ' . e($followersLabel) ?></div>
-    </article>
-    <?php
+    global $socialController, $action;
+
+    $cssPath = __DIR__ . '/assets/social.css';
+    if (is_file($cssPath)) {
+        echo '<style data-social-inline="1">' . file_get_contents($cssPath) . '</style>';
+    }
+
+    switch ($action) {
+        case 'journal':
+            $socialController->journal();
+            break;
+        case 'post':
+            $socialController->postDetail((int) ($_GET['id'] ?? 0));
+            break;
+        case 'post-form':
+            $socialController->postForm((int) ($_GET['id'] ?? 0));
+            break;
+        case 'kit':
+            require __DIR__ . '/views/kit.php';
+            break;
+        case 'sequences':
+            $socialController->sequences();
+            break;
+        default:
+            renderSocialHub();
+            break;
+    }
+
+    $jsPath = __DIR__ . '/assets/social.js';
+    if (is_file($jsPath)) {
+        echo '<script>' . file_get_contents($jsPath) . '</script>';
+    }
 }

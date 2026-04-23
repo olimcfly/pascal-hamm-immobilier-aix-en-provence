@@ -33,7 +33,7 @@ $date_publication = $date_publication_ts !== false ? date('Y-m-d H:i:s', $date_p
 $mots             = str_word_count(strip_tags($contenu));
 
 if (empty($titre)) {
-    header('Location: ../accueil.php?action=new&error=titre_vide');
+    header('Location: ../index.php?action=new&error=titre_vide');
     exit;
 }
 
@@ -60,5 +60,5 @@ if ($id) {
     $id = $pdo->lastInsertId();
 }
 
-header('Location: ../accueil.php?action=view&id=' . $id . '&success=1');
+header('Location: ../index.php?action=view&id=' . $id . '&success=1');
 exit;

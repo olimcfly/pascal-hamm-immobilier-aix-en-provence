@@ -32,6 +32,7 @@ const ALLOWED_FIELDS = [
         'zone_communes', 'zone_rayon_km', 'zone_lat', 'zone_lng',
     ],
     'api' => [
+        'api_anthropic',
         'api_openai', 'api_google_maps', 'api_google_psi', 'api_gsc',
         'api_gsc_client_id', 'api_gsc_client_secret', 'api_gsc_site_url',
         'api_gmb_client_id', 'api_gmb_client_secret', 'api_gmb_account_id',

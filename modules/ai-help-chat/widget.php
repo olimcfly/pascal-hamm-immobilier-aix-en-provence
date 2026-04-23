@@ -139,7 +139,7 @@ function renderAiHelpChatWidget(AiHelpChatService $service, array $context = [])
                 payload.append('context_page', root.dataset.page || '');
 
                 try {
-                    const response = await fetch('/admin?module=ai-help-chat&action=api', {
+                    const response = await fetch('/admin/api/ai-help-chat/message.php', {
                         method: 'POST',
                         body: payload,
                     });

@@ -25,6 +25,25 @@ foreach ($posts as $p) {
 
 $today = date('Y-m-d');
 ?>
+<style>
+/* Align journal to site palette */
+.social-journal-wrap {
+    --s-bg:     #f8fafc;
+    --s-white:  #ffffff;
+    --s-border: #e2e8f0;
+    --s-gray:   #64748b;
+    --s-navy:   #0f2237;
+}
+</style>
+<div class="hub-page">
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-calendar-days"></i> Réseaux sociaux</div>
+    <h1>Journal de publication</h1>
+    <p>Suivez et gérez tous vos posts planifiés, publiés et brouillons en un seul endroit.</p>
+</header>
+</div>
+
+<div class="social-journal-wrap">
 <div class="social-journal">
 
     <!-- ── ONGLETS RÉSEAUX ── -->
@@ -150,6 +169,7 @@ $today = date('Y-m-d');
     <?php endif; ?>
 
 </div><!-- /.social-journal -->
+</div><!-- /.social-journal-wrap -->
 </div><!-- /.social-wrap — ouvert dans _header.php -->
 
 <!-- FAB -->

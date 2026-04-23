@@ -62,3 +62,31 @@ Stack trace:
 #0 Command line code(3): PDO->query()
 #1 {main}
   thrown in Command line code on line 3
+[11-Apr-2026 02:41:06 UTC] PHP Warning:  Constant ROOT_PATH already defined in /home/cool1019/site/core/config/config.php on line 40
+[11-Apr-2026 02:41:06 UTC] PHP Warning:  Constant MODULES_PATH already defined in /home/cool1019/site/core/config/config.php on line 43
+[11-Apr-2026 02:51:51 UTC] PHP Warning:  Constant ROOT_PATH already defined in /home/cool1019/site/core/config/config.php on line 40
+[11-Apr-2026 02:51:51 UTC] PHP Warning:  Constant MODULES_PATH already defined in /home/cool1019/site/core/config/config.php on line 43
+[11-Apr-2026 02:51:58 UTC] PHP Warning:  Constant ROOT_PATH already defined in /home/cool1019/site/core/config/config.php on line 40
+[11-Apr-2026 02:51:58 UTC] PHP Warning:  Constant MODULES_PATH already defined in /home/cool1019/site/core/config/config.php on line 43
+[11-Apr-2026 02:52:08 UTC] PHP Warning:  Constant ROOT_PATH already defined in /home/cool1019/site/core/config/config.php on line 40
+[11-Apr-2026 02:52:08 UTC] PHP Warning:  Constant MODULES_PATH already defined in /home/cool1019/site/core/config/config.php on line 43
+[11-Apr-2026 04:52:08 Europe/Paris] PHP Fatal error:  Uncaught Error: Call to undefined method SequenceRepository::updateContactEnrollStatus() in /home/cool1019/site/modules/prospection/services/SequenceService.php:381
+Stack trace:
+#0 /home/cool1019/site/modules/prospection/services/SequenceService.php(330): SequenceService->applyScenario()
+#1 Command line code(17): SequenceService->simulateFullCycle()
+#2 {main}
+  thrown in /home/cool1019/site/modules/prospection/services/SequenceService.php on line 381
+[11-Apr-2026 02:52:32 UTC] PHP Warning:  Constant ROOT_PATH already defined in /home/cool1019/site/core/config/config.php on line 40
+[11-Apr-2026 02:52:32 UTC] PHP Warning:  Constant MODULES_PATH already defined in /home/cool1019/site/core/config/config.php on line 43
+[11-Apr-2026 04:33:11 UTC] PHP Parse error:  syntax error, unexpected identifier "aide", expecting "]" in /home/cool1019/site/modules/ai-help-chat/service.php on line 136
+[11-Apr-2026 04:33:13 UTC] PHP Parse error:  syntax error, unexpected identifier "aide", expecting "]" in /home/cool1019/site/modules/ai-help-chat/service.php on line 136
+[11-Apr-2026 04:33:16 UTC] PHP Parse error:  syntax error, unexpected identifier "aide", expecting "]" in /home/cool1019/site/modules/ai-help-chat/service.php on line 136
+[11-Apr-2026 04:34:19 UTC] PHP Parse error:  syntax error, unexpected token "\" in /home/cool1019/site/modules/ai-help-chat/service.php on line 136
+[11-Apr-2026 04:34:23 UTC] PHP Parse error:  syntax error, unexpected token "\" in /home/cool1019/site/modules/ai-help-chat/service.php on line 136
+[11-Apr-2026 04:36:21 UTC] PHP Warning:  Constant ROOT_PATH already defined in /home/cool1019/site/core/config/config.php on line 40
+[11-Apr-2026 04:36:27 UTC] PHP Warning:  Constant ROOT_PATH already defined in /home/cool1019/site/core/config/config.php on line 40
+[15-Apr-2026 13:30:51 UTC] PHP Parse error:  syntax error, unexpected identifier "aide" in modules/aide/_view.php on line 65
+[15-Apr-2026 13:30:54 UTC] PHP Parse error:  syntax error, unexpected identifier "aide" in modules/aide/_view.php on line 65
+[15-Apr-2026 13:30:57 UTC] PHP Parse error:  syntax error, unexpected identifier "aide" in /home/cool1019/site/modules/aide/_view.php on line 65
+[15-Apr-2026 13:31:05 UTC] PHP Parse error:  syntax error, unexpected identifier "aide" in modules/aide/_view.php on line 65
+[15-Apr-2026 13:31:08 UTC] PHP Parse error:  syntax error, unexpected identifier "aide" in modules/aide/_view.php on line 65

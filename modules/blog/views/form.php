@@ -10,7 +10,7 @@ if ($id) {
     $stmt = $pdo->prepare("SELECT * FROM blog_articles WHERE id=? AND website_id=?");
     $stmt->execute([$id, $website_id]);
     $a = $stmt->fetch();
-    if (!$a) { header('Location: ../accueil.php'); exit; }
+    if (!$a) { header('Location: ../index.php'); exit; }
 }
 
 $v = static fn(string $k, string $d = ''): string => htmlspecialchars((string)($a[$k] ?? $d), ENT_QUOTES, 'UTF-8');
@@ -41,7 +41,7 @@ $initialReason = $initialPersona['reason'];
 <body>
 <div class="cms-wrap">
   <header class="cms-header">
-    <a href="accueil.php" class="back">← Retour</a>
+    <a href="index.php" class="back">← Retour</a>
     <h1><?= $id ? 'Éditer l\'article' : 'Créer un article' ?></h1>
   </header>
 

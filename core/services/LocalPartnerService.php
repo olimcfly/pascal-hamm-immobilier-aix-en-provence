@@ -56,13 +56,14 @@ class LocalPartnerService
         [$minLat, $maxLat, $minLng, $maxLng] = $this->boundingBox($centerLat, $centerLng, $radiusKm);
 
         $params = [
-            ':center_lat' => $centerLat,
-            ':center_lng' => $centerLng,
-            ':radius_km' => $radiusKm,
-            ':min_lat' => $minLat,
-            ':max_lat' => $maxLat,
-            ':min_lng' => $minLng,
-            ':max_lng' => $maxLng,
+            ':center_lat'  => $centerLat,
+            ':center_lat2' => $centerLat,
+            ':center_lng'  => $centerLng,
+            ':radius_km'   => $radiusKm,
+            ':min_lat'     => $minLat,
+            ':max_lat'     => $maxLat,
+            ':min_lng'     => $minLng,
+            ':max_lng'     => $maxLng,
         ];
 
         $categorySql = '';
@@ -90,7 +91,7 @@ class LocalPartnerService
                         6371 * ACOS(
                             COS(RADIANS(:center_lat)) * COS(RADIANS(p.latitude))
                             * COS(RADIANS(p.longitude) - RADIANS(:center_lng))
-                            + SIN(RADIANS(:center_lat)) * SIN(RADIANS(p.latitude))
+                            + SIN(RADIANS(:center_lat2)) * SIN(RADIANS(p.latitude))
                         )
                     ) AS distance_km
                 FROM local_partners p

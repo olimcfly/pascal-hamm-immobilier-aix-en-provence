@@ -65,12 +65,33 @@ $reseauMeta = [
 .pg-empty i { font-size:3rem; margin-bottom:12px; display:block; }
 </style>
 
+<div class="hub-page">
+
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-paper-plane"></i> Rédaction</div>
+    <h1>Pool Publications</h1>
+    <p>Tous vos posts générés automatiquement depuis vos articles, prêts à publier sur vos réseaux.</p>
+</header>
+
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--explanation">
+        <h3><i class="fas fa-wand-magic-sparkles" style="color:#3b82f6"></i> Génération automatique</h3>
+        <p>À chaque article publié, des posts sont générés pour GMB, Facebook, LinkedIn et Instagram selon votre persona.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-check-circle" style="color:#10b981"></i> Prêts à diffuser</h3>
+        <p>Planifiez ou publiez directement vos posts depuis ce tableau — sans ressaisir le contenu manuellement.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-bolt" style="color:#f59e0b"></i> Conseil</h3>
+        <p>Personnalisez chaque post avant de publier pour l'adapter au ton et au format de chaque réseau.</p>
+    </article>
+</div>
+
 <div class="pg">
-  <div class="pg-header">
-    <h1>📍 Pool Publications</h1>
-    <a href="/admin?module=redaction" class="pg-btn pg-btn-outline">
-      <i class="fas fa-arrow-left"></i> Retour
-    </a>
+  <div class="pg-header" style="margin-bottom:1rem">
+    <h2 style="font-size:1rem;font-weight:700;color:#0f172a;margin:0"><i class="fas fa-layer-group" style="color:#64748b;margin-right:.4rem"></i>Publications</h2>
+    <a href="/admin?module=redaction" class="hub-btn hub-btn--sm"><i class="fas fa-arrow-left"></i> Retour</a>
   </div>
 
   <!-- Stats -->
@@ -141,4 +162,5 @@ $reseauMeta = [
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
-</div>
+</div><!-- /.pg -->
+</div><!-- /.hub-page -->

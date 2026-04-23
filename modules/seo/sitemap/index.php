@@ -6,9 +6,31 @@ $service->ensureSchema();
 $data = $service->getDashboard($userId);
 $sitemap = $data['sitemap'] ?? null;
 ?>
+<div class="hub-page">
+
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-sitemap"></i> SEO</div>
+    <h1>Sitemap XML</h1>
+    <p>Générez, vérifiez et soumettez votre sitemap pour maximiser l'indexation de votre site par Google.</p>
+</header>
+
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--explanation">
+        <h3><i class="fas fa-map" style="color:#3b82f6"></i> Rôle du sitemap</h3>
+        <p>Le sitemap indique à Google toutes vos pages importantes — sans lui, certaines pages peuvent ne jamais être indexées.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-check-circle" style="color:#10b981"></i> Après génération</h3>
+        <p>Soumettez votre sitemap dans Google Search Console pour accélérer l'indexation de votre contenu frais.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-bolt" style="color:#f59e0b"></i> Fréquence recommandée</h3>
+        <p>Regénérez votre sitemap après chaque publication majeure : nouvelle fiche ville, article de blog, page de service.</p>
+    </article>
+</div>
+
 <section class="seo-section">
-    <div class="seo-breadcrumb"><a href="/admin?module=seo">Accueil</a> &gt; SEO &gt; Sitemap</div>
-    <h2>Sitemap XML</h2>
+    <div class="seo-breadcrumb"><a href="/admin?module=seo">Accueil</a> › SEO › Sitemap</div>
 
     <div class="kpi-grid">
         <div class="kpi"><span>Statut</span><strong><?= htmlspecialchars((string) ($sitemap['status'] ?? 'idle')) ?></strong></div>
@@ -71,3 +93,4 @@ $sitemap = $data['sitemap'] ?? null;
     <h3>Prévisualisation XML</h3>
     <pre id="sitemap-xml-preview">Cliquez sur « Générer » pour produire le XML.</pre>
 </section>
+</div><!-- /.hub-page -->

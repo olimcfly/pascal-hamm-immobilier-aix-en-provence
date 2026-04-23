@@ -3,20 +3,19 @@
    IMMO LOCAL+ · Design System Premium
    ══════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* Palette principale */
-    --s-navy:        #0f1c2e;
-    --s-navy-mid:    #162236;
+    /* Palette principale — alignée sur le site admin */
+    --s-navy:        #0f2237;
+    --s-navy-mid:    #1a3a5c;
     --s-gold:        #c9a84c;
-    --s-gold-light:  #f5edda;
-    --s-gold-dim:    rgba(201,168,76,0.12);
-    --s-cream:       #f5f0e8;
-    --s-bg:          #f0ebe2;
+    --s-gold-light:  #fef3c7;
+    --s-gold-dim:    rgba(201,168,76,0.1);
+    --s-cream:       #f8fafc;
+    --s-bg:          #f8fafc;
     --s-white:       #ffffff;
-    --s-border:      #e2d9cc;
-    --s-gray:        #8a95a3;
+    --s-border:      #e2e8f0;
+    --s-gray:        #64748b;
 
     /* Statuts */
     --s-green:       #2a7a4b; --s-green-bg:  #d4eddc;
@@ -31,9 +30,9 @@
     --n4: #f97316; --n4-bg: #ffedd5;
     --n5: #22c55e; --n5-bg: #dcfce7;
 
-    /* Typo */
-    --s-serif: 'DM Serif Display', 'Georgia', serif;
-    --s-sans:  'DM Sans', 'Helvetica Neue', sans-serif;
+    /* Typo — hérite du site admin */
+    --s-serif: inherit;
+    --s-sans:  inherit;
 }
 
 /* ─────────────────────────────── WRAPPER ─────────────────── */

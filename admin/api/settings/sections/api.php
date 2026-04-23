@@ -16,6 +16,41 @@ $redirectUri  = (isset($_SERVER['HTTPS']) ? 'https' : 'http')
 <form class="settings-form" method="post">
     <input type="hidden" name="section" value="api">
 
+    <!-- ── Anthropic Claude (IA principale) ──────────────── -->
+    <div class="form-section-title">
+        <i class="fas fa-robot" style="color:#f59e0b"></i> Anthropic Claude (IA principale)
+        <small style="float:right;font-weight:400"><?= $status('api_anthropic') ?></small>
+    </div>
+    <?php
+    // Si pas de clé en DB mais clé en ENV, afficher le statut ENV
+    $envAnthropicKey = $_ENV['ANTHROPIC_API_KEY'] ?? '';
+    if (!empty($envAnthropicKey) && empty($s['api_anthropic'])): ?>
+    <div class="api-help-banner" style="border-left-color:#10b981">
+        <i class="fas fa-check-circle" style="color:#10b981"></i>
+        <div>
+            <strong>Clé configurée dans .env</strong><br>
+            <span>La clé Anthropic est déjà active via la variable d'environnement <code>ANTHROPIC_API_KEY</code>.
+            Vous pouvez la saisir ici pour la gérer depuis l'interface.</span>
+        </div>
+    </div>
+    <?php endif; ?>
+    <div class="form-group">
+        <label>Clé API Anthropic Claude</label>
+        <div class="api-key-row">
+            <input type="password" name="api_anthropic"
+                   value="<?= $v('api_anthropic') ?>"
+                   placeholder="sk-ant-api03-…">
+            <button type="button" class="api-key-toggle">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
+        <small style="color:#64748b;font-size:.78rem">
+            Générer une clé sur
+            <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a>.
+            Modèle actif : <code><?= htmlspecialchars($_ENV['ANTHROPIC_MODEL'] ?? 'claude-haiku-4-5-20251001') ?></code>
+        </small>
+    </div>
+
     <!-- ── OpenAI ─────────────────────────────────────────── -->
     <div class="form-section-title">
         <i class="fas fa-robot" style="color:#10a37f"></i> OpenAI

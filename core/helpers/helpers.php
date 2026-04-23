@@ -43,9 +43,9 @@ function truncate(string $text, int $length = 150): string
     return mb_substr($text, 0, $length) . '...';
 }
 
-function e(string $str): string
+function e(?string $str): string
 {
-    return htmlspecialchars($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return htmlspecialchars($str ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
 function redirect(string $url): never

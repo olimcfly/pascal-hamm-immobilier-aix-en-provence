@@ -293,5 +293,47 @@ if (isset($_GET['action'])) {
 function renderContent(): void
 {
     global $view, $imap, $repo, $tplRepo, $userId;
+    ?>
+    <div class="hub-page">
+    <header class="hub-hero">
+        <div class="hub-hero-badge"><i class="fas fa-envelope"></i> Communication</div>
+        <h1>Messagerie</h1>
+        <p>Répondez à vos contacts, utilisez des templates IA et gérez vos échanges depuis un seul endroit.</p>
+    </header>
+    <div class="msg-info-wrap">
+        <button class="msg-info-btn" type="button"><i class="fas fa-circle-info"></i> Comment fonctionne ce module ?</button>
+        <div class="msg-info-tooltip" role="tooltip">
+            <div class="msg-info-row"><i class="fas fa-inbox" style="color:#3b82f6"></i><div><strong>Boîte de réception</strong><br>Connectez votre email professionnel via IMAP pour centraliser tous vos échanges clients dans le CRM.</div></div>
+            <div class="msg-info-row"><i class="fas fa-check-circle" style="color:#10b981"></i><div><strong>Templates IA</strong><br>Rédigez plus vite avec des templates pré-remplis et la génération IA de brouillons adaptés à chaque situation.</div></div>
+            <div class="msg-info-row"><i class="fas fa-bolt" style="color:#f59e0b"></i><div><strong>Réactivité = conversion</strong><br>Répondre dans l'heure multiplie par 7 vos chances de convertir un lead — la messagerie centralisée y aide.</div></div>
+        </div>
+    </div>
+    <style>
+    .msg-info-wrap{position:relative;display:inline-block;margin-bottom:1.25rem;}
+    .msg-info-btn{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:.4rem .85rem;font-size:.85rem;color:#64748b;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:background .15s,color .15s;}
+    .msg-info-btn:hover{background:#f1f5f9;color:#334155;}
+    .msg-info-tooltip{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:200;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:1rem 1.1rem;width:400px;max-width:90vw;}
+    .msg-info-tooltip.is-open{display:block;}
+    .msg-info-row{display:flex;gap:.75rem;align-items:flex-start;padding:.55rem 0;font-size:.84rem;line-height:1.45;color:#374151;}
+    .msg-info-row+.msg-info-row{border-top:1px solid #f1f5f9;}
+    .msg-info-row>i{margin-top:2px;flex-shrink:0;width:16px;text-align:center;}
+    </style>
+    <script>(function(){var b=document.querySelector('.msg-info-btn'),t=document.querySelector('.msg-info-tooltip');if(!b||!t)return;b.addEventListener('click',function(e){e.stopPropagation();t.classList.toggle('is-open');});document.addEventListener('click',function(){t.classList.remove('is-open');});})();</script>
+    <?php if (!$imap->isConfigured()): ?>
+    <div class="msg-config-alert">
+        <i class="fas fa-triangle-exclamation"></i>
+        <div>
+            <strong>IMAP non configuré</strong> — vos emails ne seront pas synchronisés.
+            <a href="/admin?module=messagerie&view=settings">Configurer maintenant →</a>
+        </div>
+    </div>
+    <style>
+    .msg-config-alert{display:flex;align-items:flex-start;gap:.75rem;background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;font-size:.875rem;color:#92400e;}
+    .msg-config-alert>i{margin-top:2px;color:#d97706;flex-shrink:0;}
+    .msg-config-alert a{color:#92400e;font-weight:700;text-decoration:underline;}
+    </style>
+    <?php endif; ?>
+    </div><!-- /.hub-page -->
+    <?php
     require __DIR__ . '/views/' . $view . '.php';
 }

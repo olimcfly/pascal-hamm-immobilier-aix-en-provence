@@ -1,4 +1,26 @@
 <?php include __DIR__ . '/_noah_styles.php'; ?>
+<div class="hub-page">
+
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-anchor"></i> Construire — Noah IA</div>
+    <h1>Ancrage Territorial</h1>
+    <p>Créez votre phrase d'impact différenciante sur votre marché local — en quelques secondes avec Noah.</p>
+</header>
+
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-bolt" style="color:#f59e0b"></i> Le problème</h3>
+        <p>Sans ancrage clair, vous ressemblez à tous les autres agents. Le visiteur ne comprend pas pourquoi vous et pas un autre.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-check-circle" style="color:#10b981"></i> Ce que ça produit</h3>
+        <p>Une phrase d'accroche mémorable qui positionne votre expertise locale en 10 secondes — utilisable partout.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--action">
+        <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444"></i> Conseil</h3>
+        <p>Testez 2-3 variantes et choisissez celle qui sonne "vous" — authentique avant d'être parfait.</p>
+    </article>
+</div>
 
 <div style="--tool-color:#e74c3c">
 
@@ -49,5 +71,6 @@
         </form>
     </div>
 
-</div>
+</div><!-- /tool-color wrapper -->
+</div><!-- /.hub-page -->
 <script>initNoahForm('form-ancre', '#e74c3c');</script>

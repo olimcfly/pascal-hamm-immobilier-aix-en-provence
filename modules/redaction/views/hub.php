@@ -154,6 +154,11 @@
         <div class="lbl">Campagnes</div>
         <div class="hint">Pilier + 5 niveaux de conscience</div>
       </a>
+      <a href="/admin?module=blog" class="rd-link-card" style="border-color:#c9a84c;">
+        <div class="icon">📝</div>
+        <div class="lbl">Blog</div>
+        <div class="hint">Articles publiés sur votre site</div>
+      </a>
     </div>
   </div>
 

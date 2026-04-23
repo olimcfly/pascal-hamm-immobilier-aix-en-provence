@@ -50,8 +50,8 @@ if ($ville === '' && $agent === '') {
 }
 
 // ── Supabase ──────────────────────────────────────────────────
-define('EXP_SUPABASE_URL', 'https://ywzpnbmomlzkcbzzkaqr.supabase.co');
-define('EXP_SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3enBuYm1vbWx6a2NienprYXFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2NDkyMzMsImV4cCI6MjA2MDIyNTIzM30.6b8PT7DMzY2jnRgglammdCpqsT6EKR1_Na2T7djGb9A');
+define('EXP_SUPABASE_URL', $_ENV['SUPABASE_URL'] ?? '');
+define('EXP_SUPABASE_KEY', $_ENV['SUPABASE_ANON_KEY'] ?? '');
 
 /**
  * Appel HTTP vers Supabase REST.

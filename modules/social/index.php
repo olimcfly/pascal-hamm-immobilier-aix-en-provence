@@ -18,6 +18,7 @@ $pageTitle = 'Social';
 $pageDescription = 'Séquences, publication et journal social';
 
 $sequenceRepository = new SequenceRepository(db());
+
 $postRepository = new PostRepository(db());
 $strategyService = new StrategyService();
 $sequenceController = new SequenceController($sequenceRepository, $postRepository);
@@ -39,8 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-require_once __DIR__ . '/../../admin/views/layout.php';
-
 function renderSocialHub(): void
 {
     ?>
@@ -52,24 +51,29 @@ function renderSocialHub(): void
             <p>Planifiez vos contenus, automatisez vos séquences et entretenez la relation avec votre audience locale.</p>
         </header>
 
-        <section class="hub-narrative" aria-label="Méthode social">
-            <article class="hub-narrative-card hub-narrative-card--motivation">
-                <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Problème</h3>
-                <p>Publier manuellement prend du temps et manque de régularité.</p>
-            </article>
-            <article class="hub-narrative-card hub-narrative-card--explanation">
-                <h3><i class="fas fa-diagram-project" style="color:#3b82f6;"></i> Logique</h3>
-                <p>Des séquences planifiées, un journal de bord, un kit de contenus réutilisables.</p>
-            </article>
-            <article class="hub-narrative-card hub-narrative-card--resultat">
-                <h3><i class="fas fa-chart-line" style="color:#10b981;"></i> Bénéfice</h3>
-                <p>Vous restez visible chaque semaine sans effort supplémentaire.</p>
-            </article>
-            <article class="hub-narrative-card hub-narrative-card--action">
-                <h3><i class="fas fa-play-circle" style="color:#f59e0b;"></i> Action</h3>
-                <p>Créez votre première séquence ou rédigez un post maintenant.</p>
-            </article>
-        </section>
+        <div class="social-info-wrap">
+            <button class="social-info-btn" type="button" aria-label="Comment fonctionne ce module ?">
+                <i class="fas fa-circle-info"></i> Comment ça fonctionne ?
+            </button>
+            <div class="social-info-tooltip" role="tooltip">
+                <div class="social-info-row">
+                    <i class="fas fa-triangle-exclamation" style="color:#ef4444"></i>
+                    <div><strong>Problème</strong><br>Publier manuellement prend du temps et manque de régularité.</div>
+                </div>
+                <div class="social-info-row">
+                    <i class="fas fa-diagram-project" style="color:#3b82f6"></i>
+                    <div><strong>Logique</strong><br>Des séquences planifiées, un journal de bord, un kit de contenus réutilisables.</div>
+                </div>
+                <div class="social-info-row">
+                    <i class="fas fa-chart-line" style="color:#10b981"></i>
+                    <div><strong>Bénéfice</strong><br>Vous restez visible chaque semaine sans effort supplémentaire.</div>
+                </div>
+                <div class="social-info-row">
+                    <i class="fas fa-play-circle" style="color:#f59e0b"></i>
+                    <div><strong>Action</strong><br>Créez votre première séquence ou rédigez un post maintenant.</div>
+                </div>
+            </div>
+        </div>
 
         <div class="hub-modules-grid">
             <a href="?module=social&action=sequences" class="hub-module-card">
@@ -155,4 +159,25 @@ function renderContent(): void
     if (is_file($jsPath)) {
         echo '<script>' . file_get_contents($jsPath) . '</script>';
     }
+    ?>
+    <style>
+    .social-info-wrap { position:relative; display:inline-block; margin-bottom:1.25rem; }
+    .social-info-btn { background:none; border:1px solid #e2e8f0; border-radius:6px; padding:.4rem .85rem; font-size:.85rem; color:#64748b; cursor:pointer; display:inline-flex; align-items:center; gap:.45rem; transition:background .15s,color .15s; }
+    .social-info-btn:hover { background:#f1f5f9; color:#334155; }
+    .social-info-tooltip { display:none; position:absolute; top:calc(100% + 8px); left:0; z-index:200; background:#fff; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.1); padding:1rem 1.1rem; width:380px; max-width:90vw; }
+    .social-info-tooltip.is-open { display:block; }
+    .social-info-row { display:flex; gap:.75rem; align-items:flex-start; padding:.55rem 0; font-size:.84rem; line-height:1.45; color:#374151; }
+    .social-info-row + .social-info-row { border-top:1px solid #f1f5f9; }
+    .social-info-row > i { margin-top:2px; flex-shrink:0; width:16px; text-align:center; }
+    </style>
+    <script>
+    (function () {
+        var btn = document.querySelector('.social-info-btn');
+        var tip = document.querySelector('.social-info-tooltip');
+        if (!btn || !tip) return;
+        btn.addEventListener('click', function (e) { e.stopPropagation(); tip.classList.toggle('is-open'); });
+        document.addEventListener('click', function () { tip.classList.remove('is-open'); });
+    })();
+    </script>
+    <?php
 }

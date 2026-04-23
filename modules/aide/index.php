@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/service.php';
-require_once __DIR__ . '/index.php';
+require_once __DIR__ . '/_view.php';
 require_once __DIR__ . '/article.php';
 require_once __DIR__ . '/api.php';
 
-$pageTitle = 'Centre d’aide intelligent';
+$pageTitle = "Centre d'aide intelligent";
 $pageDescription = 'Aide contextuelle, recherche et recommandations par module.';
 
 function renderContent(): void

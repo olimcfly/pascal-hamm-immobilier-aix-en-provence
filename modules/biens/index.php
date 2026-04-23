@@ -44,24 +44,17 @@ function renderBiensHubCards(): void
             <p>Centralisez vos annonces pour gagner du temps à chaque étape.</p>
         </header>
 
-        <section class="hub-narrative" aria-label="Méthode biens">
-            <article class="hub-narrative-card hub-narrative-card--motivation">
-                <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Problème</h3>
-                <p>Les infos sont dispersées et lentes à retrouver.</p>
-            </article>
-            <article class="hub-narrative-card hub-narrative-card--explanation">
-                <h3><i class="fas fa-diagram-project" style="color:#3b82f6;"></i> Logique</h3>
-                <p>Une fiche unique, des photos rangées, un suivi clair.</p>
-            </article>
-            <article class="hub-narrative-card hub-narrative-card--resultat">
-                <h3><i class="fas fa-chart-line" style="color:#10b981;"></i> Bénéfice</h3>
-                <p>Vous répondez plus vite et inspirez confiance.</p>
-            </article>
-            <article class="hub-narrative-card hub-narrative-card--action">
-                <h3><i class="fas fa-play-circle" style="color:#f59e0b;"></i> Action</h3>
-                <p>Créez une nouvelle fiche dès maintenant.</p>
-            </article>
-        </section>
+        <div class="biens-info-wrap">
+            <button class="biens-info-btn" type="button"><i class="fas fa-circle-info"></i> Comment fonctionne ce module ?</button>
+            <div class="biens-info-tooltip" role="tooltip">
+                <div class="biens-info-row"><i class="fas fa-triangle-exclamation" style="color:#ef4444"></i><div><strong>Problème</strong><br>Les infos sont dispersées et lentes à retrouver.</div></div>
+                <div class="biens-info-row"><i class="fas fa-diagram-project" style="color:#3b82f6"></i><div><strong>Logique</strong><br>Une fiche unique, des photos rangées, un suivi clair.</div></div>
+                <div class="biens-info-row"><i class="fas fa-chart-line" style="color:#10b981"></i><div><strong>Bénéfice</strong><br>Vous répondez plus vite et inspirez confiance.</div></div>
+                <div class="biens-info-row"><i class="fas fa-play-circle" style="color:#f59e0b"></i><div><strong>Action</strong><br>Créez une nouvelle fiche dès maintenant.</div></div>
+            </div>
+        </div>
+        <style>.biens-info-wrap{position:relative;display:inline-block;margin-bottom:1.25rem;}.biens-info-btn{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:.4rem .85rem;font-size:.85rem;color:#64748b;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:background .15s,color .15s;}.biens-info-btn:hover{background:#f1f5f9;color:#334155;}.biens-info-tooltip{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:200;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:1rem 1.1rem;width:360px;max-width:90vw;}.biens-info-tooltip.is-open{display:block;}.biens-info-row{display:flex;gap:.75rem;align-items:flex-start;padding:.55rem 0;font-size:.84rem;line-height:1.45;color:#374151;}.biens-info-row+.biens-info-row{border-top:1px solid #f1f5f9;}.biens-info-row>i{margin-top:2px;flex-shrink:0;width:16px;text-align:center;}</style>
+        <script>(function(){var b=document.querySelector('.biens-info-btn'),t=document.querySelector('.biens-info-tooltip');if(!b||!t)return;b.addEventListener('click',function(e){e.stopPropagation();t.classList.toggle('is-open');});document.addEventListener('click',function(){t.classList.remove('is-open');});})();</script>
 
         <div class="hub-modules-grid">
             <a href="/admin/biens/nouveau" class="hub-module-card">

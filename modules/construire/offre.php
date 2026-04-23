@@ -1,4 +1,26 @@
 <?php include __DIR__ . '/_noah_styles.php'; ?>
+<div class="hub-page">
+
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-briefcase"></i> Construire — Noah IA</div>
+    <h1>Formulation d'Offre</h1>
+    <p>Construisez votre pitch commercial en 3 versions adaptées à votre persona cible.</p>
+</header>
+
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-bolt" style="color:#f59e0b"></i> Le constat</h3>
+        <p>Un discours commercial flou fait fuir les clients. Sans offre claire, impossible de signer en premier rendez-vous.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-check-circle" style="color:#10b981"></i> Ce que vous obtenez</h3>
+        <p>3 versions de votre pitch adaptées à votre persona — courte, détaillée, et en réponse aux objections courantes.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--action">
+        <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444"></i> Conseil</h3>
+        <p>Commencez par votre persona le plus rentable. Adaptez ensuite le pitch aux autres profils.</p>
+    </article>
+</div>
 
 <div style="--tool-color:#27ae60">
 
@@ -49,5 +71,6 @@
         </form>
     </div>
 
-</div>
+</div><!-- /tool-color wrapper -->
+</div><!-- /.hub-page -->
 <script>initNoahForm('form-offre', '#27ae60');</script>

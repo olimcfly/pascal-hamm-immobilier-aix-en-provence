@@ -7,6 +7,65 @@ class FunnelRepository
     public function __construct(PDO $db)
     {
         $this->db = $db;
+        $this->ensureTables();
+    }
+
+    private function ensureTables(): void
+    {
+        $this->db->exec("CREATE TABLE IF NOT EXISTS funnels (
+            id               INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            canal            VARCHAR(40)  NOT NULL,
+            template_id      VARCHAR(80)  NOT NULL,
+            name             VARCHAR(180) NOT NULL,
+            ville            VARCHAR(120) NOT NULL DEFAULT '',
+            quartier         VARCHAR(120) NOT NULL DEFAULT '',
+            keyword          VARCHAR(120) NOT NULL DEFAULT '',
+            persona          VARCHAR(40)  NOT NULL DEFAULT 'vendeur',
+            awareness_level  VARCHAR(40)  NOT NULL DEFAULT 'problem_aware',
+            campaign_name    VARCHAR(180) NOT NULL DEFAULT '',
+            ad_group         VARCHAR(180) NOT NULL DEFAULT '',
+            utm_source       VARCHAR(80)  NOT NULL DEFAULT '',
+            utm_medium       VARCHAR(80)  NOT NULL DEFAULT '',
+            utm_campaign     VARCHAR(180) NOT NULL DEFAULT '',
+            utm_content      VARCHAR(180) NOT NULL DEFAULT '',
+            slug             VARCHAR(180) NOT NULL,
+            seo_title        VARCHAR(255) NOT NULL DEFAULT '',
+            meta_description VARCHAR(255) NOT NULL DEFAULT '',
+            h1               VARCHAR(255) NOT NULL DEFAULT '',
+            promise          VARCHAR(255) NOT NULL DEFAULT '',
+            cta_label        VARCHAR(120) NOT NULL DEFAULT 'En savoir plus',
+            ressource_id     INT UNSIGNED NULL,
+            sequence_id      INT UNSIGNED NULL,
+            thankyou_type    VARCHAR(40)  NOT NULL DEFAULT 'telechargement',
+            thankyou_config  TEXT NULL,
+            faq_json         TEXT NULL,
+            indexable        TINYINT(1)  NOT NULL DEFAULT 0,
+            form_type        VARCHAR(40)  NOT NULL DEFAULT 'guide',
+            canonical_url    VARCHAR(255) NOT NULL DEFAULT '',
+            status           ENUM('draft','published','archived') NOT NULL DEFAULT 'draft',
+            published_at     DATETIME NULL,
+            created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uk_funnel_slug (slug),
+            KEY idx_funnel_status (status),
+            KEY idx_funnel_canal (canal)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->exec("CREATE TABLE IF NOT EXISTS funnel_events (
+            id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            funnel_id    INT UNSIGNED NOT NULL,
+            event_type   VARCHAR(40)  NOT NULL,
+            session_id   VARCHAR(64)  NOT NULL DEFAULT '',
+            ip_hash      VARCHAR(64)  NOT NULL DEFAULT '',
+            utm_source   VARCHAR(80)  NOT NULL DEFAULT '',
+            utm_medium   VARCHAR(80)  NOT NULL DEFAULT '',
+            utm_campaign VARCHAR(180) NOT NULL DEFAULT '',
+            referrer     VARCHAR(500) NOT NULL DEFAULT '',
+            user_agent   VARCHAR(300) NOT NULL DEFAULT '',
+            created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            KEY idx_fe_funnel (funnel_id),
+            KEY idx_fe_type (event_type)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     }
 
     public function findAll(array $filters = []): array

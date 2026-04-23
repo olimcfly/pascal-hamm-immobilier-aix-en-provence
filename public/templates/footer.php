@@ -73,7 +73,29 @@ $legalLinks = [
                     <em><?= e($advisorTitle) ?></em>
                 </span>
             </a>
-            <p class="footer__tagline"><?= e($advisorTagline) ?></p>
+            <p class="footer__tagline"><!-- Coordonnées de contact -->
+<div class="footer__contact">
+    <p>
+        <a href="tel:+33667198366" class="footer__phone">
+            <svg viewBox="0 0 24 24" width="16" fill="currentColor" aria-hidden="true">
+                <path d="M6.62 10.79c1.44 2.36 3.56 4.32 6.38 6.38l-1.56-1.56a1 1 0 0 1-.12-.24c.36-.6.54-1.26.54-1.98 0-.72-.18-1.38-.54-1.98a1 1 0 0 1-.12-.24l1.56-1.56c2.06-2.82 3.96-5.94 6.38-6.38l-1.56-1.56a1 1 0 0 1-.12-.24C17.3 3.18 16.64 3 15.92 3c-.72 0-1.38.18-1.98.54a1 1 0 0 1-.24-.12L13.4 1.82c-2.46.42-4.32 2.28-6.38 6.38l1.56 1.56a1 1 0 0 1 .12.24c.36.6.54 1.26.54 1.98 0 .72-.18 1.38-.54 1.98a1 1 0 0 1 .12.24l-1.56 1.56z"/>
+            </svg>
+            +33 6 67 19 83 66
+        </a>
+    </p>
+    <p>
+        <a href="mailto:contact@pascal-hamm-immobilier-aix-en-provence.fr" class="footer__email">
+            <svg viewBox="0 0 24 24" width="16" fill="currentColor" aria-hidden="true">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+            contact@pascal-hamm-immobilier-aix-en-provence.fr
+        </a>
+    </p>
+    <p class="footer__rsac">
+        <span>RSAC : 441887536</span>
+    </p>
+</div>
+<?= e($advisorTagline) ?></p>
 
             <!-- Réseaux sociaux — n'affiche que ceux renseignés -->
             <?php $filledSocials = array_filter($socialLinks); ?>

@@ -5,8 +5,8 @@
 
 class AiService
 {
-    private static string $apiUrl = 'https://api.anthropic.com/v1/messages';
-    private static string $model  = 'claude-haiku-4-5-20251001';
+    private static string $apiUrl        = 'https://api.anthropic.com/v1/messages';
+    private static string $defaultModel  = 'claude-haiku-4-5-20251001';
 
     public static function ask(string $systemPrompt, string $userMessage): string
     {
@@ -16,8 +16,13 @@ class AiService
             throw new RuntimeException('Clé API Anthropic manquante. Ajoutez ANTHROPIC_API_KEY dans le .env');
         }
 
+        $model = trim((string) ($_ENV['ANTHROPIC_MODEL'] ?? ''));
+        if ($model === '') {
+            $model = self::$defaultModel;
+        }
+
         $payload = json_encode([
-            'model'      => self::$model,
+            'model'      => $model,
             'max_tokens' => 1024,
             'system'     => $systemPrompt,
             'messages'   => [

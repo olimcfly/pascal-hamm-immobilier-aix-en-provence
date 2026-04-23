@@ -271,6 +271,51 @@ function renderContent()
         .build-module { padding: 20px; }
         .build-next { padding: 24px 26px; }
     }
+    .construire-info-wrap {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1.25rem;
+    }
+    .construire-info-btn {
+        background: none;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: .4rem .85rem;
+        font-size: .85rem;
+        color: #64748b;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        transition: background .15s, color .15s;
+    }
+    .construire-info-btn:hover { background: #f1f5f9; color: #334155; }
+    .construire-info-tooltip {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        z-index: 200;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.1);
+        padding: 1rem 1.1rem;
+        width: 400px;
+        max-width: 90vw;
+    }
+    .construire-info-tooltip.is-open { display: block; }
+    .construire-info-row {
+        display: flex;
+        gap: .75rem;
+        align-items: flex-start;
+        padding: .55rem 0;
+        font-size: .84rem;
+        line-height: 1.45;
+        color: #374151;
+    }
+    .construire-info-row + .construire-info-row { border-top: 1px solid #f1f5f9; }
+    .construire-info-row > i { margin-top: 2px; flex-shrink: 0; width: 16px; text-align: center; }
     </style>
 
     <div class="build-page">
@@ -279,34 +324,29 @@ function renderContent()
             <p>Ici, vous définissez votre positionnement, votre cible et votre offre. C’est ce qui va faire toute la différence entre un conseiller invisible… et un conseiller choisi.</p>
         </section>
 
-        <section class="build-mere" aria-label="Structure MERE">
-            <article class="mere-card motivation">
-                <div class="mere-card-head"><i class="fas fa-bolt"></i> Le constat</div>
-                <p>Aujourd’hui, la plupart des conseillers font tous la même chose :
-ils parlent à tout le monde, proposent la même chose et copient ce qu’ils voient.
-
-Au final, personne ne les remarque et ils dépendent du hasard.</p>
-            </article>
-
-            <article class="mere-card explanation">
-                <div class="mere-card-head"><i class="fas fa-lightbulb"></i> La base à poser</div>
-                <p>Avant de chercher des leads, vous devez poser une base claire :
-à qui vous parlez, ce que vous proposez, où vous intervenez et comment vous vous différenciez.
-
-Sans ça, aucun marketing ne fonctionne correctement.</p>
-            </article>
-
-            <article class="mere-card resultat">
-                <div class="mere-card-head"><i class="fas fa-chart-line"></i> Vos bénéfices</div>
-                <p>Une fois cette étape complétée :
-vous avez un message clair, vous attirez les bons prospects et votre activité devient plus simple et plus efficace.</p>
-            </article>
-
-            <article class="mere-card exercice">
-                <div class="mere-card-head"><i class="fas fa-list-check"></i> Passez à l’action</div>
-                <p>Complétez les modules ci-dessous dans l’ordre pour construire votre système.</p>
-            </article>
-        </section>
+        <div class="construire-info-wrap">
+            <button class="construire-info-btn" type="button" aria-label="Pourquoi cette étape ?">
+                <i class="fas fa-circle-info"></i> Pourquoi cette étape ?
+            </button>
+            <div class="construire-info-tooltip" role="tooltip">
+                <div class="construire-info-row">
+                    <i class="fas fa-bolt" style="color:#f59e0b"></i>
+                    <div><strong>Le constat</strong><br>La plupart des conseillers parlent à tout le monde, proposent la même chose et copient ce qu’ils voient. Au final, personne ne les remarque.</div>
+                </div>
+                <div class="construire-info-row">
+                    <i class="fas fa-lightbulb" style="color:#3b82f6"></i>
+                    <div><strong>La base à poser</strong><br>Avant de chercher des leads, définissez à qui vous parlez, ce que vous proposez, où vous intervenez et comment vous vous différenciez.</div>
+                </div>
+                <div class="construire-info-row">
+                    <i class="fas fa-chart-line" style="color:#10b981"></i>
+                    <div><strong>Vos bénéfices</strong><br>Un message clair, les bons prospects, une activité plus simple et plus efficace.</div>
+                </div>
+                <div class="construire-info-row">
+                    <i class="fas fa-list-check" style="color:#8b5cf6"></i>
+                    <div><strong>Passez à l’action</strong><br>Complétez les modules ci-dessous dans l’ordre pour construire votre système.</div>
+                </div>
+            </div>
+        </div>
 
         <section class="build-progress" aria-live="polite">
             <div class="build-progress-top">
@@ -480,6 +520,19 @@ vous avez un message clair, vous attirez les bons prospects et votre activité d
         });
 
         render(statuses);
+
+        // Infobulle
+        var infoBtn = document.querySelector('.construire-info-btn');
+        var infoTip = document.querySelector('.construire-info-tooltip');
+        if (infoBtn && infoTip) {
+            infoBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                infoTip.classList.toggle('is-open');
+            });
+            document.addEventListener('click', function () {
+                infoTip.classList.remove('is-open');
+            });
+        }
     })();
     </script>
     <?php

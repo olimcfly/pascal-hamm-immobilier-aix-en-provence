@@ -1,6 +1,36 @@
 <?php
 $sequences      = $sequences ?? [];
 $postBySequence = $postBySequence ?? [];
+?>
+<div class="hub-page">
+
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-layer-group"></i> Réseaux sociaux</div>
+    <h1>Séquences & Publication</h1>
+    <p>Planifiez vos posts, rédigez plus vite et suivez l'efficacité de vos séries de contenus.</p>
+</header>
+
+<div class="seq-info-wrap">
+    <button class="seq-info-btn" type="button"><i class="fas fa-circle-info"></i> Comment utiliser les séquences ?</button>
+    <div class="seq-info-tooltip" role="tooltip">
+        <div class="seq-info-row"><i class="fas fa-bolt" style="color:#f59e0b"></i><div><strong>Le problème</strong><br>Publier manuellement prend du temps et manque de régularité — sans plan, la visibilité est aléatoire.</div></div>
+        <div class="seq-info-row"><i class="fas fa-check-circle" style="color:#10b981"></i><div><strong>La solution</strong><br>Des séquences planifiées qui maintiennent une présence régulière sur vos réseaux sans effort supplémentaire.</div></div>
+        <div class="seq-info-row"><i class="fas fa-triangle-exclamation" style="color:#ef4444"></i><div><strong>À ne pas faire</strong><br>Ne publiez pas sans cibler un persona précis — un message générique n'engage personne.</div></div>
+    </div>
+</div>
+<style>
+.seq-info-wrap{position:relative;display:inline-block;margin-bottom:1.25rem;}
+.seq-info-btn{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:.4rem .85rem;font-size:.85rem;color:#64748b;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:background .15s,color .15s;}
+.seq-info-btn:hover{background:#f1f5f9;color:#334155;}
+.seq-info-tooltip{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:200;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:1rem 1.1rem;width:400px;max-width:90vw;}
+.seq-info-tooltip.is-open{display:block;}
+.seq-info-row{display:flex;gap:.75rem;align-items:flex-start;padding:.55rem 0;font-size:.84rem;line-height:1.45;color:#374151;}
+.seq-info-row+.seq-info-row{border-top:1px solid #f1f5f9;}
+.seq-info-row>i{margin-top:2px;flex-shrink:0;width:16px;text-align:center;}
+</style>
+<script>(function(){var b=document.querySelector('.seq-info-btn'),t=document.querySelector('.seq-info-tooltip');if(!b||!t)return;b.addEventListener('click',function(e){e.stopPropagation();t.classList.toggle('is-open');});document.addEventListener('click',function(){t.classList.remove('is-open');});})();</script>
+
+<?php
 
 $allPosts = [];
 foreach ($postBySequence as $sequenceId => $posts) {
@@ -43,29 +73,6 @@ foreach ($sequences as $sequence) {
 $defaultPost = $allPosts[0] ?? null;
 ?>
 
-<section class="social-premium-intro">
-    <div class="premium-card">
-        <span class="premium-kicker">Méthode</span>
-        <h2>Problème utilisateur</h2>
-        <p>Publier au hasard prend du temps et rapporte peu de contacts.</p>
-    </div>
-    <div class="premium-card">
-        <span class="premium-kicker">Méthode</span>
-        <h2>Logique simple</h2>
-        <p>Un plan clair, des messages réguliers, puis un suivi des retours.</p>
-    </div>
-    <div class="premium-card">
-        <span class="premium-kicker">Méthode</span>
-        <h2>Bénéfice clair</h2>
-        <p>Vous créez une présence stable qui génère des conversations qualifiées.</p>
-    </div>
-    <div class="premium-card premium-card-action">
-        <span class="premium-kicker">Méthode</span>
-        <h2>Action</h2>
-        <p>Lancez votre prochain message en quelques minutes.</p>
-        <a href="/admin?module=social&action=post-form" class="s-btn-new"><i class="fas fa-bolt"></i> Créer maintenant</a>
-    </div>
-</section>
 
 <section class="social-premium-production" id="socialPremiumProduction">
     <header class="premium-production-head">
@@ -247,3 +254,4 @@ $defaultPost = $allPosts[0] ?? null;
     <?php endforeach; ?>
 </div>
 </div><!-- /.social-wrap — ouvert dans _header.php -->
+</div><!-- /.hub-page -->

@@ -8,11 +8,13 @@ class FunnelService
     // Templates disponibles par canal
     const TEMPLATES = [
         'google_ads' => [
+            'campagne_v1'       => ['label' => 'Campagne Premium (bleu)',   'form' => 'contact',    'indexable' => false],
             'guide_vendeur_v1'  => ['label' => 'Guide Vendeur Local',      'form' => 'guide',      'indexable' => false],
             'estimation_cta_v1' => ['label' => 'Estimation Immédiate',     'form' => 'estimation', 'indexable' => false],
             'rdv_direct_v1'     => ['label' => 'Prise de RDV Direct',      'form' => 'rdv',        'indexable' => false],
         ],
         'facebook_ads' => [
+            'campagne_v1'       => ['label' => 'Campagne Premium (bleu)',   'form' => 'contact',    'indexable' => false],
             'guide_vendeur_v1'  => ['label' => 'Guide Vendeur Local',      'form' => 'guide',      'indexable' => false],
             'guide_acheteur_v1' => ['label' => 'Guide Acheteur Local',     'form' => 'guide',      'indexable' => false],
         ],
@@ -27,6 +29,7 @@ class FunnelService
             'prise_rdv_v1'      => ['label' => 'Page Prise de RDV',        'form' => 'rdv',        'indexable' => false],
         ],
         'social' => [
+            'campagne_v1'       => ['label' => 'Campagne Premium (bleu)',   'form' => 'contact',    'indexable' => false],
             'guide_vendeur_v1'  => ['label' => 'Guide Vendeur Local',      'form' => 'guide',      'indexable' => false],
         ],
     ];

@@ -5,9 +5,31 @@ $stmt = $pdo->prepare('SELECT * FROM seo_city_pages WHERE user_id = ? ORDER BY u
 $stmt->execute([$userId]);
 $cities = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 ?>
+<div class="hub-page">
+
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-city"></i> SEO Local</div>
+    <h1>Fiches Villes</h1>
+    <p>Créez des pages SEO hyper-locales pour chaque commune de votre zone de chalandise.</p>
+</header>
+
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-bolt" style="color:#f59e0b"></i> L'enjeu</h3>
+        <p>Les requêtes "immobilier + ville" concentrent 60% du trafic SEO local. Une page par commune = autant de portes d'entrée.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-check-circle" style="color:#10b981"></i> Ce que vous obtenez</h3>
+        <p>Une page optimisée par ville avec H1, titre SEO, meta, contenu riche, prix au m² et aperçu Google en temps réel.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--action">
+        <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444"></i> Conseil</h3>
+        <p>Commencez par votre ville principale puis les 5 communes voisines. Chaque fiche doit avoir un contenu unique.</p>
+    </article>
+</div>
+
 <section class="seo-section">
-    <div class="seo-breadcrumb"><a href="/admin?module=seo">Accueil</a> &gt; SEO &gt; Fiches villes</div>
-    <h2>Fiches villes</h2>
+    <div class="seo-breadcrumb"><a href="/admin?module=seo">Accueil</a> › SEO › Fiches villes</div>
 
     <form method="post" action="/modules/seo/ajax/villes.php" id="city-form" class="city-form">
         <?= csrfField() ?>
@@ -60,3 +82,4 @@ $cities = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         <div class="serp-desc">Meta description...</div>
     </div>
 </section>
+</div><!-- /.hub-page -->

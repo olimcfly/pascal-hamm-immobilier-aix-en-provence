@@ -71,7 +71,9 @@ class FunnelPublicController
         // Validation basique
         $email    = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
         $firstName= trim(strip_tags($_POST['first_name'] ?? ''));
+        $lastName = trim(strip_tags($_POST['last_name'] ?? ''));
         $phone    = trim(strip_tags($_POST['phone'] ?? ''));
+        $message  = trim(strip_tags($_POST['message'] ?? ''));
         $consent  = !empty($_POST['consent']);
 
         if (!$email || !$firstName) {
@@ -102,9 +104,10 @@ class FunnelPublicController
             'source_type'  => LeadService::SOURCE_RESSOURCE,
             'funnel_id'    => $funnel['id'],
             'first_name'   => $firstName,
-            'last_name'    => trim(strip_tags($_POST['last_name'] ?? '')),
+            'last_name'    => $lastName,
             'email'        => $email,
             'phone'        => $phone,
+            'notes'        => $message,
             'intent'       => $funnel['persona'] ?? 'vendeur',
             'consent'      => 1,
             'pipeline'     => 'new',
@@ -118,6 +121,9 @@ class FunnelPublicController
 
         // Tracking soumission
         $this->trackEvent($funnel['id'], 'submit');
+
+        // Notifier l'agent immobilier par email
+        $this->sendInternalNotification($funnel, $firstName, $lastName, $email, $phone, $message);
 
         // Inscrire dans la séquence si configurée
         if (!empty($funnel['sequence_id']) && $leadId) {
@@ -299,5 +305,70 @@ class FunnelPublicController
         $_SESSION['funnel_error'] = $message;
         header('Location: ' . rtrim(APP_URL, '/') . '/lp/' . $slug . '?error=1');
         exit;
+    }
+
+    /**
+     * Envoie une notification email interne au conseiller lors d'un nouveau lead.
+     */
+    private function sendInternalNotification(array $funnel, string $firstName, string $lastName, string $email, string $phone, string $message): void
+    {
+        if (!class_exists('MailService')) {
+            require_once ROOT_PATH . '/core/services/MailService.php';
+        }
+
+        $notifEmail = $_ENV['NOTIF_LEAD_EMAIL'] ?? $_ENV['NOTIF_EMAIL'] ?? '';
+        if (!$notifEmail || !filter_var($notifEmail, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        $fullName    = trim("$firstName $lastName") ?: $email;
+        $landingName = $funnel['name'] ?? ($funnel['h1'] ?? $funnel['slug']);
+        $date        = date('d/m/Y à H:i');
+        $appUrl      = rtrim(defined('APP_URL') ? APP_URL : '', '/');
+        $adminUrl    = $appUrl . '/admin?module=funnels';
+
+        $subject = "🏠 Nouveau lead — {$fullName} via « {$landingName} »";
+
+        $msgRow = $message
+            ? "<tr><td style='padding:6px 0;color:#64748b;font-size:.88rem;vertical-align:top'>Message</td><td style='padding:6px 0'>" . htmlspecialchars($message) . "</td></tr>"
+            : '';
+
+        $html = "
+        <div style='font-family:sans-serif;max-width:580px;margin:0 auto;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden'>
+          <div style='background:#1e3a5f;padding:20px 24px'>
+            <h2 style='color:#fff;margin:0;font-size:1.15rem'>🏠 Nouveau lead immobilier</h2>
+            <p style='color:#93c5fd;margin:4px 0 0;font-size:.85rem'>{$date}</p>
+          </div>
+          <div style='padding:24px;background:#f8fafc'>
+            <table style='width:100%;border-collapse:collapse'>
+              <tr><td style='padding:6px 0;color:#64748b;font-size:.88rem;width:120px'>Prénom</td><td style='padding:6px 0;font-weight:600'>" . htmlspecialchars($firstName) . "</td></tr>
+              <tr><td style='padding:6px 0;color:#64748b;font-size:.88rem'>Nom</td><td style='padding:6px 0;font-weight:600'>" . htmlspecialchars($lastName) . "</td></tr>
+              <tr><td style='padding:6px 0;color:#64748b;font-size:.88rem'>Email</td><td style='padding:6px 0'><a href='mailto:" . htmlspecialchars($email) . "' style='color:#1d4ed8'>" . htmlspecialchars($email) . "</a></td></tr>
+              <tr><td style='padding:6px 0;color:#64748b;font-size:.88rem'>Téléphone</td><td style='padding:6px 0'>" . (htmlspecialchars($phone) ?: '<em style=\"color:#94a3b8\">non renseigné</em>') . "</td></tr>
+              {$msgRow}
+              <tr><td style='padding:6px 0;color:#64748b;font-size:.88rem'>Page</td><td style='padding:6px 0'>" . htmlspecialchars($landingName) . "</td></tr>
+              <tr><td style='padding:6px 0;color:#64748b;font-size:.88rem'>Slug</td><td style='padding:6px 0'><code style='background:#f1f5f9;padding:2px 6px;border-radius:4px'>/lp/" . htmlspecialchars($funnel['slug']) . "</code></td></tr>
+            </table>
+            <div style='margin-top:20px'>
+              <a href='{$adminUrl}' style='display:inline-block;background:#1e3a5f;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:.9rem;font-weight:600'>Voir dans l'admin →</a>
+            </div>
+          </div>
+        </div>";
+
+        $text = "Nouveau lead reçu le {$date}\n\n"
+              . "Prénom  : {$firstName}\n"
+              . "Nom     : {$lastName}\n"
+              . "Email   : {$email}\n"
+              . "Tél     : " . ($phone ?: 'non renseigné') . "\n"
+              . ($message ? "Message : {$message}\n" : '')
+              . "\nPage    : {$landingName}\n"
+              . "Slug    : /lp/{$funnel['slug']}\n"
+              . "Admin   : {$adminUrl}";
+
+        try {
+            MailService::send($notifEmail, $subject, $text, $html);
+        } catch (\Throwable $e) {
+            error_log('[FunnelNotif] Notification email failed: ' . $e->getMessage());
+        }
     }
 }

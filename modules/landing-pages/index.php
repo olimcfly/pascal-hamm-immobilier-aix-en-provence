@@ -113,8 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($data);
 
-        header('Location: /admin/index.php?module=landing-pages&saved=1');
-        exit;
+        redirect('/admin?module=landing-pages&saved=1');
     }
 
     $defaults = $data;
@@ -129,78 +128,185 @@ function renderContent(): void
     global $landingPages, $defaults, $errors, $isEdit;
     ?>
     <style>
-        .lp-grid{display:grid;gap:1rem;grid-template-columns:1.1fr .9fr;align-items:start}
-        .lp-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1rem;box-shadow:0 10px 26px rgba(15,23,42,.06)}
-        .lp-table{width:100%;border-collapse:collapse}.lp-table th,.lp-table td{padding:.55rem;border-bottom:1px solid #f1f5f9;text-align:left}
-        .lp-form{display:grid;gap:.55rem}.lp-form label{font-size:.92rem;color:#334155}.lp-form input,.lp-form select,.lp-form textarea{width:100%;padding:.55rem .65rem;border:1px solid #cbd5e1;border-radius:10px}
-        .lp-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}.lp-actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
-        .btn{display:inline-block;background:#0f766e;color:#fff;border:none;border-radius:10px;padding:.6rem .9rem;text-decoration:none;font-weight:600}
-        @media (max-width:1000px){.lp-grid{grid-template-columns:1fr}.lp-cols{grid-template-columns:1fr}}
+    .lp-layout{display:grid;gap:1.2rem;grid-template-columns:1fr 1.1fr;align-items:start}
+    .lp-card{background:#fff;border:1px solid var(--hub-border,#e2e8f0);border-radius:var(--hub-radius,16px);padding:1.2rem 1.4rem;box-shadow:var(--hub-shadow-sm,0 1px 8px rgba(15,23,42,.06))}
+    .lp-card h3{margin:0 0 1rem;font-size:1rem;color:#0f172a;display:flex;align-items:center;gap:.4rem}
+    .lp-table{width:100%;border-collapse:collapse}
+    .lp-table th,.lp-table td{padding:.6rem .7rem;border-bottom:1px solid #f1f5f9;text-align:left;font-size:.86rem}
+    .lp-table th{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:#64748b;font-weight:700;background:#fafbfc}
+    .lp-table tr:last-child td{border-bottom:none}
+    .lp-form{display:grid;gap:.6rem}
+    .lp-form-field{display:grid;gap:.25rem}
+    .lp-form-field label{font-size:.78rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.04em}
+    .lp-form-field input,.lp-form-field select,.lp-form-field textarea{border:1px solid #cbd5e1;border-radius:10px;padding:.55rem .7rem;font-size:.88rem;width:100%}
+    .lp-form-2col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
+    .lp-form-actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-top:.4rem}
+    .lp-badge-active{display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .5rem;border-radius:999px;font-size:.73rem;font-weight:700;background:#dcfce7;color:#166534}
+    .lp-badge-inactive{display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .5rem;border-radius:999px;font-size:.73rem;font-weight:700;background:#f1f5f9;color:#64748b}
+    .lp-link{color:#1d4ed8;text-decoration:none;font-size:.84rem;font-weight:600}
+    .lp-link:hover{text-decoration:underline}
+    .lp-error{color:#b91c1c;font-size:.86rem;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:.5rem .7rem;margin-bottom:.5rem}
+    .lp-empty{padding:2.5rem 1rem;text-align:center;color:#94a3b8}
+    @media(max-width:1000px){.lp-layout{grid-template-columns:1fr}.lp-form-2col{grid-template-columns:1fr}}
     </style>
 
-    <div class="page-header">
-        <h1><i class="fas fa-bullseye page-icon"></i> Landing Pages <span class="page-title-accent">Google Ads</span></h1>
-        <p>LP multi-sites, conformes RGPD et prêtes pour le Quality Score.</p>
-    </div>
+    <div class="hub-page">
 
-    <div class="lp-grid">
-        <section class="lp-card">
-            <h3 style="margin-top:0">LP existantes</h3>
-            <table class="lp-table">
-                <thead><tr><th>Slug</th><th>Type</th><th>Ville</th><th>Statut</th><th>Action</th></tr></thead>
-                <tbody>
-                <?php if (!$landingPages): ?><tr><td colspan="5">Aucune landing page.</td></tr><?php endif; ?>
-                <?php foreach ($landingPages as $lp): ?>
-                    <tr>
-                        <td>/lp/<?= e((string)$lp['slug']) ?></td>
-                        <td><?= e((string)$lp['type']) ?></td>
-                        <td><?= e((string)$lp['ville']) ?></td>
-                        <td><?= ((int)$lp['active'] === 1) ? 'Active' : 'Inactive' ?></td>
-                        <td><a href="/admin/index.php?module=landing-pages&id=<?= (int)$lp['id'] ?>">Éditer</a></td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-        </section>
+        <header class="hub-hero">
+            <div class="hub-hero-badge"><i class="fas fa-file-lines"></i> Pages & formulaires</div>
+            <h1>Landing Pages Google Ads</h1>
+            <p>Créez des pages de capture conformes RGPD, optimisées pour le Quality Score et prêtes pour vos campagnes publicitaires.</p>
+        </header>
 
-        <section class="lp-card">
-            <h3 style="margin-top:0"><?= $isEdit ? 'Modifier la LP' : 'Créer une LP' ?></h3>
-            <?php foreach ($errors as $error): ?><p style="color:#b91c1c;margin:.2rem 0"><?= e((string)$error) ?></p><?php endforeach; ?>
-            <form class="lp-form" method="post">
-                <div class="lp-cols">
-                    <label>Slug<input name="slug" required value="<?= e((string)$defaults['slug']) ?>"></label>
-                    <label>Type<select name="type" required><option value="estimation" <?= $defaults['type']==='estimation'?'selected':'' ?>>Estimation</option><option value="financement" <?= $defaults['type']==='financement'?'selected':'' ?>>Financement</option></select></label>
+        <div class="lp-info-wrap">
+            <button class="lp-info-btn" type="button" aria-label="Comment fonctionne ce module ?">
+                <i class="fas fa-circle-info"></i> Comment ça fonctionne ?
+            </button>
+            <div class="lp-info-tooltip" role="tooltip">
+                <div class="lp-info-row">
+                    <i class="fas fa-bullseye" style="color:#3b82f6"></i>
+                    <div><strong>Pourquoi une LP dédiée</strong><br>Une landing page cohérente avec votre annonce améliore le Quality Score Google Ads, réduit votre coût par clic et augmente les conversions.</div>
                 </div>
-                <label>Headline H1<input name="headline" required value="<?= e((string)$defaults['headline']) ?>"></label>
-                <label>Sous-titre<input name="sous_titre" required value="<?= e((string)$defaults['sous_titre']) ?>"></label>
-                <label>Ville<input name="ville" value="<?= e((string)$defaults['ville']) ?>"></label>
-                <div class="lp-cols">
-                    <label>Nom conseiller<input name="advisor_name" value="<?= e((string)$defaults['advisor_name']) ?>"></label>
-                    <label>Téléphone<input name="advisor_phone" value="<?= e((string)$defaults['advisor_phone']) ?>"></label>
+                <div class="lp-info-row">
+                    <i class="fas fa-check-circle" style="color:#10b981"></i>
+                    <div><strong>Ce que vous créez</strong><br>Chaque page est autonome, avec votre identité, vos avis clients, votre formulaire et vos mentions légales — prête en quelques minutes.</div>
                 </div>
-                <label>Zone d'intervention<input name="advisor_zone" value="<?= e((string)$defaults['advisor_zone']) ?>"></label>
-                <label>Photo conseiller WebP (URL ou chemin)<input name="advisor_photo_webp" value="<?= e((string)$defaults['advisor_photo_webp']) ?>"></label>
-                <label>Bio courte<textarea rows="3" name="advisor_bio"><?= e((string)$defaults['advisor_bio']) ?></textarea></label>
-                <div class="lp-cols">
-                    <label>Avis client 1 prénom<input name="review_1_firstname" value="<?= e((string)$defaults['review_1_firstname']) ?>"></label>
-                    <label>Avis client 1 ville<input name="review_1_city" value="<?= e((string)$defaults['review_1_city']) ?>"></label>
+                <div class="lp-info-row">
+                    <i class="fas fa-link" style="color:#f59e0b"></i>
+                    <div><strong>Comment l'utiliser</strong><br>Copiez l'URL <code>/lp/votre-slug</code> dans vos campagnes Google Ads ou Meta Ads comme URL de destination.</div>
                 </div>
-                <label>Avis client 1 texte<textarea rows="2" name="review_1_text"><?= e((string)$defaults['review_1_text']) ?></textarea></label>
-                <div class="lp-cols">
-                    <label>Avis client 2 prénom<input name="review_2_firstname" value="<?= e((string)$defaults['review_2_firstname']) ?>"></label>
-                    <label>Avis client 2 ville<input name="review_2_city" value="<?= e((string)$defaults['review_2_city']) ?>"></label>
-                </div>
-                <label>Avis client 2 texte<textarea rows="2" name="review_2_text"><?= e((string)$defaults['review_2_text']) ?></textarea></label>
-                <div class="lp-cols">
-                    <label>UTM source par défaut<select name="utm_source_default"><option value="google" <?= $defaults['utm_source_default']==='google'?'selected':'' ?>>google</option><option value="facebook" <?= $defaults['utm_source_default']==='facebook'?'selected':'' ?>>facebook</option></select></label>
-                    <label>Active <input type="checkbox" name="active" value="1" <?= !empty($defaults['active']) ? 'checked' : '' ?>></label>
-                </div>
-                <div class="lp-actions">
-                    <button class="btn" type="submit">Enregistrer</button>
-                    <a href="/admin/index.php?module=landing-pages">Nouvelle fiche</a>
-                </div>
-            </form>
-        </section>
+            </div>
+        </div>
+        <style>
+        .lp-info-wrap { position:relative; display:inline-block; margin-bottom:1.25rem; }
+        .lp-info-btn { background:none; border:1px solid #e2e8f0; border-radius:6px; padding:.4rem .85rem; font-size:.85rem; color:#64748b; cursor:pointer; display:inline-flex; align-items:center; gap:.45rem; transition:background .15s,color .15s; }
+        .lp-info-btn:hover { background:#f1f5f9; color:#334155; }
+        .lp-info-tooltip { display:none; position:absolute; top:calc(100% + 8px); left:0; z-index:200; background:#fff; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.1); padding:1rem 1.1rem; width:420px; max-width:90vw; }
+        .lp-info-tooltip.is-open { display:block; }
+        .lp-info-row { display:flex; gap:.75rem; align-items:flex-start; padding:.55rem 0; font-size:.84rem; line-height:1.45; color:#374151; }
+        .lp-info-row + .lp-info-row { border-top:1px solid #f1f5f9; }
+        .lp-info-row > i { margin-top:2px; flex-shrink:0; width:16px; text-align:center; }
+        </style>
+        <script>
+        (function () {
+            var btn = document.querySelector('.lp-info-btn');
+            var tip = document.querySelector('.lp-info-tooltip');
+            if (!btn || !tip) return;
+            btn.addEventListener('click', function (e) { e.stopPropagation(); tip.classList.toggle('is-open'); });
+            document.addEventListener('click', function () { tip.classList.remove('is-open'); });
+        })();
+        </script>
+
+        <?php if (!empty($errors)): ?>
+            <?php foreach ($errors as $error): ?>
+                <div class="lp-error"><i class="fas fa-circle-exclamation me-2"></i><?= e((string) $error) ?></div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <div class="lp-layout">
+
+            <!-- Liste des LP existantes -->
+            <div class="lp-card">
+                <h3><i class="fas fa-list" style="color:#3b82f6"></i> Pages existantes (<?= count($landingPages) ?>)</h3>
+                <?php if (!$landingPages): ?>
+                    <div class="lp-empty">
+                        <i class="fas fa-file-lines fa-2x" style="opacity:.2;display:block;margin-bottom:.5rem"></i>
+                        <div style="font-size:.88rem">Aucune landing page créée.</div>
+                        <div style="font-size:.82rem;margin-top:.3rem">Utilisez le formulaire ci-contre pour en créer une.</div>
+                    </div>
+                <?php else: ?>
+                    <table class="lp-table">
+                        <thead><tr><th>Slug / URL</th><th>Type</th><th>Ville</th><th>Statut</th><th></th></tr></thead>
+                        <tbody>
+                        <?php foreach ($landingPages as $lp): ?>
+                            <tr>
+                                <td><code style="font-size:.78rem;background:#f1f5f9;padding:.1rem .4rem;border-radius:4px">/lp/<?= e((string) $lp['slug']) ?></code></td>
+                                <td><?= e((string) $lp['type']) ?></td>
+                                <td><?= e((string) $lp['ville']) ?></td>
+                                <td><?= ((int) $lp['active'] === 1) ? '<span class="lp-badge-active">Active</span>' : '<span class="lp-badge-inactive">Inactive</span>' ?></td>
+                                <td><a href="/admin?module=landing-pages&id=<?= (int) $lp['id'] ?>" class="lp-link">Éditer</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
+                <?php if ($isEdit): ?>
+                    <div style="margin-top:.8rem">
+                        <a href="/admin?module=landing-pages" class="hub-btn hub-btn--sm" style="background:#f1f5f9;color:#334155;">
+                            <i class="fas fa-plus"></i> Nouvelle LP
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Formulaire -->
+            <div class="lp-card">
+                <h3>
+                    <i class="fas fa-<?= $isEdit ? 'pen' : 'plus-circle' ?>" style="color:#f59e0b"></i>
+                    <?= $isEdit ? 'Modifier la landing page' : 'Créer une landing page' ?>
+                </h3>
+                <form class="lp-form" method="post">
+                    <div class="lp-form-2col">
+                        <div class="lp-form-field">
+                            <label>Slug *</label>
+                            <input name="slug" required value="<?= e((string) $defaults['slug']) ?>" placeholder="estimation-aix">
+                        </div>
+                        <div class="lp-form-field">
+                            <label>Type *</label>
+                            <select name="type" required>
+                                <option value="estimation"  <?= $defaults['type'] === 'estimation'  ? 'selected' : '' ?>>Estimation</option>
+                                <option value="financement" <?= $defaults['type'] === 'financement' ? 'selected' : '' ?>>Financement</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lp-form-field"><label>Headline H1 *</label><input name="headline" required value="<?= e((string) $defaults['headline']) ?>"></div>
+                    <div class="lp-form-field"><label>Sous-titre *</label><input name="sous_titre" required value="<?= e((string) $defaults['sous_titre']) ?>"></div>
+                    <div class="lp-form-field"><label>Ville</label><input name="ville" value="<?= e((string) $defaults['ville']) ?>"></div>
+                    <div class="lp-form-2col">
+                        <div class="lp-form-field"><label>Nom conseiller</label><input name="advisor_name" value="<?= e((string) $defaults['advisor_name']) ?>"></div>
+                        <div class="lp-form-field"><label>Téléphone</label><input name="advisor_phone" value="<?= e((string) $defaults['advisor_phone']) ?>"></div>
+                    </div>
+                    <div class="lp-form-field"><label>Zone d'intervention</label><input name="advisor_zone" value="<?= e((string) $defaults['advisor_zone']) ?>"></div>
+                    <div class="lp-form-field"><label>Photo conseiller (URL WebP)</label><input name="advisor_photo_webp" value="<?= e((string) $defaults['advisor_photo_webp']) ?>"></div>
+                    <div class="lp-form-field"><label>Bio courte</label><textarea rows="2" name="advisor_bio"><?= e((string) $defaults['advisor_bio']) ?></textarea></div>
+                    <div class="lp-form-2col">
+                        <div class="lp-form-field"><label>Avis 1 — Prénom</label><input name="review_1_firstname" value="<?= e((string) $defaults['review_1_firstname']) ?>"></div>
+                        <div class="lp-form-field"><label>Avis 1 — Ville</label><input name="review_1_city" value="<?= e((string) $defaults['review_1_city']) ?>"></div>
+                    </div>
+                    <div class="lp-form-field"><label>Avis 1 — Texte</label><textarea rows="2" name="review_1_text"><?= e((string) $defaults['review_1_text']) ?></textarea></div>
+                    <div class="lp-form-2col">
+                        <div class="lp-form-field"><label>Avis 2 — Prénom</label><input name="review_2_firstname" value="<?= e((string) $defaults['review_2_firstname']) ?>"></div>
+                        <div class="lp-form-field"><label>Avis 2 — Ville</label><input name="review_2_city" value="<?= e((string) $defaults['review_2_city']) ?>"></div>
+                    </div>
+                    <div class="lp-form-field"><label>Avis 2 — Texte</label><textarea rows="2" name="review_2_text"><?= e((string) $defaults['review_2_text']) ?></textarea></div>
+                    <div class="lp-form-2col">
+                        <div class="lp-form-field">
+                            <label>UTM source par défaut</label>
+                            <select name="utm_source_default">
+                                <option value="google"   <?= $defaults['utm_source_default'] === 'google'   ? 'selected' : '' ?>>google</option>
+                                <option value="facebook" <?= $defaults['utm_source_default'] === 'facebook' ? 'selected' : '' ?>>facebook</option>
+                            </select>
+                        </div>
+                        <div class="lp-form-field" style="justify-content:flex-end;align-items:flex-end">
+                            <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.88rem;text-transform:none;letter-spacing:0">
+                                <input type="checkbox" name="active" value="1" <?= !empty($defaults['active']) ? 'checked' : '' ?>>
+                                Page active (visible)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="lp-form-actions">
+                        <button class="hub-btn hub-btn--gold" type="submit">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <?php if ($isEdit): ?>
+                            <a href="/admin?module=landing-pages" class="hub-btn" style="background:#f1f5f9;color:#334155;">Annuler</a>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
     </div>
     <?php
 }

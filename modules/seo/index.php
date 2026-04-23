@@ -120,7 +120,24 @@ function renderSeoHub(array $stats): void
             .seo-hub-pillars { grid-template-columns:repeat(2, minmax(0,1fr)); }
             .seo-hub-final-cta { display:flex; align-items:center; justify-content:space-between; gap:1.2rem; }
         }
+        .seo-info-wrap { position:relative; display:inline-block; margin-bottom:1.25rem; }
+        .seo-info-btn { background:none; border:1px solid #e2e8f0; border-radius:6px; padding:.4rem .85rem; font-size:.85rem; color:#64748b; cursor:pointer; display:inline-flex; align-items:center; gap:.45rem; transition:background .15s,color .15s; }
+        .seo-info-btn:hover { background:#f1f5f9; color:#334155; }
+        .seo-info-tooltip { display:none; position:absolute; top:calc(100% + 8px); left:0; z-index:200; background:#fff; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.1); padding:1rem 1.1rem; width:400px; max-width:90vw; }
+        .seo-info-tooltip.is-open { display:block; }
+        .seo-info-row { display:flex; gap:.75rem; align-items:flex-start; padding:.55rem 0; font-size:.84rem; line-height:1.45; color:#374151; }
+        .seo-info-row + .seo-info-row { border-top:1px solid #f1f5f9; }
+        .seo-info-row > i { margin-top:2px; flex-shrink:0; width:16px; text-align:center; }
     </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.querySelector('.seo-info-btn');
+        var tip = document.querySelector('.seo-info-tooltip');
+        if (!btn || !tip) return;
+        btn.addEventListener('click', function (e) { e.stopPropagation(); tip.classList.toggle('is-open'); });
+        document.addEventListener('click', function () { tip.classList.remove('is-open'); });
+    });
+    </script>
 
     <section class="seo-strategy-page">
 
@@ -140,24 +157,29 @@ function renderSeoHub(array $stats): void
             </div>
         </section>
 
-        <section class="seo-hub-narrative">
-            <article class="seo-hub-narrative-card">
-                <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Le constat</h3>
-                <p>Vos futurs clients recherchent un conseiller local sur Google et ne vous trouvent pas encore.</p>
-            </article>
-            <article class="seo-hub-narrative-card">
-                <h3><i class="fas fa-diagram-project" style="color:#3b82f6;"></i> La logique</h3>
-                <p>Des pages locales optimisées, des mots-clés ciblés, un site rapide et bien indexé.</p>
-            </article>
-            <article class="seo-hub-narrative-card">
-                <h3><i class="fas fa-chart-line" style="color:#10b981;"></i> Ce que vous gagnez</h3>
-                <p>Une présence constante sur les recherches locales et plus de demandes entrantes chaque mois.</p>
-            </article>
-            <article class="seo-hub-narrative-card">
-                <h3><i class="fas fa-play-circle" style="color:#f59e0b;"></i> ACTION</h3>
-                <p>Choisissez un levier ci-dessous, activez-le cette semaine et mesurez les premiers retours.</p>
-            </article>
-        </section>
+        <div class="seo-info-wrap">
+            <button class="seo-info-btn" type="button" aria-label="Comment fonctionne le SEO ?">
+                <i class="fas fa-circle-info"></i> Comment ça fonctionne ?
+            </button>
+            <div class="seo-info-tooltip" role="tooltip">
+                <div class="seo-info-row">
+                    <i class="fas fa-triangle-exclamation" style="color:#ef4444"></i>
+                    <div><strong>Le constat</strong><br>Vos futurs clients recherchent un conseiller local sur Google et ne vous trouvent pas encore.</div>
+                </div>
+                <div class="seo-info-row">
+                    <i class="fas fa-diagram-project" style="color:#3b82f6"></i>
+                    <div><strong>La logique</strong><br>Des pages locales optimisées, des mots-clés ciblés, un site rapide et bien indexé.</div>
+                </div>
+                <div class="seo-info-row">
+                    <i class="fas fa-chart-line" style="color:#10b981"></i>
+                    <div><strong>Ce que vous gagnez</strong><br>Une présence constante sur les recherches locales et plus de demandes entrantes chaque mois.</div>
+                </div>
+                <div class="seo-info-row">
+                    <i class="fas fa-play-circle" style="color:#f59e0b"></i>
+                    <div><strong>Action</strong><br>Choisissez un levier ci-dessous, activez-le cette semaine et mesurez les premiers retours.</div>
+                </div>
+            </div>
+        </div>
 
         <section class="seo-hub-pillars" aria-label="Leviers SEO">
 

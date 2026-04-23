@@ -254,6 +254,21 @@ $router->post('/lp/{slug}', function(string $slug) {
 });
 
 // ══════════════════════════════════════════════════════════════
+//  RESSOURCES
+// ══════════════════════════════════════════════════════════════
+$router->get('/ressources', function() {
+    servePage(ROOT_PATH . '/public/pages/ressources/index.php');
+});
+
+$router->get('/ressources/guide-vendeur', function() {
+    servePage(ROOT_PATH . '/public/pages/ressources/guide-vendeur.php');
+});
+
+$router->get('/ressources/guide-acheteur', function() {
+    servePage(ROOT_PATH . '/public/pages/ressources/guide-acheteur.php');
+});
+
+// ══════════════════════════════════════════════════════════════
 //  FINANCEMENT
 // ══════════════════════════════════════════════════════════════
 $router->get('/financement', function() {

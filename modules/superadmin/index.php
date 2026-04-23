@@ -33,8 +33,6 @@ if (!$user || ($user['role'] ?? '') !== 'superadmin') {
 $pageTitle = 'Superadmin';
 $pageDescription = 'Pilotage global des modules et demandes de session';
 
-require_once __DIR__ . '/../../admin/views/layout.php';
-
 function renderContent(): void
 {
     require __DIR__ . '/dashboard.php';

@@ -65,10 +65,32 @@ $auto = $blueprint['auto_generation'] ?? [];
     }
 </style>
 
+<div class="hub-page">
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-rocket"></i> Démarrer</div>
+    <h1>Onboarding</h1>
+    <p>6 étapes pour structurer votre activité et préparer tous les modules du CRM avec vos données réelles.</p>
+</header>
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--explanation">
+        <h3><i class="fas fa-list-check" style="color:#3b82f6"></i> 6 étapes</h3>
+        <p>Identité, cible, offre, territoire, objectif et génération automatique de votre blueprint stratégique.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-check-circle" style="color:#10b981"></i> Ce que ça débloque</h3>
+        <p>Une fois complété, tous les modules Noah se pré-remplissent automatiquement avec vos vraies données.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-bolt" style="color:#f59e0b"></i> Durée</h3>
+        <p>Comptez 10 à 15 minutes pour tout renseigner correctement. Vous pouvez sauvegarder et reprendre à tout moment.</p>
+    </article>
+</div>
+</div><!-- /.hub-page -->
+
 <div class="onb-shell">
     <section class="onb-card onb-header">
-        <h1>Onboarding — collecte des informations</h1>
-        <p>Un écran par étape pour structurer vos données et préparer le module Construire.</p>
+        <h1>Étape <?= (int)$step ?>/6 — <?= htmlspecialchars((string)($labels[$step] ?? 'Progression')) ?></h1>
+        <p>Renseignez les informations demandées, puis cliquez sur Suivant.</p>
 
         <?php if ($canResume): ?>
             <p><a href="/admin?module=onboarding&amp;step=<?= (int) $resumeStep ?>">Reprendre votre progression (étape <?= (int) $resumeStep ?>/6)</a></p>

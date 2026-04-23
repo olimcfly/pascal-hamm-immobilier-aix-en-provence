@@ -27,15 +27,25 @@ function renderContent(): void
     $apis_ok    = array_sum($apis);
     $apis_total = count($apis);
     ?>
+    <div class="hub-page">
 
     <!-- ── EN-TÊTE ─────────────────────────────────────────── -->
-    <div class="page-header">
-        <h1>
-            <i class="fas fa-gear page-icon"></i>
-            <span class="page-title-accent">Paramètres</span>
-        </h1>
-        <p class="page-description"><?= htmlspecialchars($pageDescription ?? '') ?></p>
+    <header class="hub-hero">
+        <div class="hub-hero-badge"><i class="fas fa-gear"></i> Compte</div>
+        <h1>Paramètres</h1>
+        <p>Profil, APIs, notifications, SEO, danger zone — toute la configuration de votre CRM en un endroit.</p>
+    </header>
+
+    <div class="params-info-wrap">
+        <button class="params-info-btn" type="button"><i class="fas fa-circle-info"></i> Que faire ici ?</button>
+        <div class="params-info-tooltip" role="tooltip">
+            <div class="params-info-row"><i class="fas fa-user-gear" style="color:#3b82f6"></i><div><strong>Votre profil</strong><br>Nom, photo, coordonnées — ces données alimentent automatiquement vos pages publiques et vos emails.</div></div>
+            <div class="params-info-row"><i class="fas fa-plug" style="color:#10b981"></i><div><strong><?= $apis_ok ?>/<?= $apis_total ?> APIs configurées</strong><br>Plus vous connectez d'APIs, plus de fonctionnalités deviennent disponibles : IA, GMB, SEO, réseaux sociaux.</div></div>
+            <div class="params-info-row"><i class="fas fa-shield-halved" style="color:#f59e0b"></i><div><strong>Zone sensible</strong><br>Les modifications dans Danger Zone sont irréversibles. Lisez attentivement avant d'agir.</div></div>
+        </div>
     </div>
+    <style>.params-info-wrap{position:relative;display:inline-block;margin-bottom:1.25rem;}.params-info-btn{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:.4rem .85rem;font-size:.85rem;color:#64748b;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:background .15s,color .15s;}.params-info-btn:hover{background:#f1f5f9;color:#334155;}.params-info-tooltip{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:200;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:1rem 1.1rem;width:400px;max-width:90vw;}.params-info-tooltip.is-open{display:block;}.params-info-row{display:flex;gap:.75rem;align-items:flex-start;padding:.55rem 0;font-size:.84rem;line-height:1.45;color:#374151;}.params-info-row+.params-info-row{border-top:1px solid #f1f5f9;}.params-info-row>i{margin-top:2px;flex-shrink:0;width:16px;text-align:center;}</style>
+    <script>(function(){var b=document.querySelector('.params-info-btn'),t=document.querySelector('.params-info-tooltip');if(!b||!t)return;b.addEventListener('click',function(e){e.stopPropagation();t.classList.toggle('is-open');});document.addEventListener('click',function(){t.classList.remove('is-open');});})();</script>
 
     <!-- ── PROFIL RÉSUMÉ ───────────────────────────────────── -->
     <div class="settings-profile-banner">
@@ -224,14 +234,15 @@ function renderContent(): void
 
     /* ── PROFIL BANNER ────────────────────────────────────── */
     .settings-profile-banner {
-        background: linear-gradient(135deg, #1a2332, #2c3e50);
+        background: #fff;
+        border: 1px solid #e2e8f0;
         border-radius: 14px;
-        padding: 24px 28px;
+        padding: 18px 24px;
         display: flex;
         align-items: center;
         gap: 20px;
         margin-bottom: 28px;
-        box-shadow: 0 4px 20px rgba(26,35,50,.15);
+        box-shadow: 0 1px 6px rgba(0,0,0,.05);
     }
     .spb-avatar {
         width: 64px; height: 64px; border-radius: 50%;
@@ -239,20 +250,20 @@ function renderContent(): void
         display: flex; align-items: center; justify-content: center;
         font-size: 22px; font-weight: 700; color: white;
         flex-shrink: 0; overflow: hidden;
-        border: 3px solid rgba(255,255,255,.15);
+        border: 3px solid #e2e8f0;
     }
     .spb-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .spb-info { flex: 1; }
-    .spb-name  { font-size: 18px; font-weight: 700; color: white; }
-    .spb-email { font-size: 13px; color: rgba(255,255,255,.55); margin-top: 3px; }
-    .spb-location { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 4px; }
-    .spb-location i { margin-right: 4px; color: #3498db; }
+    .spb-name  { font-size: 17px; font-weight: 700; color: #0f2237; }
+    .spb-email { font-size: 13px; color: #64748b; margin-top: 3px; }
+    .spb-location { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .spb-location i { margin-right: 4px; color: #3b82f6; }
     .spb-api-badge {
         padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-        display: flex; align-items: center; gap: 6px;
+        display: flex; align-items: center; gap: 6px; border: 1px solid;
     }
-    .badge-ok   { background: rgba(46,204,113,.2);  color: #2ecc71; }
-    .badge-warn { background: rgba(230,126,34,.2);  color: #f39c12; }
+    .badge-ok   { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+    .badge-warn { background: #fef3c7; color: #92400e; border-color: #fde68a; }
 
     /* ── SETTINGS GRID ────────────────────────────────────── */
     .settings-grid {
@@ -569,5 +580,6 @@ function renderContent(): void
         if (e.key === 'Escape') closeSettingsDrawer();
     });
     </script>
+    </div><!-- /.hub-page -->
     <?php
 }

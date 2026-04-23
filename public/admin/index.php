@@ -39,13 +39,13 @@ if (!ModuleService::isEnabledForRole($module, $role)) {
     exit;
 }
 
-$modulePath = __DIR__ . "/../../modules/{$module}/accueil.php";
+$modulePath = __DIR__ . "/../../modules/{$module}/index.php";
 if (!is_file($modulePath)) {
     if (APP_DEBUG) {
         error_log('[admin/index] Module introuvable: ' . $modulePath . '. Fallback sur construire.');
     }
     $module = 'construire';
-    $modulePath = __DIR__ . '/../../modules/construire/accueil.php';
+    $modulePath = __DIR__ . '/../../modules/construire/index.php';
 }
 
 require_once $modulePath;

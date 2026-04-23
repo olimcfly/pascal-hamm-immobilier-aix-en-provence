@@ -15,17 +15,37 @@ $statusLabels = [
     'a_corriger' => 'À corriger',
 ];
 ?>
-<section class="seo-section seo-performance-dashboard">
-    <div class="seo-breadcrumb"><a href="/admin?module=seo">Accueil</a> &gt; SEO &gt; Performance technique</div>
+<div class="hub-page">
 
-    <div class="seo-headline">
-        <div>
-            <h2>Performance technique</h2>
-            <p>Un tableau de bord clair pour savoir si votre site est sain, quoi corriger et dans quel ordre.</p>
-        </div>
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-gauge-high"></i> SEO</div>
+    <h1>Performance technique</h1>
+    <p>Un tableau de bord clair pour savoir si votre site est sain, quoi corriger et dans quel ordre de priorité.</p>
+</header>
+
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-bolt" style="color:#f59e0b"></i> Pourquoi c'est crucial</h3>
+        <p>Un site lent ou avec des erreurs techniques perd des positions Google — indépendamment de la qualité du contenu.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-check-circle" style="color:#10b981"></i> Ce que l'audit détecte</h3>
+        <p>Vitesse, balises manquantes, liens brisés, images non optimisées — triés par ordre de priorité d'impact SEO.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--action">
+        <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444"></i> Par où commencer</h3>
+        <p>Traitez d'abord les problèmes critiques, puis les importants. Les mineurs peuvent attendre le prochain sprint.</p>
+    </article>
+</div>
+
+<section class="seo-section seo-performance-dashboard">
+    <div class="seo-breadcrumb"><a href="/admin?module=seo">Accueil</a> › SEO › Performance technique</div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+        <p style="margin:0;font-size:.88rem;color:#64748b">Lancez un audit pour analyser votre site et obtenir un score de santé technique.</p>
         <form method="post" action="/admin?module=seo&action=performance_run">
             <?= csrfField() ?>
-            <button type="submit">Lancer un audit global</button>
+            <button type="submit" class="hub-btn hub-btn--gold"><i class="fas fa-magnifying-glass-chart"></i> Lancer un audit global</button>
         </form>
     </div>
 
@@ -80,3 +100,4 @@ $statusLabels = [
         </table>
     </div>
 </section>
+</div><!-- /.hub-page -->

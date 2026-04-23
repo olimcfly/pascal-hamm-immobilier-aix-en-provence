@@ -16,7 +16,7 @@ class ModuleService
                 return false;
             }
 
-            return is_dir($moduleDir . '/' . $entry) && is_file($moduleDir . '/' . $entry . '/accueil.php');
+            return is_dir($moduleDir . '/' . $entry) && is_file($moduleDir . '/' . $entry . '/index.php');
         });
 
         $modules = array_values(array_unique(array_map(static function ($name) {

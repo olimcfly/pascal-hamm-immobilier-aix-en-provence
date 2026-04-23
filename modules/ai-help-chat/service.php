@@ -133,7 +133,7 @@ final class AiHelpChatService
     public function getSources(): array
     {
         $defaults = [
-            ['source_type' => 'help_articles', 'source_key' => 'help_articles', 'label' => 'Articles du centre d’aide', 'is_active' => true],
+            ['source_type' => 'help_articles', 'source_key' => 'help_articles', 'label' => "Articles du centre d'aide", 'is_active' => true],
             ['source_type' => 'internal_guides', 'source_key' => 'internal_guides', 'label' => 'Guides internes', 'is_active' => true],
             ['source_type' => 'module_docs', 'source_key' => 'module_docs', 'label' => 'Documentation par module', 'is_active' => true],
             ['source_type' => 'videos', 'source_key' => 'videos', 'label' => 'Ressources vidéos (futures)', 'is_active' => false],
@@ -299,11 +299,12 @@ final class AiHelpChatService
 
     public function buildAssistantResponse(string $message, array $context): array
     {
-        $settings = $this->getSettings();
+        $settings  = $this->getSettings();
         $resources = $this->suggestResources($message, $context, 3);
-        $module = (string) ($context['module'] ?? 'dashboard');
+        $module    = (string) ($context['module'] ?? 'dashboard');
 
-        $response = $this->buildScopedReply($message, $resources, $settings);
+        // ── Tenter une réponse IA (Claude) ───────────────────
+        $response = $this->buildAiReply($message, $context, $resources, $settings);
 
         $nextStep = null;
         if ($settings['suggest_next_step']) {
@@ -314,16 +315,89 @@ final class AiHelpChatService
         if ($settings['show_module_cta'] && $nextStep !== null) {
             $moduleCta = [
                 'label' => 'Aller au module conseillé : ' . ucfirst($nextStep),
-                'url' => '/admin?module=' . rawurlencode($nextStep),
+                'url'   => '/admin?module=' . rawurlencode($nextStep),
             ];
         }
 
         return [
-            'answer' => $response,
-            'resources' => $resources,
-            'next_step' => $nextStep,
+            'answer'     => $response,
+            'resources'  => $resources,
+            'next_step'  => $nextStep,
             'module_cta' => $moduleCta,
         ];
+    }
+
+    /**
+     * Construit la réponse via Claude (IA) si la clé est disponible,
+     * sinon bascule sur la réponse textuelle de secours.
+     */
+    private function buildAiReply(string $message, array $context, array $resources, array $settings): string
+    {
+        if (!class_exists('AiService')) {
+            require_once ROOT_PATH . '/core/services/AiService.php';
+        }
+
+        $apiKey = $_ENV['ANTHROPIC_API_KEY'] ?? '';
+        // Fallback sur la clé DB settings si ENV vide
+        if (empty($apiKey)) {
+            try {
+                $userId = (int) (Auth::user()['id'] ?? 0);
+                $apiKey = (string) setting('api_anthropic', '', $userId);
+            } catch (Throwable) {}
+        }
+
+        if (empty($apiKey)) {
+            return $this->buildScopedReply($message, $resources, $settings);
+        }
+
+        // ── Construire le contexte pour Claude ───────────────
+        $moduleName  = (string) ($context['module'] ?? 'dashboard');
+        $tone        = (string) ($settings['tone'] ?? 'professionnel');
+        $customPrompt = trim((string) ($settings['system_prompt'] ?? ''));
+
+        $moduleLabels = [
+            'dashboard'    => 'Tableau de bord',
+            'assistant'    => 'Assistant IA Noah',
+            'seo'          => 'Référencement SEO',
+            'gmb'          => 'Google My Business',
+            'social'       => 'Réseaux sociaux',
+            'blog'         => 'Rédaction / Blog',
+            'capture'      => 'Capture de leads',
+            'landing-pages'=> 'Landing Pages',
+            'funnels'      => 'Funnels / Tunnels',
+            'convertir'    => 'Conversion',
+            'prospection'  => 'Prospection email',
+            'messagerie'   => 'Messagerie',
+            'biens'        => 'Catalogue de biens',
+            'parametres'   => 'Paramètres du compte',
+            'integrations' => 'Santé des intégrations',
+            'aide'         => 'Centre d\'aide',
+        ];
+        $moduleLabel = $moduleLabels[$moduleName] ?? ucfirst($moduleName);
+
+        $resourceContext = '';
+        if (!empty($resources)) {
+            $titles = array_map(static fn($r) => '• ' . ($r['title'] ?? ''), $resources);
+            $resourceContext = "\n\nRessources internes disponibles sur ce sujet :\n" . implode("\n", $titles);
+        }
+
+        $systemPrompt = $customPrompt ?: "Tu es un assistant d'aide intégré dans un CRM immobilier pour conseillers indépendants. "
+            . "Tu réponds en français, de façon concise et actionnable (3-5 lignes max). "
+            . "Tu ne fais jamais de mise en forme markdown complexe. Tu ne poses pas de questions en retour. "
+            . "Tu restes dans le périmètre du CRM immobilier. "
+            . "Ton ton est " . $tone . ".";
+
+        $userPrompt = "L'utilisateur est sur le module : **{$moduleLabel}**.\n\n"
+            . "Question : {$message}"
+            . $resourceContext;
+
+        try {
+            $answer = AiService::ask($systemPrompt, $userPrompt);
+            return $answer !== '' ? $answer : $this->buildScopedReply($message, $resources, $settings);
+        } catch (Throwable $e) {
+            error_log('[AiHelpChat] Claude error: ' . $e->getMessage());
+            return $this->buildScopedReply($message, $resources, $settings);
+        }
     }
 
     private function buildScopedReply(string $message, array $resources, array $settings): string
@@ -332,19 +406,19 @@ final class AiHelpChatService
         $mode = (string) ($settings['response_mode'] ?? 'guide');
 
         $prefix = match ($tone) {
-            'direct' => 'Réponse directe :',
+            'direct'       => 'Réponse directe :',
             'bienveillant' => 'Voici une aide rapide :',
-            default => 'Assistant CRM :',
+            default        => 'Assistant CRM :',
         };
 
         $actionHint = match ($mode) {
-            'concis' => 'Passez à l’action dans le module actif.',
+            'concis' => "Passez à l'action dans le module actif.",
             'normal' => 'Appliquez cette étape puis vérifiez le résultat.',
-            default => 'Suivez l’étape proposée ci-dessous pour avancer concrètement.',
+            default  => "Suivez l'étape proposée ci-dessous pour avancer concrètement.",
         };
 
         if ($resources === []) {
-            return $prefix . " Je reste limité au périmètre du CRM. Reformulez votre question avec le module, la page ou l’objectif (ex: SEO, Capturer, Convertir). " . $actionHint;
+            return $prefix . " Je reste limité au périmètre du CRM. Reformulez votre question avec le module, la page ou l'objectif (ex: SEO, Capturer, Funnels). " . $actionHint;
         }
 
         $best = $resources[0];
@@ -369,13 +443,13 @@ final class AiHelpChatService
     {
         return [
             'id' => 1,
-            'assistant_name' => 'Assistant Aide IA',
+            'assistant_name' => 'Léa — Assistante IA',
             'is_enabled' => true,
             'default_language' => 'fr',
             'tone' => 'professionnel',
             'response_length' => 'moyenne',
             'response_mode' => 'guide',
-            'system_prompt' => "Tu es un assistant d’aide interne au CRM. Tu réponds uniquement depuis les ressources CRM. Tu restes concret, tu n’inventes pas de fonctionnalité, et tu proposes une action suivante.",
+            'system_prompt' => "Tu es un assistant d'aide interne au CRM. Tu réponds uniquement depuis les ressources CRM. Tu restes concret, tu n'inventes pas de fonctionnalité, et tu proposes une action suivante.",
             'allow_admin' => true,
             'allow_user' => true,
             'suggest_articles' => true,

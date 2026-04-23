@@ -571,6 +571,15 @@ function renderConvertirHubCards(): void
         .convertir-final-cta h2{margin:0;font-size:1.1rem;color:#1e1b4b;}
         .convertir-final-cta-btn{display:inline-flex;align-items:center;gap:.45rem;background:#1d4ed8;color:#fff;text-decoration:none;padding:.62rem .88rem;border-radius:10px;font-weight:700;}
 
+        .convertir-info-wrap{position:relative;display:inline-block;margin-bottom:1.25rem;}
+        .convertir-info-btn{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:.4rem .85rem;font-size:.85rem;color:#64748b;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:background .15s,color .15s;}
+        .convertir-info-btn:hover{background:#f1f5f9;color:#334155;}
+        .convertir-info-tooltip{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:200;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:1rem 1.1rem;width:400px;max-width:90vw;}
+        .convertir-info-tooltip.is-open{display:block;}
+        .convertir-info-row{display:flex;gap:.75rem;align-items:flex-start;padding:.55rem 0;font-size:.84rem;line-height:1.45;color:#374151;}
+        .convertir-info-row+.convertir-info-row{border-top:1px solid #f1f5f9;}
+        .convertir-info-row>i{margin-top:2px;flex-shrink:0;width:16px;text-align:center;}
+
         @media (min-width: 900px){
             .convertir-hero{padding:1.8rem;}
             .convertir-hero h1{font-size:2rem;}
@@ -584,37 +593,35 @@ function renderConvertirHubCards(): void
     </style>
 
     <section class="convertir-sales-flow">
-        <header class="convertir-hero">
+        <header class="hub-hero">
+            <div class="hub-hero-badge"><i class="fas fa-arrow-trend-up"></i> Conversion</div>
             <h1>Transformer vos contacts en clients</h1>
             <p>Mettez en place un système simple pour qualifier, relancer et signer vos prospects.</p>
         </header>
 
-        <section class="convertir-core">
-            <h2>Méthode mère</h2>
-            <div class="convertir-core-grid">
-                <article class="convertir-core-item">
-                    <span class="convertir-core-label">Point de départ</span>
-                    <div>Sans suivi clair, des contacts chauds se perdent.</div>
-                </article>
-                <article class="convertir-core-item">
-                    <span class="convertir-core-label">Méthode simple</span>
-                    <ul>
-                        <li>CRM</li>
-                        <li>RDV</li>
-                        <li>Argumentaire</li>
-                        <li>Suivi</li>
-                    </ul>
-                </article>
-                <article class="convertir-core-item">
-                    <span class="convertir-core-label">Impact direct</span>
-                    <div>Plus de signatures et plus de mandats.</div>
-                </article>
-                <article class="convertir-core-item">
-                    <span class="convertir-core-label">Prochaine étape</span>
-                    <div>Suivez les modules dans l’ordre ci-dessous.</div>
-                </article>
+        <div class="convertir-info-wrap">
+            <button class="convertir-info-btn" type="button" aria-label="Comment fonctionne ce module ?">
+                <i class="fas fa-circle-info"></i> Comment ça fonctionne ?
+            </button>
+            <div class="convertir-info-tooltip" role="tooltip">
+                <div class="convertir-info-row">
+                    <i class="fas fa-triangle-exclamation" style="color:#ef4444"></i>
+                    <div><strong>Point de départ</strong><br>Sans suivi clair, des contacts chauds se perdent en route.</div>
+                </div>
+                <div class="convertir-info-row">
+                    <i class="fas fa-diagram-project" style="color:#3b82f6"></i>
+                    <div><strong>Méthode</strong><br>Quatre étapes : CRM → RDV → Argumentaire → Suivi post-RDV.</div>
+                </div>
+                <div class="convertir-info-row">
+                    <i class="fas fa-chart-line" style="color:#10b981"></i>
+                    <div><strong>Impact direct</strong><br>Plus de signatures et plus de mandats grâce à un suivi structuré.</div>
+                </div>
+                <div class="convertir-info-row">
+                    <i class="fas fa-list-check" style="color:#8b5cf6"></i>
+                    <div><strong>Prochaine étape</strong><br>Suivez les modules dans l’ordre ci-dessous.</div>
+                </div>
             </div>
-        </section>
+        </div>
 
         <section class="convertir-steps" aria-label="Étapes du processus de conversion">
             <?php foreach ($steps as $step): ?>
@@ -642,6 +649,15 @@ function renderConvertirHubCards(): void
             <a href="/admin?module=convertir&action=crm-contacts" class="convertir-final-cta-btn">Structurer mon suivi client <i class="fas fa-arrow-right"></i></a>
         </section>
     </section>
+    <script>
+    (function () {
+        var btn = document.querySelector(‘.convertir-info-btn’);
+        var tip = document.querySelector(‘.convertir-info-tooltip’);
+        if (!btn || !tip) return;
+        btn.addEventListener(‘click’, function (e) { e.stopPropagation(); tip.classList.toggle(‘is-open’); });
+        document.addEventListener(‘click’, function () { tip.classList.remove(‘is-open’); });
+    })();
+    </script>
     <?php
 }
 

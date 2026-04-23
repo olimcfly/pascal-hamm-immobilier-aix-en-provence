@@ -1,9 +1,9 @@
 <?php
-// modules/funnels/accueil.php
+// modules/funnels/index.php
 
 require_once MODULES_PATH . '/funnels/services/FunnelService.php';
 
-function renderContent(): string
+function renderContent(): void
 {
     $db      = \Database::getInstance();
     $service = new FunnelService($db);
@@ -13,13 +13,16 @@ function renderContent(): string
 
     switch ($action) {
         case 'wizard':
-            return renderWizard($service, $id);
+            echo renderWizard($service, $id);
+            break;
         case 'edit':
-            return renderEdit($service, $id);
+            echo renderEdit($service, $id);
+            break;
         case 'stats':
-            return renderStats($service, $id);
+            echo renderStats($service, $id);
+            break;
         default:
-            return renderList($service);
+            echo renderList($service);
     }
 }
 
@@ -72,6 +75,10 @@ function renderEdit(FunnelService $service, int $id): string
 
     $canaux    = FunnelService::CANAUX;
     $templates = FunnelService::TEMPLATES;
+
+    if (!class_exists('SequenceCrmService')) {
+        require_once MODULES_PATH . '/funnels/services/SequenceCrmService.php';
+    }
     $sequences = (new \SequenceCrmService(\Database::getInstance()))->getAllSequences();
 
     ob_start();

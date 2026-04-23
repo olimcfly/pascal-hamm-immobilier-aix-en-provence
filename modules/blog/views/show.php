@@ -7,7 +7,7 @@ $id = (int)($_GET['id'] ?? 0);
 $stmt = $pdo->prepare("SELECT a.*, s.nom AS silo_nom FROM blog_articles a LEFT JOIN blog_silos s ON s.id=a.silo_id WHERE a.id=? AND a.website_id=?");
 $stmt->execute([$id, $website_id]);
 $a = $stmt->fetch();
-if (!$a) { header('Location: ../accueil.php'); exit; }
+if (!$a) { header('Location: ../index.php'); exit; }
 
 $kw_stmt = $pdo->prepare("SELECT * FROM blog_keywords WHERE article_id=? ORDER BY volume DESC");
 $kw_stmt->execute([$id]);
@@ -24,7 +24,7 @@ $persona = PersonaResolver::resolveFromPersonaId(isset($a['persona_id']) ? (stri
 <body>
 <div class="cms-wrap">
   <header class="cms-header">
-    <a href="accueil.php" class="back">← Retour</a>
+    <a href="index.php" class="back">← Retour</a>
     <h1><?= htmlspecialchars($a['titre']) ?></h1>
     <a href="?action=edit&id=<?= $id ?>" class="btn-primary">✏️ Éditer</a>
   </header>

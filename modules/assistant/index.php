@@ -3,15 +3,84 @@ $pageTitle       = 'Noah — Assistant Stratégique';
 $pageDescription = 'Votre assistant IA pour structurer votre activité immobilière';
 
 
-function renderContent()
+function renderContent(): void
 {
     ?>
-    <div class="page-header">
-        <h1><i class="fas fa-robot page-icon"></i> NOAH <span class="page-title-accent">Assistant Stratégique</span></h1>
-        <p>Analyse, recommandations et formulations prêtes à utiliser.</p>
+    <div class="hub-page">
+
+    <header class="hub-hero">
+        <div class="hub-hero-badge"><i class="fas fa-robot"></i> Intelligence Artificielle</div>
+        <h1>Noah — Assistant Stratégique</h1>
+        <p>Analyse, recommandations et formulations prêtes à utiliser pour votre activité immobilière.</p>
+    </header>
+
+    <div class="noah-info-wrap">
+        <button class="noah-info-btn" type="button" aria-label="Comment utiliser Noah">
+            <i class="fas fa-circle-info"></i> Comment utiliser Noah
+        </button>
+        <div class="noah-info-tooltip" role="tooltip">
+            <div class="noah-info-row">
+                <i class="fas fa-bolt" style="color:#f59e0b"></i>
+                <div><strong>Le constat</strong><br>Structurer son positionnement, son offre et ses argumentaires prend des heures — et souvent on repart de zéro à chaque fois.</div>
+            </div>
+            <div class="noah-info-row">
+                <i class="fas fa-check-circle" style="color:#10b981"></i>
+                <div><strong>Ce que Noah apporte</strong><br>Des formulations calibrées à votre persona, votre zone et votre objectif — en quelques secondes, prêtes à réutiliser.</div>
+            </div>
+            <div class="noah-info-row">
+                <i class="fas fa-hand-pointer" style="color:#3b82f6"></i>
+                <div><strong>Comment l'utiliser</strong><br>Cliquez sur une carte, remplissez les champs, et générez. Testez plusieurs combinaisons pour affiner votre discours.</div>
+            </div>
+        </div>
     </div>
 
     <style>
+        .noah-info-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.25rem;
+        }
+        .noah-info-btn {
+            background: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: .4rem .85rem;
+            font-size: .85rem;
+            color: #64748b;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            transition: background .15s, color .15s;
+        }
+        .noah-info-btn:hover { background: #f1f5f9; color: #334155; }
+        .noah-info-tooltip {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            z-index: 200;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.1);
+            padding: 1rem 1.1rem;
+            width: 380px;
+            max-width: 90vw;
+        }
+        .noah-info-tooltip.is-open { display: block; }
+        .noah-info-row {
+            display: flex;
+            gap: .75rem;
+            align-items: flex-start;
+            padding: .55rem 0;
+            font-size: .84rem;
+            line-height: 1.45;
+            color: #374151;
+        }
+        .noah-info-row + .noah-info-row { border-top: 1px solid #f1f5f9; }
+        .noah-info-row > i { margin-top: 2px; flex-shrink: 0; width: 16px; text-align: center; }
+
         .noah-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -147,7 +216,9 @@ function renderContent()
             ['name' => 'objectif',       'label' => 'Objectif du RDV',         'placeholder' => 'ex : signer un mandat exclusif au 1er rendez-vous'],
         ]); ?>
 
-    </div>
+    </div><!-- /.noah-grid -->
+
+    </div><!-- /.hub-page -->
 
     <script>
     // Toggle cards
@@ -230,5 +301,19 @@ function noahCard(string $tool, string $title, string $sub, string $color, strin
             <div class="noah-result"></div>
         </form>
     </div>
+    <script>
+    (function () {
+        const btn = document.querySelector('.noah-info-btn');
+        const tip = document.querySelector('.noah-info-tooltip');
+        if (!btn || !tip) return;
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            tip.classList.toggle('is-open');
+        });
+        document.addEventListener('click', function () {
+            tip.classList.remove('is-open');
+        });
+    })();
+    </script>
     <?php
 }

@@ -1,4 +1,26 @@
 <?php include __DIR__ . '/_noah_styles.php'; ?>
+<div class="hub-page">
+
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-map-marked-alt"></i> Construire — Noah IA</div>
+    <h1>Zone de Prospection</h1>
+    <p>Délimitez votre territoire de prospection en 3 niveaux stratégiques pour maximiser vos mandats.</p>
+</header>
+
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-bolt" style="color:#f59e0b"></i> Le constat</h3>
+        <p>Prospecter partout sans priorité disperse l'énergie. Un territoire mal défini = prospection inefficace.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-check-circle" style="color:#10b981"></i> Ce que ça donne</h3>
+        <p>Une stratégie territoriale en 3 cercles : cœur de zone, zone d'extension et opportunités périphériques.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--action">
+        <h3><i class="fas fa-triangle-exclamation" style="color:#ef4444"></i> À ne pas oublier</h3>
+        <p>Commencez par maîtriser un périmètre restreint avant de l'élargir — la profondeur prime sur l'étendue.</p>
+    </article>
+</div>
 
 <div style="--tool-color:#8e44ad">
 
@@ -45,5 +67,6 @@
         </form>
     </div>
 
-</div>
+</div><!-- /tool-color wrapper -->
+</div><!-- /.hub-page -->
 <script>initNoahForm('form-zone', '#8e44ad');</script>

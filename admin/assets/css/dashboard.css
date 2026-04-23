@@ -978,3 +978,64 @@ body {
     opacity: 1;
     transform: rotate(45deg);
 }
+
+/* ============================================================
+   SIDEBAR — REFONTE MENU (ajouts non destructifs)
+============================================================ */
+
+/* Réduire légèrement la densité verticale des sections */
+.nav-section-label {
+    padding: 12px 20px 4px;
+}
+
+/* Badge non-lus messagerie */
+.menu-badge {
+    background: #ef4444;
+    color: #fff;
+    border-radius: 999px;
+    font-size: .6rem;
+    padding: 1px 5px;
+    margin-left: 4px;
+    font-weight: 700;
+    line-height: 1.4;
+    vertical-align: middle;
+}
+
+/* Section Assistant IA — label distinctif */
+.nav-section-label--ai {
+    color: rgba(201,168,76,.65);
+    letter-spacing: .1em;
+}
+
+/* Item Assistant IA — highlight subtil */
+.menu-item--ai {
+    color: rgba(255,255,255,.9);
+}
+.menu-item--ai .menu-icon {
+    color: #c9a84c;
+}
+.menu-item--ai .menu-hint {
+    color: rgba(201,168,76,.55);
+}
+.menu-item--ai:hover {
+    background: rgba(201,168,76,.12);
+}
+.menu-item--ai.active {
+    background: #b8943f;
+}
+
+/* Mobile — quand le drawer est ouvert, afficher les labels */
+@media (max-width: 900px) {
+    .dashboard-container.mobile-sidebar-open .sidebar {
+        width: 260px;
+        min-width: 260px;
+    }
+    .dashboard-container.mobile-sidebar-open .menu-label,
+    .dashboard-container.mobile-sidebar-open .nav-section-label,
+    .dashboard-container.mobile-sidebar-open .brand-text,
+    .dashboard-container.mobile-sidebar-open .user-name,
+    .dashboard-container.mobile-sidebar-open .toggle-label {
+        opacity: 1;
+        width: auto;
+    }
+}

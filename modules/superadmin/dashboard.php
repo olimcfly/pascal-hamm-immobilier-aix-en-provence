@@ -15,15 +15,33 @@ try {
 // Infos superadmin connecté
 $currentUser = Auth::user();
 ?>
-<div class="page-header">
-    <h1><i class="fas fa-crown page-icon"></i> HUB <span class="page-title-accent">Superadmin</span></h1>
-    <p>Gestion des modules, des comptes et de votre profil.</p>
+<div class="hub-page">
+
+<header class="hub-hero">
+    <div class="hub-hero-badge"><i class="fas fa-crown"></i> Administration</div>
+    <h1>Superadmin</h1>
+    <p>Pilotage global des modules, des comptes utilisateurs et de votre profil.</p>
+</header>
+
+<div class="hub-narrative">
+    <article class="hub-narrative-card hub-narrative-card--explanation">
+        <h3><i class="fas fa-puzzle-piece" style="color:#3b82f6"></i> Modules</h3>
+        <p>Activez ou désactivez chaque module pour les utilisateurs et les admins depuis le tableau ci-dessous.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--resultat">
+        <h3><i class="fas fa-users" style="color:#10b981"></i> Comptes</h3>
+        <p>Gérez les comptes utilisateurs : activation, désactivation, et suivi des rôles depuis un seul endroit.</p>
+    </article>
+    <article class="hub-narrative-card hub-narrative-card--motivation">
+        <h3><i class="fas fa-shield-halved" style="color:#f59e0b"></i> Accès réservé</h3>
+        <p>Cette section est exclusivement accessible aux comptes superadmin. Chaque modification est effective immédiatement.</p>
+    </article>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start;">
 
     <!-- MODULES -->
-    <section class="card">
+    <section style="background:#fff;border:1px solid var(--hub-border,#e2e8f0);border-radius:var(--hub-radius,16px);padding:1.25rem 1.4rem;box-shadow:var(--hub-shadow-sm,0 1px 8px rgba(15,23,42,.06))">
         <h3 class="card-title" style="margin-bottom:16px;"><i class="fas fa-puzzle-piece"></i> Modules</h3>
         <table style="width:100%;border-collapse:collapse;font-size:14px;">
             <thead>
@@ -57,7 +75,7 @@ $currentUser = Auth::user();
     <div style="display:flex;flex-direction:column;gap:20px;">
 
         <!-- MON PROFIL SUPERADMIN -->
-        <section class="card">
+        <section style="background:#fff;border:1px solid var(--hub-border,#e2e8f0);border-radius:var(--hub-radius,16px);padding:1.25rem 1.4rem;box-shadow:var(--hub-shadow-sm,0 1px 8px rgba(15,23,42,.06))">
             <h3 class="card-title" style="margin-bottom:14px;"><i class="fas fa-user-shield"></i> Mon profil</h3>
             <form id="superadmin-profile-form">
                 <div style="margin-bottom:12px;">
@@ -80,7 +98,7 @@ $currentUser = Auth::user();
         </section>
 
         <!-- LISTE DES UTILISATEURS -->
-        <section class="card">
+        <section style="background:#fff;border:1px solid var(--hub-border,#e2e8f0);border-radius:var(--hub-radius,16px);padding:1.25rem 1.4rem;box-shadow:var(--hub-shadow-sm,0 1px 8px rgba(15,23,42,.06))">
             <h3 class="card-title" style="margin-bottom:14px;"><i class="fas fa-users"></i> Comptes utilisateurs</h3>
             <?php if (empty($users)): ?>
                 <p style="color:#6b7280;font-size:14px;">Aucun utilisateur.</p>
@@ -115,7 +133,8 @@ $currentUser = Auth::user();
         </section>
 
     </div>
-</div>
+</div><!-- /.grid -->
+</div><!-- /.hub-page -->
 
 <script>
 (function () {

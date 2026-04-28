@@ -155,6 +155,10 @@ try {
         }
 
         $whereStatus = $statusConditions !== [] ? 'AND (' . implode(' OR ', $statusConditions) . ')' : '';
+        $vitrineClause = '';
+        if (columnExists($pdo, 'biens', 'publier_vitrine')) {
+            $vitrineClause = ' AND (publier_vitrine IS NULL OR publier_vitrine = 1)';
+        }
 
         $stmt = $pdo->query(
             "SELECT slug,
@@ -162,7 +166,7 @@ try {
              FROM biens
              WHERE slug IS NOT NULL
                AND slug <> ''
-               {$whereStatus}"
+               {$whereStatus}{$vitrineClause}"
         );
 
         foreach (($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) as $row) {

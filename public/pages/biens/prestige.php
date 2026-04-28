@@ -4,11 +4,16 @@ $pageDescription = 'Découvrez une sélection exclusive de biens de prestige sur
 $extraCss = ['/assets/css/home.css'];
 
 require_once __DIR__ . '/../../../core/Database.php';
+require_once dirname(__DIR__, 3) . '/core/helpers/biens_vitrine.php';
 
 $pdo = Database::getInstance();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$stmt = $pdo->query("SELECT * FROM biens WHERE exclusif = 1 AND statut = 'actif' ORDER BY created_at DESC");
+$stmt = $pdo->query(
+    'SELECT * FROM biens WHERE exclusif = 1 AND statut = \'actif\' AND '
+    . biens_sql_publier_vitrine_ok('')
+    . ' ORDER BY created_at DESC'
+);
 $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

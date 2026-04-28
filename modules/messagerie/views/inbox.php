@@ -6,6 +6,10 @@
 
 $isConfigured = $imap->isConfigured();
 $advisorEmail = $imap->getAdvisorEmail();
+$imapExtOk    = ImapService::imapExtensionAvailable();
+$mSettingsUrl = function_exists('admin_url')
+    ? admin_url(['module' => 'messagerie', 'view' => 'settings'])
+    : '/admin?module=messagerie&view=settings';
 $threadId     = isset($_GET['thread_id']) ? (int)$_GET['thread_id'] : 0;
 $threads      = $repo->getThreads($userId, 80);
 $totalUnread  = $repo->getTotalUnread($userId);
@@ -103,6 +107,15 @@ if ($threadId > 0 && $isConfigured) {
 .btn-danger-sm{background:#fee2e2;color:#991b1b;border:0;}
 .btn-danger-sm:hover{background:#fecaca;}
 .msg-no-config{padding:40px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.msg-setup-main{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 24px;background:linear-gradient(180deg,#f8fafc 0%,#fff 40%);}
+.msg-setup-card{max-width:440px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:28px 26px;box-shadow:0 8px 30px rgba(15,23,42,.08);text-align:center;}
+.msg-setup-card h2{margin:0 0 10px;font-size:1.15rem;color:#0f172a;}
+.msg-setup-card p{margin:0 0 18px;font-size:.88rem;color:#64748b;line-height:1.6;}
+.msg-setup-card .msg-setup-steps{text-align:left;font-size:.8rem;color:#475569;line-height:1.65;margin:0 0 18px;padding-left:1.1rem;}
+.msg-setup-card .msg-setup-steps li{margin-bottom:6px;}
+.btn-setup-cta{display:inline-flex;align-items:center;gap:8px;background:#2563eb;color:#fff;font-weight:700;font-size:.9rem;padding:12px 22px;border-radius:10px;text-decoration:none;border:0;cursor:pointer;}
+.btn-setup-cta:hover{background:#1d4ed8;color:#fff;}
+.msg-ext-warn{background:#fef3c7;border:1px solid #fcd34d;color:#92400e;font-size:.76rem;padding:8px 12px;border-radius:8px;margin:0 16px 10px;}
 
 /* ── Modals ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
@@ -148,12 +161,18 @@ if ($threadId > 0 && $isConfigured) {
             <i class="fas fa-xmark" style="margin-left:2px;opacity:.6;"></i>
         </button>
     <?php else: ?>
-        <a href="/admin?module=messagerie&view=settings" class="msg-conn-badge disconnected">
+        <a href="<?= htmlspecialchars($mSettingsUrl, ENT_QUOTES, 'UTF-8') ?>" class="msg-conn-badge disconnected">
             <i class="fas fa-circle" style="font-size:.45rem;"></i>
             Non connecté — Configurer
         </a>
     <?php endif; ?>
 </div>
+
+<?php if (!$imapExtOk): ?>
+<div class="msg-ext-warn" role="alert">
+    <strong>Serveur :</strong> l’extension PHP <code>imap</code> n’est pas activée. La synchronisation de boîte est impossible tant que l’hébergeur ne l’active pas (souvent <code>php-imap</code> / cPanel « Select PHP Extension »).
+</div>
+<?php endif; ?>
 
 <!-- BODY -->
 <div class="msg-body">
@@ -162,7 +181,8 @@ if ($threadId > 0 && $isConfigured) {
     <div class="msg-sidebar">
         <div class="msg-sb-head">
             <button class="btn-sm btn-primary-sm" onclick="openCompose()" style="flex:1;"><i class="fas fa-pen"></i> Nouveau</button>
-            <button class="btn-sm btn-outline" id="syncBtn" onclick="syncInbox()" title="Synchroniser">
+            <button class="btn-sm btn-outline" id="syncBtn" onclick="syncInbox()" title="Synchroniser"
+                    <?= (!$imapExtOk || !$isConfigured) ? 'disabled' : '' ?>>
                 <i class="fas fa-rotate-right" id="syncIcon"></i>
             </button>
         </div>
@@ -171,9 +191,13 @@ if ($threadId > 0 && $isConfigured) {
         </div>
         <div class="msg-threads" id="threadList">
             <?php if (!$isConfigured): ?>
-                <div style="padding:20px;text-align:center;color:#94a3b8;font-size:.8rem;">
-                    <i class="fas fa-plug" style="display:block;font-size:1.5rem;margin-bottom:8px;opacity:.4;"></i>
-                    Configurez votre compte email pour voir vos messages.
+                <div style="padding:18px 14px;text-align:center;">
+                    <p style="margin:0 0 12px;font-size:.8rem;color:#64748b;line-height:1.5;">
+                        Connectez une boîte <strong>IMAP</strong> pour charger les conversations.
+                    </p>
+                    <a href="<?= htmlspecialchars($mSettingsUrl, ENT_QUOTES, 'UTF-8') ?>" class="btn-setup-cta" style="width:100%;justify-content:center;box-sizing:border-box;">
+                        <i class="fas fa-gear"></i> Connexion &amp; paramètres
+                    </a>
                 </div>
             <?php elseif (empty($threads)): ?>
                 <div style="padding:20px;text-align:center;color:#94a3b8;font-size:.8rem;">
@@ -212,7 +236,32 @@ if ($threadId > 0 && $isConfigured) {
 
     <!-- ZONE PRINCIPALE -->
     <div class="msg-main">
-        <?php if ($activeThread):
+        <?php if (!$imapExtOk): ?>
+            <div class="msg-setup-main">
+                <div class="msg-setup-card">
+                    <h2>Extension IMAP manquante</h2>
+                    <p>Demandez à votre hébergeur d’activer le module PHP <strong>imap</strong> pour ce site. Sans lui, aucune lecture de boîte mail n’est possible depuis l’admin.</p>
+                    <p style="margin-bottom:0;font-size:.8rem;">Ensuite : onglet <strong>Connexion</strong>, renseignez hôte (ex. <code>imap.gmail.com</code> ou <code>mail.votredomaine.fr</code>), email, mot de passe, puis <strong>Tester</strong> et <strong>Enregistrer</strong>.</p>
+                </div>
+            </div>
+        <?php elseif (!$isConfigured): ?>
+            <div class="msg-setup-main">
+                <div class="msg-setup-card">
+                    <h2>Relier votre boîte mail</h2>
+                    <p>L’admin lit votre <strong>boîte de réception</strong> en IMAP et envoie via le SMTP déjà configuré dans les paramètres du site.</p>
+                    <ol class="msg-setup-steps">
+                        <li>Ouvrez l’onglet <strong>Connexion</strong> (ou le bouton ci-dessous).</li>
+                        <li>Renseignez l’adresse, le mot de passe, l’hôte IMAP et le port (souvent <strong>993</strong> en SSL).</li>
+                        <li>Cliquez sur <strong>Tester la connexion</strong>, puis <strong>Enregistrer</strong>.</li>
+                        <li>Revenez ici et cliquez sur <i class="fas fa-rotate-right"></i> pour synchroniser.</li>
+                    </ol>
+                    <p style="font-size:.78rem;color:#94a3b8;margin:0 0 16px;">Google / Gmail : utilisez un <strong>mot de passe d’application</strong> si la validation en deux étapes est activée.</p>
+                    <a href="<?= htmlspecialchars($mSettingsUrl, ENT_QUOTES, 'UTF-8') ?>" class="btn-setup-cta">
+                        <i class="fas fa-plug"></i> Configurer IMAP maintenant
+                    </a>
+                </div>
+            </div>
+        <?php elseif ($activeThread):
             $contactUrl = '';
             if (!empty($activeThread['contact_id'])) {
                 $contactUrl = match($activeThread['contact_type'] ?? '') {
@@ -282,7 +331,7 @@ if ($threadId > 0 && $isConfigured) {
         <?php else: ?>
             <div class="msg-empty">
                 <i class="fas fa-envelope-open"></i>
-                <span style="font-size:.85rem;">Sélectionnez une conversation</span>
+                <span style="font-size:.85rem;">Sélectionnez une conversation dans la liste</span>
             </div>
         <?php endif; ?>
     </div>

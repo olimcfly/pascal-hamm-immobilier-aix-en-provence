@@ -37,14 +37,20 @@ final class SequenceController
             $this->sequenceRepository->togglePause($id, $userId);
         }
 
+        $redirectSeq = (int) ($_POST['id'] ?? 0);
+
         if ($action === 'duplicate-sequence') {
             $id = (int) ($_POST['id'] ?? 0);
             $newId = $this->sequenceRepository->duplicate($id, $userId);
             if ($newId > 0) {
                 $this->postRepository->duplicateForSequence($id, $newId, $userId);
+                $redirectSeq = $newId;
             }
         }
 
-        redirect('/admin?module=social&action=sequences');
+        $url = function_exists('admin_url')
+            ? admin_url(['module' => 'social', 'action' => 'sequences'] + ($redirectSeq > 0 ? ['seq' => $redirectSeq] : []))
+            : ('/admin/?module=social&action=sequences' . ($redirectSeq > 0 ? '&seq=' . $redirectSeq : ''));
+        redirect($url);
     }
 }

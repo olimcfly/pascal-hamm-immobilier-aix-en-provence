@@ -5,7 +5,59 @@ declare(strict_types=1);
 $pageTitle = 'Positionnement';
 $pageDescription = 'Comprendre pourquoi vous n\'attirez pas de vendeurs';
 
+/**
+ * Secteurs / communes issus des réglages Zone (onboarding admin courant).
+ *
+ * @return list<string>
+ */
+function positionnement_secteurs_from_settings(): array
+{
+    if (!function_exists('setting')) {
+        return [];
+    }
+
+    $uid = 0;
+    $out = [];
+
+    $ville = trim((string) setting('zone_ville', '', $uid));
+    if ($ville !== '') {
+        $out[] = $ville;
+    }
+
+    $comm = trim((string) setting('zone_communes', '', $uid));
+    if ($comm !== '') {
+        foreach (preg_split('/[,;\n\r]+/u', $comm) as $part) {
+            $part = trim($part);
+            if ($part !== '') {
+                $out[] = $part;
+            }
+        }
+    }
+
+    $nb = setting('zone_neighborhoods', [], $uid);
+    if (is_string($nb)) {
+        $decoded = json_decode($nb, true);
+        $nb = is_array($decoded) ? $decoded : [];
+    }
+    foreach ((array) $nb as $item) {
+        if (is_string($item)) {
+            $t = trim($item);
+            if ($t !== '') {
+                $out[] = $t;
+            }
+        } elseif (is_array($item)) {
+            $t = trim((string) ($item['name'] ?? $item['label'] ?? $item['ville'] ?? ''));
+            if ($t !== '') {
+                $out[] = $t;
+            }
+        }
+    }
+
+    return array_values(array_unique($out));
+}
+
 function renderContent(): void {
+    $secteursZone = positionnement_secteurs_from_settings();
     ?>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -273,32 +325,9 @@ function renderContent(): void {
             background: #eef2f7;
         }
 
-        .positioning-level-meter {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-            margin-bottom: 32px;
-        }
-
-        .positioning-level {
-            flex: 1;
-            height: 8px;
-            border-radius: 4px;
-            background: #e2e8f0;
+        select.positioning-input {
             cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .positioning-level.active {
-            background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
-        }
-
-        .positioning-level-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 8px;
+            appearance: auto;
         }
 
         @media (max-width: 600px) {
@@ -411,17 +440,23 @@ function renderContent(): void {
             <div class="positioning-step" data-step="2">
                 <div class="positioning-step-number">Étape 2 sur 6</div>
                 <div class="positioning-question">Quel est le niveau d'urgence / de confiance du/des <span class="audience-word">vendeurs</span> ?</div>
-                <div class="positioning-micro-text">De "pas du tout prêt" à "décidé et confiant".</div>
-                <div class="positioning-level-meter" id="levelMeter">
-                    <div class="positioning-level" data-level="1" title="Très peu confiant"></div>
-                    <div class="positioning-level" data-level="2" title="Peu confiant"></div>
-                    <div class="positioning-level" data-level="3" title="Neutre"></div>
-                    <div class="positioning-level" data-level="4" title="Confiant"></div>
-                    <div class="positioning-level" data-level="5" title="Très confiant"></div>
-                </div>
-                <div class="positioning-level-labels">
-                    <span>Très peu confiant</span>
-                    <span>Très confiant</span>
+                <div class="positioning-micro-text">Choisissez la formulation qui colle le mieux.</div>
+                <div class="positioning-options">
+                    <button type="button" class="positioning-option" data-field="confiance" data-value="1">
+                        Très peu confiant · hésitant(e), pas prêt(e) à agir
+                    </button>
+                    <button type="button" class="positioning-option" data-field="confiance" data-value="2">
+                        Peu confiant · se renseigne sans se décider
+                    </button>
+                    <button type="button" class="positioning-option" data-field="confiance" data-value="3">
+                        Neutre · curieux mais sans urgence forte
+                    </button>
+                    <button type="button" class="positioning-option" data-field="confiance" data-value="4">
+                        Confiant · un projet sérieux mais encore des questions
+                    </button>
+                    <button type="button" class="positioning-option" data-field="confiance" data-value="5">
+                        Très confiant · décidé(e) et prêt(e) à passer à l’action
+                    </button>
                 </div>
             </div>
 
@@ -448,9 +483,31 @@ function renderContent(): void {
             <!-- ÉTAPE 4: PENSÉE -->
             <div class="positioning-step" data-step="4">
                 <div class="positioning-step-number">Étape 4 sur 6</div>
-                <div class="positioning-question">Qu'est-ce que se dit en ce moment le(s) <span class="audience-word">vendeur(s)</span> ?</div>
-                <div class="positioning-micro-text">Écrivez exactement sa préoccupation principale.</div>
-                <input type="text" class="positioning-input" id="pensee" placeholder="Exemple: Le marché est compliqué en ce moment" required>
+                <div class="positioning-question">Qu’est-ce que se dit en ce moment le(s) <span class="audience-word">vendeur(s)</span> ?</div>
+                <div class="positioning-micro-text">Choisissez la pensée dominante ou précisez en « Autre ».</div>
+                <div class="positioning-options" id="penseeOptions">
+                    <button type="button" class="positioning-option" data-field="penseeKey" data-value="marche_lent">
+                        Le marché est trop lent ou incertain pour vendre comme je le voudrais
+                    </button>
+                    <button type="button" class="positioning-option" data-field="penseeKey" data-value="prix_inconnu">
+                        Je ne sais pas quel prix est réaliste pour bien vendre
+                    </button>
+                    <button type="button" class="positioning-option" data-field="penseeKey" data-value="peu_de_signaux">
+                        Peu de visites, peu de réponses — je tourne un peu dans le vide
+                    </button>
+                    <button type="button" class="positioning-option" data-field="penseeKey" data-value="pas_le_temps">
+                        Je manque de temps pour suivre tout ça correctement
+                    </button>
+                    <button type="button" class="positioning-option" data-field="penseeKey" data-value="pas_confiance_agence">
+                        Je me méfie / je suis mécontent du suivi jusqu’ici
+                    </button>
+                    <button type="button" class="positioning-option" data-field="penseeKey" data-value="__autre__">
+                        Autre (préciser ci-dessous)
+                    </button>
+                </div>
+                <div id="pensee_autre_wrap" style="display: none;">
+                    <textarea class="positioning-input" id="pensee_autre" rows="3" placeholder="Formulez précisément sa préoccupation (comme elle se dit en elle-même)"></textarea>
+                </div>
             </div>
 
             <!-- ÉTAPE 5: OBJECTIF -->
@@ -477,7 +534,26 @@ function renderContent(): void {
             <div class="positioning-step" data-step="6">
                 <div class="positioning-step-number">Étape 6 sur 6</div>
                 <div class="positioning-question">Sur quelle zone géographique ?</div>
-                <input type="text" class="positioning-input" id="zone" placeholder="Votre ville ou secteur" required>
+                <?php if (\count($secteursZone) > 0): ?>
+                    <div class="positioning-micro-text">
+                        Liste issue de vos réglages <strong>Zone</strong> (ville, communes, secteurs d’accueil).
+                    </div>
+                    <select class="positioning-input" id="zone_select" aria-label="Zone ou secteur">
+                        <option value="">— Choisissez un secteur —</option>
+                        <?php foreach ($secteursZone as $zs): ?>
+                            <option value="<?= htmlspecialchars((string) $zs, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $zs, ENT_QUOTES, 'UTF-8') ?></option>
+                        <?php endforeach; ?>
+                        <option value="__autre__">Autre (préciser)</option>
+                    </select>
+                    <div id="zone_autre_wrap" style="display: none;">
+                        <textarea class="positioning-input" id="zone_autre_input" rows="2" placeholder="Nom de la commune ou du secteur"></textarea>
+                    </div>
+                <?php else: ?>
+                    <div class="positioning-micro-text">
+                        Aucune commune renseignée dans vos réglages <strong>Zone</strong>. Indiquez manuellement un secteur, ou complétez vos paramètres Zone pour retrouver vos secteurs à l’avenir.
+                    </div>
+                    <input type="text" class="positioning-input" id="zone_free" placeholder="Ville ou secteur" autocomplete="street-address">
+                <?php endif; ?>
             </div>
 
             <!-- RÉSULTAT -->
@@ -528,7 +604,39 @@ function renderContent(): void {
         const progressBar = document.getElementById('progressBar');
 
         let currentStep = 1;
-        const data = { profile: 'vendeur' };
+        const data = { profile: 'vendeur', penseeKey: '' };
+
+        const penseeLabels = {
+            marche_lent: 'Le marché est trop lent ou incertain pour vendre comme je le voudrais',
+            prix_inconnu: 'Je ne sais pas quel prix est réaliste pour bien vendre',
+            peu_de_signaux: 'Peu de visites, peu de réponses — je tourne un peu dans le vide',
+            pas_le_temps: 'Je manque de temps pour suivre tout ça correctement',
+            pas_confiance_agence: 'Je me méfie / je suis mécontent du suivi jusqu’ici',
+        };
+
+        function getPenseeText() {
+            const pk = data.penseeKey;
+            if (!pk) return '';
+            if (pk === '__autre__') {
+                const ta = document.getElementById('pensee_autre');
+                return ta ? ta.value.trim() : '';
+            }
+            return penseeLabels[pk] || '';
+        }
+
+        function getZoneText() {
+            const freeEl = document.getElementById('zone_free');
+            const sel = document.getElementById('zone_select');
+            if (freeEl) {
+                return freeEl.value.trim();
+            }
+            if (!sel || sel.value === '') return '';
+            if (sel.value === '__autre__') {
+                const zAutre = document.getElementById('zone_autre_input');
+                return zAutre ? zAutre.value.trim() : '';
+            }
+            return sel.value.trim();
+        }
 
         const personaLabels = {
             'jeune_couple': 'Couple jeune (primo-accédants)',
@@ -600,22 +708,41 @@ function renderContent(): void {
         }
 
         function canProceed() {
-            if (currentStep === 1 && (!data.profile || !data.persona)) return false;
-            if (currentStep === 4 && !document.getElementById('pensee').value.trim()) return false;
-            if (currentStep === 6 && !document.getElementById('zone').value.trim()) return false;
+            const stepEl = document.querySelector('[data-step="' + currentStep + '"]');
+            const selectedOption = stepEl ? stepEl.querySelector('.positioning-option.selected') : null;
 
-            const selectedOption = document.querySelector(`[data-step="${currentStep}"] .positioning-option.selected`);
-            const selectedLevel = document.querySelector('.positioning-level.active');
-
-            if (currentStep === 1 && (!data.profile || !data.persona)) return false;
-            if (currentStep === 2 && !selectedLevel) return false;
-            if (currentStep === 3 && !selectedOption) return false;
-            if (currentStep === 5 && !selectedOption) return false;
+            if (currentStep === 1) {
+                return !!(data.profile && data.persona);
+            }
+            if (currentStep === 2 && !selectedOption) {
+                return false;
+            }
+            if (currentStep === 3 && !selectedOption) {
+                return false;
+            }
+            if (currentStep === 4) {
+                if (!data.penseeKey) return false;
+                if (data.penseeKey === '__autre__') {
+                    const ta = document.getElementById('pensee_autre');
+                    return !!(ta && ta.value.trim().length > 0);
+                }
+                return true;
+            }
+            if (currentStep === 5 && !selectedOption) {
+                return false;
+            }
+            if (currentStep === 6) {
+                const zt = getZoneText();
+                if (!zt) return false;
+            }
 
             return true;
         }
 
         function generateResult() {
+            data.pensee = getPenseeText();
+            data.zone = getZoneText();
+
             const problemeLabels = {
                 'pas_visites': 'pas de visites',
                 'prix_complique': 'difficultés de prix',
@@ -678,31 +805,54 @@ function renderContent(): void {
                     return;
                 }
 
+                if (field === 'penseeKey') {
+                    document.querySelectorAll('[data-field="penseeKey"]').forEach(o => {
+                        o.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                    data.penseeKey = value;
+                    const wrap = document.getElementById('pensee_autre_wrap');
+                    if (wrap) {
+                        wrap.style.display = value === '__autre__' ? 'block' : 'none';
+                        if (value === '__autre__') {
+                            const ta = document.getElementById('pensee_autre');
+                            if (ta) {
+                                setTimeout(() => ta.focus(), 0);
+                            }
+                        }
+                    }
+                    return;
+                }
+
                 document.querySelectorAll(`[data-field="${field}"]`).forEach(o => {
                     o.classList.remove('selected');
                 });
                 option.classList.add('selected');
-                data[field] = value;
-            });
-        });
-
-        // Clic sur les niveaux de confiance
-        document.querySelectorAll('.positioning-level').forEach(level => {
-            level.addEventListener('click', (e) => {
-                e.preventDefault();
-                const levelValue = level.dataset.level;
-
-                document.querySelectorAll('.positioning-level').forEach(l => {
-                    l.classList.remove('active');
-                });
-
-                for (let i = 1; i <= levelValue; i++) {
-                    document.querySelector(`.positioning-level[data-level="${i}"]`).classList.add('active');
+                if (field === 'confiance' && value !== undefined) {
+                    data.confiance = parseInt(value, 10);
+                } else if (field) {
+                    data[field] = value;
                 }
-
-                data.confiance = parseInt(levelValue);
             });
         });
+
+        const zoneSel = document.getElementById('zone_select');
+        if (zoneSel) {
+            zoneSel.addEventListener('change', () => {
+                const w = document.getElementById('zone_autre_wrap');
+                const aut = document.getElementById('zone_autre_input');
+                if (zoneSel.value === '__autre__') {
+                    if (w) {
+                        w.style.display = '';
+                    }
+                    if (aut) {
+                        aut.focus();
+                    }
+                } else if (w) {
+                    w.style.display = 'none';
+                }
+            });
+        }
 
         // Bouton Suivant
         nextBtn.addEventListener('click', (e) => {
@@ -714,8 +864,6 @@ function renderContent(): void {
             }
 
             if (currentStep === 6) {
-                data.pensee = document.getElementById('pensee').value;
-                data.zone = document.getElementById('zone').value;
                 generateResult();
                 steps.forEach(s => s.classList.remove('active'));
                 resultSection.classList.add('active');
@@ -724,7 +872,6 @@ function renderContent(): void {
                 updateProgress();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                if (currentStep === 4) data.pensee = document.getElementById('pensee').value;
                 currentStep++;
                 showStep(currentStep);
             }

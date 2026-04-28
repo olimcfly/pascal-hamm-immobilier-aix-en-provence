@@ -8,7 +8,10 @@ require_once __DIR__ . '/services/ImapService.php';
 
 $pdo    = db();
 $user   = Auth::user();
-$userId = (int)($user['id'] ?? 1);
+$userId = (int) (($user['id'] ?? null) ?: ($_SESSION['user_id'] ?? 0));
+if ($userId <= 0) {
+    $userId = 1;
+}
 
 $repo     = new MessageRepository($pdo);
 $tplRepo  = new TemplateRepository($pdo);
@@ -31,8 +34,12 @@ if (isset($_GET['action'])) {
 
     // ── Sync IMAP ────────────────────────────────────────────────
     if ($action === 'sync') {
+        if (!ImapService::imapExtensionAvailable()) {
+            echo json_encode(['ok' => false, 'error' => 'Extension PHP imap absente sur le serveur.']);
+            exit;
+        }
         if (!$imap->isConfigured()) {
-            echo json_encode(['ok' => false, 'error' => 'IMAP non configuré.']);
+            echo json_encode(['ok' => false, 'error' => 'IMAP non configuré (hôte, identifiant et mot de passe requis).']);
             exit;
         }
         try {
@@ -68,6 +75,10 @@ if (isset($_GET['action'])) {
 
     // ── Test connexion IMAP ──────────────────────────────────────
     if ($action === 'test_imap') {
+        if (!ImapService::imapExtensionAvailable()) {
+            echo json_encode(['ok' => false, 'error' => 'Extension PHP imap absente sur le serveur.']);
+            exit;
+        }
         try {
             $count = $imap->testConnection();
             echo json_encode(['ok' => true, 'message' => "Connexion réussie — {$count} message(s) dans la boîte."]);

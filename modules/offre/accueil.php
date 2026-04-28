@@ -480,6 +480,7 @@ function renderContent(): void {
                 // Sélectionner celui-ci
                 option.classList.add('selected');
                 formData[field] = value;
+                updateNextButton();
             });
         });
 
@@ -496,12 +497,21 @@ function renderContent(): void {
             document.querySelector(`.offre-step[data-step="${step}"]`).classList.add('active');
 
             prevBtn.style.display = step === 1 ? 'none' : 'flex';
-            nextBtn.style.display = step === totalSteps ? 'none' : 'flex';
+            nextBtn.style.display = 'flex';
+
+            nextBtn.innerHTML = step === totalSteps
+                ? '<i class="fas fa-arrow-right"></i> Voir le résultat'
+                : 'Suivant <i class="fas fa-chevron-right"></i>';
 
             updateProgress();
+            updateNextButton();
         }
 
         nextBtn.addEventListener('click', () => {
+            if (!isStepValid()) {
+                alert('Choisissez une réponse avant de continuer.');
+                return;
+            }
             if (currentStep < totalSteps) {
                 currentStep++;
                 showStep(currentStep);
@@ -577,11 +587,8 @@ function renderContent(): void {
             nextBtn.disabled = !isStepValid();
         }
 
-        form.addEventListener('change', updateNextButton);
-
-        // Au chargement, vérifier et mettre à jour
-        updateProgress();
-        updateNextButton();
+        // Harmonise boutons / progress avec l'étape visible (Étape 1 active dans le HTML)
+        showStep(1);
     </script>
     <?php
 }

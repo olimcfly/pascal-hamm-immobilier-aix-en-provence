@@ -11,6 +11,23 @@ final class SocialController
     ) {
     }
 
+    public function sequencesList(): void
+    {
+        $userId = socialUserId();
+        $filters = [
+            'persona' => (string) ($_GET['persona'] ?? 'all'),
+            'status'  => (string) ($_GET['status']  ?? 'all'),
+        ];
+
+        $sequences      = $this->sequenceRepository->findAllByUser($userId, $filters);
+        $postBySequence = $this->postRepository->groupedBySequence($userId);
+
+        $GLOBALS['social_use_commencer_nav'] = true;
+
+        include __DIR__ . '/../views/layout/_header.php';
+        include __DIR__ . '/../views/sequences/list.php';
+    }
+
     public function sequences(): void
     {
         $userId  = socialUserId();
@@ -21,6 +38,27 @@ final class SocialController
 
         $sequences      = $this->sequenceRepository->findAllByUser($userId, $filters);
         $postBySequence = $this->postRepository->groupedBySequence($userId);
+
+        $selectedSeqId = (int) ($_GET['seq'] ?? 0);
+        $sequenceIds   = array_map(static fn (array $s): int => (int) ($s['id'] ?? 0), $sequences);
+        if ($selectedSeqId > 0 && ! in_array($selectedSeqId, $sequenceIds, true)) {
+            $selectedSeqId = 0;
+        }
+        if ($selectedSeqId === 0 && $sequences !== []) {
+            $selectedSeqId = (int) ($sequences[0]['id'] ?? 0);
+        }
+
+        $selectedSequence = null;
+        foreach ($sequences as $s) {
+            if ((int) ($s['id'] ?? 0) === $selectedSeqId) {
+                $selectedSequence = $s;
+                break;
+            }
+        }
+
+        $selectedPosts = $postBySequence[$selectedSeqId] ?? [];
+
+        $GLOBALS['social_use_commencer_nav'] = true;
 
         include __DIR__ . '/../views/layout/_header.php';
         include __DIR__ . '/../views/sequences/index.php';
@@ -44,18 +82,21 @@ final class SocialController
         }
         krsort($postsByDate);
 
+        $GLOBALS['social_use_commencer_nav'] = true;
+
         include __DIR__ . '/../views/layout/_header.php';
         include __DIR__ . '/../views/journal/index.php';
     }
 
     public function postDetail(int $postId): void
     {
-        $userId   = socialUserId();
-        $post     = $this->postRepository->findById($postId, $userId);
-        $strategy = $post !== null ? $this->strategyService->buildFromPost($post) : null;
+        $userId = socialUserId();
+        $post   = $this->postRepository->findById($postId, $userId);
+
+        $GLOBALS['social_use_commencer_nav'] = true;
 
         include __DIR__ . '/../views/layout/_header.php';
-        echo '<div>';
+        echo '<div class="social-post-shell">';
         include __DIR__ . '/../views/post/detail.php';
         echo '</div></div>';
     }
@@ -66,8 +107,10 @@ final class SocialController
         $post      = $postId > 0 ? $this->postRepository->findById($postId, $userId) : null;
         $sequences = $this->sequenceRepository->findAllByUser($userId, ['persona' => 'all', 'status' => 'all']);
 
+        $GLOBALS['social_use_commencer_nav'] = true;
+
         include __DIR__ . '/../views/layout/_header.php';
-        echo '<div>';
+        echo '<div class="social-post-shell">';
         include __DIR__ . '/../views/post/form.php';
         echo '</div></div>';
     }

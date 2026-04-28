@@ -4,6 +4,7 @@ $metaDesc = 'Découvrez notre sélection exclusive de biens immobiliers à Aix-e
 $extraCss = ['/assets/css/style.css', '/assets/css/biens.css'];
 
 require_once __DIR__ . '/../../../core/Database.php';
+require_once dirname(__DIR__, 3) . '/core/helpers/biens_vitrine.php';
 
 try {
     $db = Database::getInstance();
@@ -37,7 +38,7 @@ if (preg_match('/^\d+\-\d+$/', $searchBudget) === 1) {
 
 $biens = [];
 try {
-    $where  = ["b.statut <> 'archive'"];
+    $where  = ["b.statut <> 'archive'", biens_sql_publier_vitrine_ok('b')];
     $params = [];
 
     if ($searchQuery !== '') {

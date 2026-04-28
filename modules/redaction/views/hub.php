@@ -3,6 +3,8 @@
 /** @var array $pubCounts par réseau */
 /** @var int   $campaignsCount */
 /** @var array $recentArticles */
+/** @var array<int,int> $socialCampaignSeqByArticle */
+$socialCampaignSeqByArticle = $socialCampaignSeqByArticle ?? [];
 ?>
 <style>
 .rd { --rd-navy:#1a3c5e; --rd-gold:#c9a84c; --rd-bg:#f0f4f8; --rd-card:#fff;
@@ -72,6 +74,25 @@
 .rd-badge.publié    { background:#d1fae5; color:#065f46; }
 .rd-badge.archivé   { background:#f1f5f9; color:#64748b; }
 .rd-badge.pilier    { background:#ede9fe; color:#5b21b6; }
+
+/* Voyant campagne social sur la liste */
+.rd-social-led {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  margin-left:8px;
+  vertical-align:middle;
+  background:linear-gradient(145deg,#22c55e,#15803d);
+  color:#fff;
+  font-size:10px;
+  text-decoration:none;
+  box-shadow:0 0 0 1px #fff, 0 2px 8px rgba(22,163,74,.35);
+}
+.rd-social-led:hover { color:#fff; transform:scale(1.06); }
+.rd-title-cell { display:flex; align-items:center; flex-wrap:wrap; gap:4px; }
 </style>
 
 <div class="rd">
@@ -176,7 +197,20 @@
         <tbody>
           <?php foreach ($recentArticles as $a): ?>
           <tr>
-            <td><?= htmlspecialchars($a['titre']) ?></td>
+            <td>
+              <span class="rd-title-cell">
+                <?= htmlspecialchars($a['titre']) ?>
+                <?php
+                $seqSocial = (int) ($socialCampaignSeqByArticle[(int) $a['id']] ?? 0);
+                if ($seqSocial > 0):
+                    ?>
+                <a href="/admin?module=social&action=sequences&seq=<?= $seqSocial ?>"
+                   class="rd-social-led"
+                   title="Campagne social créée"
+                   aria-label="Campagne social créée"><i class="fas fa-bullhorn"></i></a>
+                <?php endif; ?>
+              </span>
+            </td>
             <td>
               <span class="rd-badge <?= $a['type'] === 'pilier' ? 'pilier' : 'brouillon' ?>">
                 <?= $a['type'] === 'pilier' ? 'Pilier' : 'Satellite' ?>

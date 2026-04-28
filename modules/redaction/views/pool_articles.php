@@ -1,6 +1,8 @@
 <?php
 /** @var array $articles */
 /** @var array $counts */
+/** @var array<int,int> $socialCampaignSeqByArticle article_id => séquence social */
+$socialCampaignSeqByArticle = $socialCampaignSeqByArticle ?? [];
 $filterStatut = $_GET['statut'] ?? '';
 $filterType   = $_GET['type']   ?? '';
 $filterQ      = $_GET['q']      ?? '';
@@ -57,6 +59,42 @@ $filterQ      = $_GET['q']      ?? '';
                       transition:.15s; }
 .pa-card-actions a:hover { background:var(--pa-navy); color:#fff; border-color:var(--pa-navy); }
 
+/* Voyant campagne social (séquence liée à l’article) */
+.pa-card-title-row {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:8px;
+}
+.pa-card-title-text {
+  flex:1;
+  min-width:0;
+  font-size:.95rem;
+  font-weight:700;
+  line-height:1.3;
+}
+.pa-social-led {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  flex-shrink:0;
+  margin-top:1px;
+  background:linear-gradient(145deg,#22c55e,#15803d);
+  color:#fff;
+  font-size:11px;
+  text-decoration:none;
+  box-shadow:0 0 0 2px #fff, 0 2px 10px rgba(22,163,74,.4);
+  transition:transform .15s, box-shadow .15s;
+}
+.pa-social-led:hover {
+  transform:scale(1.08);
+  box-shadow:0 0 0 2px #fff, 0 4px 14px rgba(22,163,74,.55);
+  color:#fff;
+}
+
 .pa-empty { text-align:center; padding:60px 20px; color:#94a3b8; }
 .pa-empty i { font-size:3rem; margin-bottom:12px; display:block; }
 </style>
@@ -105,7 +143,20 @@ $filterQ      = $_GET['q']      ?? '';
   <div class="pa-grid">
     <?php foreach ($articles as $a): ?>
     <div class="pa-card <?= $a['type'] === 'pilier' ? 'pilier' : htmlspecialchars($a['statut']) ?>">
-      <div class="pa-card-title"><?= htmlspecialchars($a['titre']) ?></div>
+      <div class="pa-card-title-row">
+        <div class="pa-card-title-text"><?= htmlspecialchars($a['titre']) ?></div>
+        <?php
+        $seqSocial = (int) ($socialCampaignSeqByArticle[(int) $a['id']] ?? 0);
+        if ($seqSocial > 0):
+            ?>
+        <a href="/admin?module=social&action=sequences&seq=<?= $seqSocial ?>"
+           class="pa-social-led"
+           title="Campagne social créée — ouvrir la séquence"
+           aria-label="Campagne social créée">
+          <i class="fas fa-bullhorn" aria-hidden="true"></i>
+        </a>
+        <?php endif; ?>
+      </div>
       <div class="pa-card-meta">
         <span class="pa-badge <?= $a['type'] === 'pilier' ? 'pilier' : 'satellite' ?>">
           <?= $a['type'] === 'pilier' ? 'Pilier' : 'Satellite' ?>

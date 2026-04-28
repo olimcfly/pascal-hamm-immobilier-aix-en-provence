@@ -47,6 +47,85 @@ function rdFetchPersonas(PDO $pdo): array
     }
 }
 
+function rdTableHasColumn(PDO $pdo, string $table, string $column): bool
+{
+    try {
+        $dbStmt = $pdo->query('SELECT DATABASE()');
+        $db = $dbStmt ? (string) $dbStmt->fetchColumn() : '';
+        if ($db === '') {
+            return false;
+        }
+        $st = $pdo->prepare(
+            'SELECT 1 FROM information_schema.COLUMNS
+             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ? LIMIT 1'
+        );
+        $st->execute([$db, $table, $column]);
+
+        return (bool) $st->fetchColumn();
+    } catch (Throwable) {
+        return false;
+    }
+}
+
+/**
+ * Ancienne base : social_posts peut exister sans user_id / reseaux / sequence_id (CREATE IF NOT EXISTS ne migre pas).
+ * On ajoute les colonnes attendues par les séquences SEO → social.
+ */
+function rdMigrateSocialPostsForSequences(PDO $pdo): void
+{
+    if (!rdTableHasColumn($pdo, 'social_posts', 'id')) {
+        return;
+    }
+
+    $tryAlter = static function (PDO $pdo, string $sql): void {
+        try {
+            $pdo->exec($sql);
+        } catch (Throwable) {
+        }
+    };
+
+    if (!rdTableHasColumn($pdo, 'social_posts', 'user_id')) {
+        $tryAlter($pdo, 'ALTER TABLE social_posts ADD COLUMN user_id INT NOT NULL DEFAULT 1');
+    }
+    if (!rdTableHasColumn($pdo, 'social_posts', 'sequence_id')) {
+        $tryAlter($pdo, 'ALTER TABLE social_posts ADD COLUMN sequence_id INT NULL');
+    }
+    if (!rdTableHasColumn($pdo, 'social_posts', 'titre')) {
+        $tryAlter($pdo, 'ALTER TABLE social_posts ADD COLUMN titre VARCHAR(220) NULL');
+    }
+    if (!rdTableHasColumn($pdo, 'social_posts', 'planifie_at')) {
+        $tryAlter($pdo, 'ALTER TABLE social_posts ADD COLUMN planifie_at DATETIME NULL');
+    }
+    if (!rdTableHasColumn($pdo, 'social_posts', 'updated_at')) {
+        $tryAlter($pdo, 'ALTER TABLE social_posts ADD COLUMN updated_at DATETIME NULL DEFAULT NULL');
+    }
+
+    if (!rdTableHasColumn($pdo, 'social_posts', 'reseaux')) {
+        $tryAlter($pdo, 'ALTER TABLE social_posts ADD COLUMN reseaux JSON NULL');
+        try {
+            if (str_contains(strtolower($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)), 'mysql')) {
+                $pdo->exec('UPDATE social_posts SET reseaux = CAST(\'[]\' AS JSON) WHERE reseaux IS NULL');
+            } else {
+                $pdo->exec("UPDATE social_posts SET reseaux = '[]' WHERE reseaux IS NULL");
+            }
+        } catch (Throwable) {
+            try {
+                $pdo->exec("UPDATE social_posts SET reseaux = '[]' WHERE reseaux IS NULL");
+            } catch (Throwable) {
+            }
+        }
+        $tryAlter($pdo, 'ALTER TABLE social_posts MODIFY COLUMN reseaux JSON NOT NULL');
+    }
+
+    // Statut : les séquences insèrent « brouillon » (ignore si déjà compatible)
+    if (rdTableHasColumn($pdo, 'social_posts', 'statut')) {
+        $tryAlter(
+            $pdo,
+            "ALTER TABLE social_posts MODIFY COLUMN statut ENUM('brouillon','planifie','publie','erreur','archive') NOT NULL DEFAULT 'brouillon'"
+        );
+    }
+}
+
 function rdEnsureSocialSchema(PDO $pdo): void
 {
     static $done = false;
@@ -70,11 +149,51 @@ function rdEnsureSocialSchema(PDO $pdo): void
         }
     }
 
+    rdMigrateSocialPostsForSequences($pdo);
+
     try {
         $pdo->exec("ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS niveau ENUM('n1','n2','n3','n4','n5') DEFAULT NULL AFTER statut");
-        $pdo->exec("ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS ordre_sequence SMALLINT UNSIGNED DEFAULT NULL AFTER niveau");
+        $pdo->exec('ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS ordre_sequence SMALLINT UNSIGNED DEFAULT NULL AFTER niveau');
     } catch (Throwable) {
     }
+
+    // MySQL pur (sans IF NOT EXISTS) : ajout niveau / ordre si encore absents
+    if (rdTableHasColumn($pdo, 'social_posts', 'statut') && !rdTableHasColumn($pdo, 'social_posts', 'niveau')) {
+        try {
+            $pdo->exec("ALTER TABLE social_posts ADD COLUMN niveau ENUM('n1','n2','n3','n4','n5') DEFAULT NULL AFTER statut");
+        } catch (Throwable) {
+        }
+    }
+    if (rdTableHasColumn($pdo, 'social_posts', 'niveau') && !rdTableHasColumn($pdo, 'social_posts', 'ordre_sequence')) {
+        try {
+            $pdo->exec('ALTER TABLE social_posts ADD COLUMN ordre_sequence SMALLINT UNSIGNED DEFAULT NULL AFTER niveau');
+        } catch (Throwable) {
+        }
+    }
+
+    rdEnsureSocialSequenceMetaColumns($pdo);
+}
+
+function rdEnsureSocialSequenceMetaColumns(PDO $pdo): void
+{
+    try {
+        $pdo->exec('ALTER TABLE social_sequences ADD COLUMN ref_code VARCHAR(48) DEFAULT NULL');
+    } catch (Throwable) {
+    }
+    try {
+        $pdo->exec('ALTER TABLE social_sequences ADD COLUMN source_article_id INT UNSIGNED DEFAULT NULL');
+    } catch (Throwable) {
+    }
+}
+
+function rdArticleAccessibleForSocialSequence(array $article, int $userId, int $websiteId): bool
+{
+    $owner = (int) ($article['user_id'] ?? 0);
+    if ($owner !== 0 && $owner === $userId) {
+        return true;
+    }
+
+    return (int) ($article['website_id'] ?? 0) === $websiteId && $websiteId !== 0;
 }
 
 function rdArticleLink(array $article): string
@@ -89,6 +208,35 @@ function rdArticleLink(array $article): string
     }
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     return $scheme . '://' . $host . '/blog/' . rawurlencode($slug);
+}
+
+/**
+ * Articles ayant au moins une séquence social (campagne) créée depuis la rédaction.
+ *
+ * @return array<int, int> article_id => id de séquence social (pour lien direct)
+ */
+function rdSocialCampaignSeqByArticleId(PDO $pdo, int $userId): array
+{
+    $map = [];
+    try {
+        $stmt = $pdo->prepare(
+            'SELECT source_article_id, MIN(id) AS seq_id
+             FROM social_sequences
+             WHERE user_id = ? AND source_article_id IS NOT NULL AND source_article_id > 0
+             GROUP BY source_article_id'
+        );
+        $stmt->execute([$userId]);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
+            $aid = (int) ($row['source_article_id'] ?? 0);
+            $sid = (int) ($row['seq_id'] ?? 0);
+            if ($aid > 0 && $sid > 0) {
+                $map[$aid] = $sid;
+            }
+        }
+    } catch (Throwable) {
+    }
+
+    return $map;
 }
 
 function rdBuildStrategicPosts(array $article, string $persona, string $objectif, int $requestedCount): array
@@ -151,7 +299,19 @@ function rdBuildStrategicPosts(array $article, string $persona, string $objectif
     return $posts;
 }
 
-$action = $_GET['action'] ?? 'hub';
+$action = is_string($_GET['action'] ?? null) ? (string) $_GET['action'] : 'hub';
+
+/** Méthode HTTP réelle (certains reverse proxies / hébergeurs peuvent mal renseigner REQUEST_METHOD). */
+function rdEffectiveRequestMethod(): string
+{
+    $m = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+    $ov = strtoupper((string) ($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ?? ''));
+    if ($ov === 'POST') {
+        return 'POST';
+    }
+
+    return $m;
+}
 
 // ─── API endpoints (JSON) ────────────────────────────────────────────────────
 
@@ -162,8 +322,8 @@ if ($action === 'api_search_articles') {
     exit;
 }
 
-if ($action === 'api_generate_post') {
-    header('Content-Type: application/json');
+if (rdEffectiveRequestMethod() === 'POST' && $action === 'api_generate_post') {
+    header('Content-Type: application/json; charset=utf-8');
     $reseau  = $_POST['reseau'] ?? 'gmb';
     $article = [
         'titre'   => $_POST['titre']   ?? '',
@@ -174,8 +334,8 @@ if ($action === 'api_generate_post') {
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'api_create_social_sequence') {
-    header('Content-Type: application/json');
+if (rdEffectiveRequestMethod() === 'POST' && $action === 'api_create_social_sequence') {
+    header('Content-Type: application/json; charset=utf-8');
 
     $articleId = (int)($_POST['article_id'] ?? 0);
     $persona = trim((string)($_POST['persona'] ?? 'Persona libre'));
@@ -192,9 +352,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'api_create_social_sequ
     }
 
     $article = $articleRepo->findById($articleId);
-    if (!$article || (int)($article['user_id'] ?? 0) !== $userId) {
+    if (!$article || !rdArticleAccessibleForSocialSequence($article, $userId, $websiteId)) {
         http_response_code(404);
-        echo json_encode(['ok' => false, 'message' => 'Article introuvable.']);
+        echo json_encode(['ok' => false, 'message' => 'Article introuvable ou non autorisé.']);
         exit;
     }
 
@@ -218,6 +378,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'api_create_social_sequ
             ':objectif' => $objectif,
         ]);
         $sequenceId = (int)$pdo->lastInsertId();
+
+        $refCode = sprintf('SOC-BLOG-%d-%d', $articleId, $sequenceId);
+        try {
+            $upd = $pdo->prepare('UPDATE social_sequences SET ref_code = :ref, source_article_id = :aid WHERE id = :id AND user_id = :uid');
+            $upd->execute([':ref' => $refCode, ':aid' => $articleId, ':id' => $sequenceId, ':uid' => $userId]);
+        } catch (Throwable) {
+        }
 
         $postStmt = $pdo->prepare(
             'INSERT INTO social_posts
@@ -244,6 +411,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'api_create_social_sequ
         echo json_encode([
             'ok' => true,
             'sequence_id' => $sequenceId,
+            'ref_code' => $refCode,
             'created_posts' => count($posts),
             'effective_posts' => count($posts),
             'message' => 'Séquence sociale créée avec succès.',
@@ -253,8 +421,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'api_create_social_sequ
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
+        $msg = 'Impossible de créer la séquence sociale.';
+        if (defined('APP_DEBUG') && APP_DEBUG) {
+            $msg .= ' ' . $e->getMessage();
+        }
         http_response_code(500);
-        echo json_encode(['ok' => false, 'message' => 'Impossible de créer la séquence sociale.']);
+        echo json_encode(['ok' => false, 'message' => $msg]);
         exit;
     }
 }
@@ -393,6 +565,7 @@ function renderContent(): void
         $campaignsCount = count($campaigns);
         $recentArticles = $articleRepo->findAll($userId, []);
         $recentArticles = array_slice($recentArticles, 0, 10);
+        $socialCampaignSeqByArticle = rdSocialCampaignSeqByArticleId($pdo, $userId);
         require __DIR__ . '/views/hub.php';
         return;
     }
@@ -427,6 +600,7 @@ function renderContent(): void
         ];
         $articles = $articleRepo->findAll($userId, $filters);
         $counts   = $articleRepo->countByStatut($userId);
+        $socialCampaignSeqByArticle = rdSocialCampaignSeqByArticleId($pdo, $userId);
         require __DIR__ . '/views/pool_articles.php';
         return;
     }

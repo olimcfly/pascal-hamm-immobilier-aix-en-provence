@@ -171,10 +171,11 @@ if ($action === 'index' || $action === '') {
         $seqFilterParams = ['manual'];
     }
 
+    $bootstrapMsg = '';
     try {
         $seededCount = EmailSequenceService::ensureDefaultEntrySequences();
         if ($seededCount > 0) {
-            $_SESSION['success'] = ($seededCount === 1)
+            $bootstrapMsg = ($seededCount === 1)
                 ? 'Une séquence automatique par défaut a été créée (points d’entrée du site).'
                 : $seededCount . ' séquences automatiques par défaut ont été créées (une par type de formulaire).';
         }
@@ -191,7 +192,24 @@ if ($action === 'index' || $action === '') {
     $priorityHealth = [];
     if (defined('ROOT_PATH') && is_file(ROOT_PATH . '/core/services/EmailSequencePriorityService.php')) {
         require_once ROOT_PATH . '/core/services/EmailSequencePriorityService.php';
+        if ($seqFilter === 'automatic') {
+            try {
+                $syncRep = EmailSequencePriorityService::syncPriorityAutomaticSequences();
+                $nC = count($syncRep['created'] ?? []);
+                $nU = count($syncRep['updated'] ?? []);
+                if ($nC + $nU > 0) {
+                    $bootstrapMsg .= ($bootstrapMsg !== '' ? ' ' : '')
+                        . 'Scénarios prioritaires (e-mails détaillés) : ' . $nC . ' créée(s), ' . $nU . ' mise(s) à jour.';
+                }
+            } catch (Throwable $e) {
+                error_log('email-sequences syncPriorityAutomaticSequences: ' . $e->getMessage());
+            }
+        }
         $priorityHealth = EmailSequencePriorityService::getHealthSummary();
+    }
+
+    if ($bootstrapMsg !== '') {
+        $_SESSION['success'] = trim($bootstrapMsg);
     }
 
     function renderContent(): void {
@@ -202,6 +220,38 @@ if ($action === 'index' || $action === '') {
             'automatic' => ['label' => 'Automatiques', 'q' => '&filter=automatic'],
             'manual' => ['label' => 'Manuelles', 'q' => '&filter=manual'],
         ];
+
+        if ($seqFilter === 'automatic') {
+            if (!class_exists(EmailSequencePriorityService::class, false) && defined('ROOT_PATH') && is_file(ROOT_PATH . '/core/services/EmailSequencePriorityService.php')) {
+                require_once ROOT_PATH . '/core/services/EmailSequencePriorityService.php';
+            }
+            if (defined('ROOT_PATH') && is_file(ROOT_PATH . '/public/admin/includes/auth_functions.php')) {
+                require_once ROOT_PATH . '/public/admin/includes/auth_functions.php';
+            }
+            $csrfSync = function_exists('generateCsrfToken') ? generateCsrfToken() : '';
+            $presets = class_exists(EmailSequencePriorityService::class, false)
+                ? EmailSequencePriorityService::loadPresets()
+                : [];
+            $autoSequences = [];
+            try {
+                $stmt = db()->prepare(
+                    'SELECT es.id, es.name, es.description, es.status, es.form_trigger, es.trigger_type, es.created_at,
+                    (SELECT COUNT(*) FROM email_sequence_emails e WHERE e.sequence_id = es.id) AS email_steps
+                    FROM email_sequences es
+                    WHERE es.trigger_type = ?
+                    ORDER BY es.form_trigger ASC, es.status DESC, es.created_at DESC
+                    LIMIT 120'
+                );
+                $stmt->execute(['automatic']);
+                $autoSequences = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            } catch (Throwable $e) {
+                error_log('email-sequences automatic list: ' . $e->getMessage());
+            }
+            require __DIR__ . '/views/automatic_layout.php';
+
+            return;
+        }
+
         ?>
     <style>
         /* Détails : hub-hero = hub-page.css (évite double définition + incohérences) */

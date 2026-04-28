@@ -17,15 +17,28 @@ require_once __DIR__ . '/controllers/SocialController.php';
 $pageTitle = 'Social';
 $pageDescription = 'Séquences, publication et journal social';
 
-$sequenceRepository = new SequenceRepository(db());
-$postRepository = new PostRepository(db());
+$socialPdo = db();
+foreach ([
+    'ALTER TABLE social_sequences ADD COLUMN ref_code VARCHAR(48) DEFAULT NULL',
+    'ALTER TABLE social_sequences ADD COLUMN source_article_id INT UNSIGNED DEFAULT NULL',
+    'ALTER TABLE social_posts ADD COLUMN image_svg LONGTEXT NULL',
+    'ALTER TABLE social_posts ADD COLUMN image_format VARCHAR(16) NOT NULL DEFAULT \'feed\'',
+] as $socialAlter) {
+    try {
+        $socialPdo->exec($socialAlter);
+    } catch (Throwable) {
+    }
+}
+
+$sequenceRepository = new SequenceRepository($socialPdo);
+$postRepository = new PostRepository($socialPdo);
 $strategyService = new StrategyService();
 $sequenceController = new SequenceController($sequenceRepository, $postRepository);
 $postController = new PostController($postRepository, $strategyService);
 $socialController = new SocialController($sequenceRepository, $postRepository, $strategyService);
 
 $action = preg_replace('/[^a-z-]/', '', (string) ($_GET['action'] ?? 'index'));
-$allowedActions = ['index', 'sequences', 'journal', 'post', 'post-form', 'kit', 'save-sequence', 'save-post', 'delete-post', 'toggle-sequence', 'duplicate-sequence'];
+$allowedActions = ['index', 'sequences', 'sequences-list', 'journal', 'post', 'post-form', 'post-edit', 'kit', 'save-sequence', 'save-post', 'delete-post', 'toggle-sequence', 'duplicate-sequence'];
 if (!in_array($action, $allowedActions, true)) {
     $action = 'index';
 }
@@ -39,8 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-require_once __DIR__ . '/../../admin/views/layout.php';
-
 function renderSocialHub(): void
 {
     ?>
@@ -53,7 +64,7 @@ function renderSocialHub(): void
         </header>
 
         <div class="hub-modules-grid">
-            <a href="?module=social&action=sequences" class="hub-module-card">
+            <a href="?module=social&action=sequences-list" class="hub-module-card">
                 <div class="hub-module-card-head">
                     <div class="hub-module-card-icon" style="background:#eafaf1;color:#16a34a;"><i class="fas fa-layer-group"></i></div>
                     <h3>Séquences</h3>
@@ -95,7 +106,7 @@ function renderSocialHub(): void
                 <h2>Progression : Séquences → Posts → Journal → Amplifier</h2>
                 <p>Commencez par une séquence, puis publiez régulièrement.</p>
             </div>
-            <a href="?module=social&action=sequences" class="hub-btn hub-btn--gold"><i class="fas fa-rocket"></i> Créer ma première séquence</a>
+            <a href="?module=social&action=sequences-list" class="hub-btn hub-btn--gold"><i class="fas fa-rocket"></i> Mes séquences social</a>
         </section>
 
     </section>
@@ -113,18 +124,30 @@ function renderContent(): void
 
     switch ($action) {
         case 'journal':
+            $pageTitle = 'Journal social · Social';
             $socialController->journal();
             break;
         case 'post':
+            $pageTitle = 'Publication · Social';
             $socialController->postDetail((int) ($_GET['id'] ?? 0));
             break;
+        case 'post-edit':
+            $pageTitle = 'Modifier la publication · Social';
+            $socialController->postForm((int) ($_GET['id'] ?? 0));
+            break;
         case 'post-form':
+            $pageTitle = 'Nouvelle publication · Social';
             $socialController->postForm((int) ($_GET['id'] ?? 0));
             break;
         case 'kit':
             require __DIR__ . '/views/kit.php';
             break;
+        case 'sequences-list':
+            $pageTitle = 'Liste des séquences · Social';
+            $socialController->sequencesList();
+            break;
         case 'sequences':
+            $pageTitle = 'Posts de la séquence · Social';
             $socialController->sequences();
             break;
         default:

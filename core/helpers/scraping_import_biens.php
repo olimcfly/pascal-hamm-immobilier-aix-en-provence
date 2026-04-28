@@ -47,6 +47,7 @@ function scraping_import_build_insert(PDO $pdo, array $row): array
         'a_parking' => true, 'a_jardin' => true, 'a_piscine' => true, 'a_terrasse' => true,
         'a_balcon' => true, 'a_ascenseur' => true, 'photo_principale' => true, 'reference' => true,
         'agent_id' => true, 'source' => true, 'source_externe_id' => true, 'source_agent_nom' => true,
+        'publier_vitrine' => true,
     ];
 
     $defaults = [

@@ -200,6 +200,7 @@ foreach ($rows as $row) {
         'latitude'            => $lat,
         'longitude'           => $lon,
         'statut'              => 'actif',
+        'publier_vitrine'     => 0,
         'dpe_classe'          => $dpeOne,
         'reference'           => $ref,
         'a_balcon'            => empty($row['has_balcony']) ? 0 : 1,

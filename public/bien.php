@@ -12,7 +12,11 @@ $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($id > 0) {
     $pdo  = db();
-    $stmt = $pdo->prepare("SELECT slug FROM biens WHERE id = :id AND statut != 'Archivé' LIMIT 1");
+    $stmt = $pdo->prepare(
+        'SELECT slug FROM biens WHERE id = :id AND statut != \'Archivé\' AND '
+        . biens_sql_publier_vitrine_ok('')
+        . ' LIMIT 1'
+    );
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 

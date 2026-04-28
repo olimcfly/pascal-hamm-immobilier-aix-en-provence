@@ -4,6 +4,7 @@ $pageDescription = 'Découvrez les biens immobiliers à vendre sur Aix-en-Proven
 $extraCss = ['/assets/css/home.css'];
 
 require_once __DIR__ . '/../../../core/Database.php';
+require_once dirname(__DIR__, 3) . '/core/helpers/biens_vitrine.php';
 
 $pdo = Database::getInstance();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -12,6 +13,7 @@ $stmt = $pdo->query("
     SELECT * FROM biens
     WHERE type_bien = 'maison'
       AND statut = 'actif'
+      AND " . biens_sql_publier_vitrine_ok('') . "
     ORDER BY created_at DESC
 ");
 $biens = $stmt->fetchAll(PDO::FETCH_ASSOC);

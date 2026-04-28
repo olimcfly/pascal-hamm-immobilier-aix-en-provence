@@ -6,7 +6,11 @@
 $slug = trim((string) (($slug ?? '') !== '' ? $slug : ($GLOBALS['bienSlug'] ?? '')));
 
 $pdo  = db();
-$bien = $pdo->prepare("SELECT * FROM biens WHERE slug = :slug AND statut != 'Archivé' LIMIT 1");
+$bien = $pdo->prepare(
+    'SELECT * FROM biens WHERE slug = :slug AND statut != \'Archivé\' AND '
+    . biens_sql_publier_vitrine_ok('')
+    . ' LIMIT 1'
+);
 $bien->execute([':slug' => $slug]);
 $b = $bien->fetch(PDO::FETCH_ASSOC);
 
@@ -25,14 +29,15 @@ if (!empty($b['photo_principale'])) {
 }
 
 // ── Biens similaires ──────────────────────────────────────────
-$similairesStmt = $pdo->prepare("
+$similairesStmt = $pdo->prepare('
     SELECT * FROM biens
-    WHERE  statut != 'Archivé'
+    WHERE  statut != \'Archivé\'
     AND    id     != :id
     AND    type_bien = :type_bien
+    AND ' . biens_sql_publier_vitrine_ok('') . '
     ORDER  BY created_at DESC
     LIMIT  3
-");
+');
 $similairesStmt->execute([':id' => $b['id'], ':type_bien' => $b['type_bien']]);
 $similaires = $similairesStmt->fetchAll(PDO::FETCH_ASSOC);
 

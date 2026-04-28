@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Scraping eXp France';
-$pageDescription = 'Importez des biens depuis la plateforme eXp France';
+$pageDescription = 'Recherche eXp, sélection puis import en base Listings (publication vitrine à valider)';
 
 function renderContent(): void
 {
@@ -60,6 +60,22 @@ function renderContent(): void
             max-width: 720px;
             line-height: 1.5;
         }
+        .scrap-flow {
+            background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 16px 18px 16px 22px;
+            font-size: 14px;
+            color: #1e3a5f;
+            line-height: 1.55;
+            max-width: 840px;
+            margin-top: 16px;
+        }
+        .scrap-flow h3 { margin: 0 0 10px; font-size: 15px; color: #1d4ed8; }
+        .scrap-flow ol { margin: 0; padding-left: 1.25rem; }
+        .scrap-flow li { margin: 6px 0; }
+        .scrap-flow a { color: #1d4ed8; font-weight: 600; }
+        .scrap-flow code { font-size: 12px; background: #fff; padding: 1px 6px; border-radius: 4px; border: 1px solid #dbeafe; }
 
         /* ── Barre de recherche ── */
         .scrap-search-bar {
@@ -216,8 +232,20 @@ function renderContent(): void
         <div class="page-header">
             <h1><i class="fas fa-satellite-dish page-icon"></i> Scraping <span class="page-title-accent">eXp France</span></h1>
             <p class="scrap-lead">
-                Recherchez des biens via l’outil ci-dessous (données synchronisées), sélectionnez-les et importez-les dans votre catalogue.
+                Comme avant&nbsp;: recherche ci-dessous, coches sur les cartes, puis import en <strong>« mes biens »</strong> ou <strong>« partage »</strong>.
+                Les fiches arrivent dans votre base (table <code>biens</code>) mais ne sont <strong>pas encore visibles sur le site public</strong> tant que vous n’avez pas validé sous <a href="/admin/?module=listings">Listings</a>.
             </p>
+            <div class="scrap-flow" role="note">
+                <h3><i class="fas fa-arrow-down-short-wide"></i> Parcours : sélection → Listings → publication</h3>
+                <ol>
+                    <li><strong>Ici</strong>&nbsp;: chercher, sélectionner une ou plusieurs annonces, cliquer sur importer (comportement inchangé).</li>
+                    <li><strong>Listings</strong>&nbsp;: retrouver les fiches, régler <code>Publication /biens</code> sur <strong>Oui</strong> pour les afficher sur le catalogue.</li>
+                    <li>Optionnel&nbsp;: supprimer ce que vous ne gardez pas depuis Listings.</li>
+                </ol>
+                <p style="margin:12px 0 0;font-size:13px">
+                    Accès direct&nbsp;: <a href="/admin/?module=listings"><i class="fas fa-list-check"></i> ouvrir Listings &amp; publication</a>
+                </p>
+            </div>
             <a href="<?= htmlspecialchars($expFranceSearchUrl, ENT_QUOTES, 'UTF-8') ?>"
                class="scrap-exp-cta"
                target="_blank"
@@ -266,10 +294,10 @@ function renderContent(): void
                 <i class="fas fa-check-double"></i> Tout sélectionner
             </button>
             <button class="scrap-btn scrap-btn-own" id="scrap-import-own-btn" disabled>
-                <i class="fas fa-plus-circle"></i> Importer (<span id="scrap-selected-count">0</span>) comme mes biens
+                <i class="fas fa-plus-circle"></i> Envoyer vers Listings (<span id="scrap-selected-count">0</span>) — mes biens
             </button>
             <button class="scrap-btn scrap-btn-share" id="scrap-import-share-btn" disabled>
-                <i class="fas fa-handshake"></i> Importer en partage
+                <i class="fas fa-handshake"></i> Envoyer vers Listings — partage
             </button>
         </div>
 
@@ -516,7 +544,11 @@ function renderContent(): void
                     throw new Error(data.message || 'Erreur import');
                 }
 
-                showToast(`✓ ${data.imported} bien(s) importé(s) dans ${label}.`, 'success');
+                showToast(
+                    `✓ ${data.imported} bien(s) enregistré(s) (${label}). ` +
+                    (data.imported > 0 ? 'Hors ligne jusqu’à validation : menu Listings & publication.' : ''),
+                    'success'
+                );
 
                 // Mettre à jour les cartes importées
                 ids.forEach(id => {

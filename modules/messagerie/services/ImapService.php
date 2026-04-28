@@ -13,39 +13,53 @@ class ImapService
 
     public function isConfigured(): bool
     {
-        return $this->getHost() !== '' && $this->getUser() !== '';
+        if ($this->getHost() === '' || $this->getUser() === '') {
+            return false;
+        }
+        // Mot de passe requis (saisi en base ou variables d’environnement IMAP_*/SMTP_*)
+        return $this->getPass() !== '';
     }
 
     public function getAdvisorEmail(): string
     {
-        return (string) (setting('smtp_user', '') ?: ($_ENV['SMTP_USER'] ?? ''));
+        $imapUser = trim((string) setting('imap_user', '', $this->userId));
+        if ($imapUser !== '') {
+            return $imapUser;
+        }
+
+        return trim((string) (setting('smtp_user', '', $this->userId) ?: ($_ENV['SMTP_USER'] ?? '')));
     }
 
     private function getHost(): string
     {
-        return trim((string) (setting('imap_host', '') ?: ($_ENV['IMAP_HOST'] ?? setting('smtp_host', '') ?: ($_ENV['SMTP_HOST'] ?? ''))));
+        return trim((string) (setting('imap_host', '', $this->userId) ?: ($_ENV['IMAP_HOST'] ?? setting('smtp_host', '', $this->userId) ?: ($_ENV['SMTP_HOST'] ?? ''))));
     }
 
     private function getPort(): int
     {
-        $p = (int) (setting('imap_port', '0') ?: ($_ENV['IMAP_PORT'] ?? 0));
+        $p = (int) (setting('imap_port', '0', $this->userId) ?: ($_ENV['IMAP_PORT'] ?? 0));
         return $p > 0 ? $p : 993;
     }
 
     private function getSecure(): string
     {
-        $s = strtolower(trim((string) (setting('imap_secure', '') ?: ($_ENV['IMAP_SECURE'] ?? 'ssl'))));
+        $s = strtolower(trim((string) (setting('imap_secure', '', $this->userId) ?: ($_ENV['IMAP_SECURE'] ?? 'ssl'))));
         return in_array($s, ['ssl', 'tls', 'none'], true) ? $s : 'ssl';
     }
 
     private function getUser(): string
     {
-        return trim((string) (setting('imap_user', '') ?: ($_ENV['IMAP_USER'] ?? setting('smtp_user', '') ?: ($_ENV['SMTP_USER'] ?? ''))));
+        return trim((string) (setting('imap_user', '', $this->userId) ?: ($_ENV['IMAP_USER'] ?? setting('smtp_user', '', $this->userId) ?: ($_ENV['SMTP_USER'] ?? ''))));
     }
 
     private function getPass(): string
     {
-        return (string) (setting('imap_pass', '') ?: ($_ENV['IMAP_PASS'] ?? setting('smtp_pass', '') ?: ($_ENV['SMTP_PASS'] ?? '')));
+        return (string) (setting('imap_pass', '', $this->userId) ?: ($_ENV['IMAP_PASS'] ?? setting('smtp_pass', '', $this->userId) ?: ($_ENV['SMTP_PASS'] ?? '')));
+    }
+
+    public static function imapExtensionAvailable(): bool
+    {
+        return extension_loaded('imap');
     }
 
     private function buildMailbox(): string
@@ -66,6 +80,9 @@ class ImapService
 
     public function testConnection(): int
     {
+        if (!self::imapExtensionAvailable()) {
+            throw new RuntimeException('Extension PHP « imap » absente sur le serveur. Contactez l’hébergeur pour l’activer.');
+        }
         $mailbox = imap_open(
             $this->buildMailbox(),
             $this->getUser(),
@@ -89,6 +106,9 @@ class ImapService
      */
     public function syncInbox(int $limit = 100): int
     {
+        if (!self::imapExtensionAvailable()) {
+            throw new RuntimeException('Extension PHP « imap » absente sur le serveur.');
+        }
         $mailbox = imap_open(
             $this->buildMailbox(),
             $this->getUser(),

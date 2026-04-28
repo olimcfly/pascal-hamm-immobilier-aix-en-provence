@@ -121,12 +121,16 @@ $statusClass = match($statut) {
 
     <!-- GRILLE DES POSTS (visible si is-open) -->
     <div class="seq-posts">
-        <?php foreach ($posts as $i => $post): ?>
+        <?php
+        $GLOBALS['social_post_card_compact'] = true;
+        foreach ($posts as $i => $post):
+            ?>
             <?php if ($i > 0): ?>
                 <div class="post-connector"><div class="connector-line"></div></div>
             <?php endif; ?>
             <?php include __DIR__ . '/_post_card.php'; ?>
         <?php endforeach; ?>
+        <?php unset($GLOBALS['social_post_card_compact']); ?>
 
         <!-- Bouton ajouter -->
         <div class="post-connector" style="padding-top:30px">
@@ -166,7 +170,7 @@ $statusClass = match($statut) {
             </button>
         </form>
 
-        <a href="/admin?module=social&action=sequences&edit=<?= $sequenceId ?>" class="s-btn-sm">
+        <a href="/admin?module=social&action=sequences&seq=<?= $sequenceId ?>" class="s-btn-sm">
             <i class="fas fa-pen"></i> Modifier
         </a>
 

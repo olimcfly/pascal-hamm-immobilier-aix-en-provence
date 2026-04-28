@@ -66,9 +66,9 @@ final class PostRepository
     {
         $stmt = $this->pdo->prepare(
             'INSERT INTO social_posts
-             (user_id, sequence_id, titre, contenu, reseaux, statut, niveau, ordre_sequence, planifie_at, created_at, updated_at)
+             (user_id, sequence_id, titre, contenu, reseaux, statut, niveau, ordre_sequence, planifie_at, image_svg, image_format, created_at, updated_at)
              VALUES
-             (:user_id, :sequence_id, :titre, :contenu, :reseaux, :statut, :niveau, :ordre, :planifie_at, NOW(), NOW())'
+             (:user_id, :sequence_id, :titre, :contenu, :reseaux, :statut, :niveau, :ordre, :planifie_at, :image_svg, :image_format, NOW(), NOW())'
         );
         $stmt->execute([
             ':user_id'     => $userId,
@@ -80,6 +80,8 @@ final class PostRepository
             ':niveau'      => $payload['niveau'] ?? null,
             ':ordre'       => $payload['ordre_sequence'] ?? null,
             ':planifie_at' => ($payload['planifie_at'] ?? '') !== '' ? $payload['planifie_at'] : null,
+            ':image_svg'   => $payload['image_svg'] ?? null,
+            ':image_format'=> $payload['image_format'] ?? 'feed',
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -97,6 +99,8 @@ final class PostRepository
                  niveau         = :niveau,
                  ordre_sequence = :ordre,
                  planifie_at    = :planifie_at,
+                 image_svg      = :image_svg,
+                 image_format   = :image_format,
                  updated_at     = NOW()
              WHERE id = :id AND user_id = :user_id'
         );
@@ -111,6 +115,8 @@ final class PostRepository
             ':niveau'      => $payload['niveau'] ?? null,
             ':ordre'       => $payload['ordre_sequence'] ?? null,
             ':planifie_at' => ($payload['planifie_at'] ?? '') !== '' ? $payload['planifie_at'] : null,
+            ':image_svg'   => $payload['image_svg'] ?? null,
+            ':image_format'=> $payload['image_format'] ?? 'feed',
         ]);
     }
 
@@ -124,8 +130,8 @@ final class PostRepository
     {
         $stmt = $this->pdo->prepare(
             'INSERT INTO social_posts
-             (user_id, sequence_id, titre, contenu, reseaux, statut, niveau, ordre_sequence, planifie_at, created_at, updated_at)
-             SELECT user_id, :new_sequence_id, titre, contenu, reseaux, "brouillon", niveau, ordre_sequence, NULL, NOW(), NOW()
+             (user_id, sequence_id, titre, contenu, reseaux, statut, niveau, ordre_sequence, planifie_at, image_svg, image_format, created_at, updated_at)
+             SELECT user_id, :new_sequence_id, titre, contenu, reseaux, "brouillon", niveau, ordre_sequence, NULL, image_svg, image_format, NOW(), NOW()
              FROM social_posts
              WHERE sequence_id = :old_sequence_id AND user_id = :user_id'
         );

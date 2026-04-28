@@ -24,3 +24,12 @@ if (!function_exists('socialJsonResponse')) {
         exit;
     }
 }
+
+if (!function_exists('social_sanitize_svg')) {
+    /** Sécurise un SVG stocké (usage admin). */
+    function social_sanitize_svg(string $svg): string
+    {
+        $svg = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $svg) ?? '';
+        return preg_replace('/\bon[a-z]+\s*=\s*(["\']).*?\1/is', '', $svg) ?? '';
+    }
+}

@@ -5,13 +5,60 @@ declare(strict_types=1);
 if (!function_exists('db')) {
     require_once __DIR__ . '/../../core/config/database.php';
 }
+if (!class_exists('Auth', false) && is_file(__DIR__ . '/../../core/Auth.php')) {
+    require_once __DIR__ . '/../../core/Auth.php';
+}
 
 $pageTitle = 'Gestion des articles';
 $pageDescription = 'Créez et gérez les articles de votre blog';
 
 $action = preg_replace('/[^a-z_]/', '', (string) ($_GET['action'] ?? 'index'));
 $id = (int) ($_GET['id'] ?? 0);
-$site_id = 1;
+$user = class_exists('Auth', false) ? Auth::user() : [];
+$site_id = (int) ($user['website_id'] ?? 1);
+
+/**
+ * @return array{0: string, 1: string} [classe CSS, libellé affiché]
+ */
+function blog_map_statut_blog(string $statut): array
+{
+    $s = strtolower(trim($statut));
+
+    return match ($s) {
+        'publié' => ['published', 'Publié'],
+        'brouillon' => ['draft', 'Brouillon'],
+        'planifié' => ['scheduled', 'Planifié'],
+        'archivé' => ['archived', 'Archivé'],
+        default => ['draft', $statut !== '' ? $statut : 'Brouillon'],
+    };
+}
+
+function blog_map_statut_seo(string $status): array
+{
+    $s = strtolower(trim($status));
+
+    return match ($s) {
+        'published' => ['published', 'Publié'],
+        'draft' => ['draft', 'Brouillon'],
+        'scheduled' => ['scheduled', 'Planifié'],
+        'archived' => ['archived', 'Archivé'],
+        default => ['draft', $status],
+    };
+}
+
+function blog_table_exists(PDO $pdo, string $table): bool
+{
+    if (!preg_match('/^[a-z0-9_]+$/i', $table)) {
+        return false;
+    }
+    try {
+        $stmt = $pdo->query('SHOW TABLES LIKE ' . $pdo->quote($table));
+
+        return $stmt && $stmt->fetchColumn() !== false;
+    } catch (Throwable) {
+        return false;
+    }
+}
 
 // Gestion de la sauvegarde d'article (AVANT le layout)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_article'])) {
@@ -47,7 +94,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_article'])) {
     }
 }
 
-// Gestion de la suppression
+// Suppression d'un article blog (table blog_articles, filtrée par site)
+if ($action === 'delete_blog_article' && $id > 0) {
+    try {
+        $stmt = db()->prepare('DELETE FROM blog_articles WHERE id = ? AND website_id = ?');
+        $stmt->execute([$id, $site_id]);
+    } catch (Throwable) {
+    }
+    header('Location: /admin?module=blog&success=deleted', false, 303);
+    exit;
+}
+
+// Gestion de la suppression (plan éditorial seo_articles_plan)
 if ($action === 'delete' && $id > 0) {
     try {
         $stmt = db()->prepare('DELETE FROM seo_articles_plan WHERE id = ? AND site_id = ?');
@@ -179,28 +237,120 @@ function renderContent(): void
         return;
     }
 
-    // Afficher la liste des articles
+    // Afficher la liste des articles (priorité : blog_articles du site, sinon plan SEO legacy)
     $stats = ['total' => 0, 'published' => 0, 'draft' => 0, 'scheduled' => 0, 'archived' => 0];
     $articles = [];
     $success = isset($_GET['success']) && $_GET['success'] === 'deleted' ? 'Article supprimé avec succès' : '';
     $error = '';
+    $listingHint = '';
+    $newArticleHref = '/admin?module=blog&action=new';
 
-    try {
-        $stmt = db()->prepare('SELECT status, COUNT(*) as nb FROM seo_articles_plan WHERE site_id = ? GROUP BY status');
-        $stmt->execute([$site_id]);
-        foreach ($stmt->fetchAll(PDO::FETCH_KEY_PAIR) as $status => $count) {
-            if (isset($stats[$status])) {
-                $stats[$status] = (int)$count;
+    $pdo = db();
+    $listUsesBlogTable = blog_table_exists($pdo, 'blog_articles');
+
+    if ($listUsesBlogTable) {
+        $newArticleHref = '/admin?module=redaction&action=article_new';
+        $listingHint = 'Articles publiables sur le site — édition et rédaction dans le module Rédaction.';
+
+        try {
+            $stmt = $pdo->prepare('SELECT statut, COUNT(*) as nb FROM blog_articles WHERE website_id = ? GROUP BY statut');
+            $stmt->execute([$site_id]);
+            foreach ($stmt->fetchAll(PDO::FETCH_KEY_PAIR) as $st => $nb) {
+                $n = (int) $nb;
+                $stats['total'] += $n;
+                $sk = function_exists('mb_strtolower') ? mb_strtolower((string) $st, 'UTF-8') : strtolower((string) $st);
+                match ($sk) {
+                    'publié' => $stats['published'] += $n,
+                    'brouillon' => $stats['draft'] += $n,
+                    'planifié' => $stats['scheduled'] += $n,
+                    'archivé' => $stats['archived'] += $n,
+                    default => null,
+                };
             }
-            $stats['total'] += (int)$count;
+        } catch (Throwable) {
         }
-    } catch (Throwable) {}
 
-    try {
-        $stmt = db()->prepare('SELECT id, COALESCE(h1, title) as titre, slug, status, word_count as mots, COALESCE(article_type, "article") as type, updated_at FROM seo_articles_plan WHERE site_id = ? ORDER BY updated_at DESC LIMIT 10');
-        $stmt->execute([$site_id]);
-        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Throwable) {}
+        try {
+            $stmt = $pdo->prepare(
+                'SELECT a.id, a.titre, a.slug, a.statut, a.mots, a.type, a.score_seo, a.updated_at, s.nom AS silo_nom
+                 FROM blog_articles a
+                 LEFT JOIN blog_silos s ON s.id = a.silo_id
+                 WHERE a.website_id = ?
+                 ORDER BY a.updated_at DESC'
+            );
+            $stmt->execute([$site_id]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                [$css, $label] = blog_map_statut_blog((string) ($r['statut'] ?? ''));
+                $seo = max(0, min(100, (int) ($r['score_seo'] ?? 0)));
+                $articles[] = [
+                    'titre' => (string) ($r['titre'] ?? ''),
+                    'type' => (string) ($r['type'] ?? ''),
+                    'status_css' => $css,
+                    'status_label' => $label,
+                    'mots' => (int) ($r['mots'] ?? 0),
+                    'seo_pct' => $seo,
+                    'updated_at' => (string) ($r['updated_at'] ?? ''),
+                    'silo_nom' => trim((string) ($r['silo_nom'] ?? '')),
+                    'edit_url' => '/admin?module=redaction&action=article_edit&id=' . (int) $r['id'],
+                    'delete_url' => '/admin?module=blog&action=delete_blog_article&id=' . (int) $r['id'],
+                ];
+            }
+        } catch (Throwable) {
+        }
+    } else {
+        try {
+            $stmt = $pdo->prepare('SELECT status, COUNT(*) as nb FROM seo_articles_plan WHERE site_id = ? GROUP BY status');
+            $stmt->execute([$site_id]);
+            foreach ($stmt->fetchAll(PDO::FETCH_KEY_PAIR) as $status => $count) {
+                $c = (int) $count;
+                $stats['total'] += $c;
+                $sk = strtolower((string) $status);
+                match ($sk) {
+                    'published' => $stats['published'] += $c,
+                    'draft' => $stats['draft'] += $c,
+                    'scheduled' => $stats['scheduled'] += $c,
+                    'archived' => $stats['archived'] += $c,
+                    default => null,
+                };
+            }
+        } catch (Throwable) {
+        }
+
+        $rawSeo = [];
+        try {
+            $stmt = $pdo->prepare(
+                'SELECT id, COALESCE(h1, title) as titre, slug, status, COALESCE(word_count, 0) as mots, COALESCE(article_type, "article") as type, updated_at
+                 FROM seo_articles_plan WHERE site_id = ? ORDER BY updated_at DESC'
+            );
+            $stmt->execute([$site_id]);
+            $rawSeo = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable) {
+            try {
+                $stmt = $pdo->prepare(
+                    'SELECT id, COALESCE(h1, title) as titre, slug, status, COALESCE(article_type, "article") as type, updated_at
+                     FROM seo_articles_plan WHERE site_id = ? ORDER BY updated_at DESC'
+                );
+                $stmt->execute([$site_id]);
+                $rawSeo = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Throwable) {
+            }
+        }
+        foreach ($rawSeo as $r) {
+            [$css, $label] = blog_map_statut_seo((string) ($r['status'] ?? ''));
+            $articles[] = [
+                'titre' => (string) ($r['titre'] ?? ''),
+                'type' => (string) ($r['type'] ?? 'article'),
+                'status_css' => $css,
+                'status_label' => $label,
+                'mots' => (int) ($r['mots'] ?? 0),
+                'seo_pct' => 0,
+                'updated_at' => (string) ($r['updated_at'] ?? ''),
+                'silo_nom' => '',
+                'edit_url' => '/admin?module=blog&action=edit&id=' . (int) $r['id'],
+                'delete_url' => '/admin?module=blog&action=delete&id=' . (int) $r['id'],
+            ];
+        }
+    }
     ?>
     <style>
         .blog-page{display:grid;gap:22px}
@@ -241,6 +391,9 @@ function renderContent(): void
         <header class="blog-hero">
             <h1>Gestion du blog</h1>
             <p>Créez, éditez et publiez les articles de votre blog.</p>
+            <?php if ($listingHint !== ''): ?>
+                <p style="margin-top:10px;font-size:14px;color:rgba(255,255,255,.72)"><?= e($listingHint) ?></p>
+            <?php endif; ?>
         </header>
 
         <?php if (!empty($success)): ?>
@@ -249,7 +402,7 @@ function renderContent(): void
 
         <div class="blog-toolbar">
             <p style="margin:0;color:#64748b">Vous avez <?= $stats['total'] ?> article(s) au total</p>
-            <a href="/admin?module=blog&action=new" class="blog-btn"><i class="fas fa-plus"></i> Nouvel article</a>
+            <a href="<?= e($newArticleHref) ?>" class="blog-btn"><i class="fas fa-plus"></i> Nouvel article</a>
         </div>
 
         <div class="blog-stats">
@@ -265,17 +418,25 @@ function renderContent(): void
                 <tbody>
                     <?php if (!$articles): ?>
                         <tr><td colspan="7" style="text-align:center;padding:2rem;color:#9ca3af;">Aucun article pour le moment</td></tr>
-                    <?php else: foreach ($articles as $a): $status = strtolower($a['status'] ?? 'draft'); ?>
+                    <?php else: foreach ($articles as $a):
+                        $ts = strtotime((string) ($a['updated_at'] ?? ''));
+                        $dateStr = $ts ? date('d/m/Y', $ts) : '—';
+                        ?>
                         <tr>
-                            <td><strong><?= e($a['titre']) ?></strong></td>
-                            <td><?= e($a['type'] ?? 'article') ?></td>
-                            <td><span class="blog-status <?= e($status) ?>"><?= e($status) ?></span></td>
-                            <td><?= (int)($a['mots'] ?? 0) ?></td>
-                            <td><div class="blog-score"><div class="blog-score-fill" style="width:50%"></div></div></td>
-                            <td><?= date('d/m/Y', strtotime((string)$a['updated_at'])) ?></td>
+                            <td>
+                                <strong><?= e($a['titre']) ?></strong>
+                                <?php if (!empty($a['silo_nom'])): ?>
+                                    <br><span style="color:#64748b;font-size:.82rem"><?= e($a['silo_nom']) ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= e($a['type'] ?? '') ?></td>
+                            <td><span class="blog-status <?= e($a['status_css'] ?? 'draft') ?>"><?= e($a['status_label'] ?? '') ?></span></td>
+                            <td><?= (int) ($a['mots'] ?? 0) ?></td>
+                            <td><div class="blog-score"><div class="blog-score-fill" style="width:<?= (int) ($a['seo_pct'] ?? 0) ?>%"></div></div></td>
+                            <td><?= e($dateStr) ?></td>
                             <td class="blog-actions">
-                                <a href="/admin?module=blog&action=edit&id=<?= (int)$a['id'] ?>" title="Éditer"><i class="fas fa-edit"></i></a>
-                                <a href="/admin?module=blog&action=delete&id=<?= (int)$a['id'] ?>" class="delete" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');"><i class="fas fa-trash"></i></a>
+                                <a href="<?= e($a['edit_url'] ?? '#') ?>" title="Éditer"><i class="fas fa-edit"></i></a>
+                                <a href="<?= e($a['delete_url'] ?? '#') ?>" class="delete" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                     <?php endforeach; endif; ?>
@@ -285,7 +446,7 @@ function renderContent(): void
 
         <section class="blog-final-cta">
             <div><h2>Créer un nouvel article</h2><p>Commencez à ajouter du contenu au blog.</p></div>
-            <a href="/admin?module=blog&action=new" class="blog-btn"><i class="fas fa-rocket"></i> Créer un article</a>
+            <a href="<?= e($newArticleHref) ?>" class="blog-btn"><i class="fas fa-rocket"></i> Créer un article</a>
         </section>
     </section>
     <?php

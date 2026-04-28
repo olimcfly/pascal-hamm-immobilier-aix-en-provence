@@ -64,6 +64,7 @@ require_once __DIR__ . '/Router.php';
 
 // ── Helpers ──────────────────────────────────────────────────
 require_once __DIR__ . '/helpers/helpers.php';
+require_once __DIR__ . '/helpers/biens_vitrine.php';
 require_once __DIR__ . '/helpers/sanitize.php';
 require_once __DIR__ . '/helpers/auth.php';
 require_once __DIR__ . '/helpers/cms.php';

@@ -550,6 +550,30 @@ $niveaux  = [1=>'Inconscient',2=>'Douleur',3=>'Solution',4=>'Produit',5=>'Plus c
 <?php endif; ?>
 
 <script>
+/** Chemin admin cohérent avec la page (data-admin-base), puis URL absolue pour éviter redirections POST→GET. */
+function rdAdminRootPath() {
+    var b = document.body && document.body.getAttribute('data-admin-base');
+    if (b && b !== '.' && b !== '') {
+        return b.replace(/\/$/, '');
+    }
+    var p = window.location.pathname || '';
+    var m = p.match(/^(.*\/admin)(?:\/|$)/i);
+    if (m) {
+        return m[1].replace(/\/$/, '');
+    }
+    return '/admin';
+}
+function rdRedactionApiUrl(apiAction) {
+    return window.location.origin + rdAdminRootPath() + '/?module=redaction&action=' + encodeURIComponent(apiAction);
+}
+function rdSocialModuleUrl(seqId) {
+    var u = window.location.origin + rdAdminRootPath() + '/?module=social&action=sequences';
+    if (seqId) {
+        u += '&seq=' + encodeURIComponent(seqId);
+    }
+    return u;
+}
+
 // Tab switching
 document.querySelectorAll('.af-tab').forEach(function(tab) {
     tab.addEventListener('click', function() {
@@ -666,7 +690,7 @@ miSearch.addEventListener('input', function() {
     var q = this.value.trim();
     if (q.length < 2) { miDropdown.style.display='none'; return; }
     miTimer = setTimeout(function() {
-        fetch('/admin?module=redaction&action=api_search_articles&q=' + encodeURIComponent(q))
+        fetch(rdRedactionApiUrl('api_search_articles') + '&q=' + encodeURIComponent(q))
             .then(r => r.json()).then(function(data) {
                 if (!data.length) { miDropdown.style.display='none'; return; }
                 miDropdown.innerHTML = data.map(function(a) {
@@ -730,8 +754,9 @@ function generatePost(reseau) {
     var titre    = document.getElementById('titre-input')?.value || '';
     var intro    = document.getElementById('intro-area')?.value || '';
     var contenu  = document.getElementById('contenu-area')?.value || '';
-    fetch('/admin?module=redaction&action=api_generate_post', {
+    fetch(rdRedactionApiUrl('api_generate_post'), {
         method: 'POST',
+        redirect: 'error',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'reseau=' + encodeURIComponent(reseau) +
               '&titre=' + encodeURIComponent(titre) +
@@ -781,21 +806,40 @@ document.getElementById('create-social-seq-btn')?.addEventListener('click', func
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération...';
 
-    fetch('/admin?module=redaction&action=api_create_social_sequence', {
+    fetch(rdRedactionApiUrl('api_create_social_sequence'), {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        redirect: 'error',
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
         body: 'article_id=<?= $artId ?>' +
               '&persona=' + encodeURIComponent(persona) +
               '&objectif=' + encodeURIComponent(objectif) +
               '&nombre_posts=' + encodeURIComponent(nbPosts) +
               reseaux.map(function(n) { return '&reseaux[]=' + encodeURIComponent(n); }).join('')
-    }).then(function(r) { return r.json(); })
+    }).then(function(r) {
+        return r.text().then(function(text) {
+            var data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                var snippet = (text || '').replace(/^\s+/, '').slice(0, 400);
+                throw new Error(snippet ? ('Réponse invalide (pas du JSON) : ' + snippet) : 'Réponse vide du serveur.');
+            }
+            if (!r.ok) {
+                throw new Error((data && data.message) ? data.message : ('Erreur HTTP ' + r.status));
+            }
+            return data;
+        });
+    })
       .then(function(data) {
           if (!data || !data.ok) {
               throw new Error((data && data.message) ? data.message : 'Erreur de génération');
           }
           closeSocialModal();
-          window.location.href = '/admin?module=social&action=sequences';
+          window.location.href = rdSocialModuleUrl(data.sequence_id);
       })
       .catch(function(err) {
           alert(err.message || 'Impossible de créer la séquence.');

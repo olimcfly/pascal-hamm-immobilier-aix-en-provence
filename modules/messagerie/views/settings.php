@@ -4,6 +4,7 @@
 
 $isConfigured = $imap->isConfigured();
 $advisorEmail = $imap->getAdvisorEmail();
+$imapExtOk    = ImapService::imapExtensionAvailable();
 $imapHost     = (string) setting('imap_host',   $_ENV['IMAP_HOST']   ?? setting('smtp_host',   $_ENV['SMTP_HOST']   ?? ''), $userId);
 $imapPort     = (string) setting('imap_port',   $_ENV['IMAP_PORT']   ?? '993', $userId);
 $imapUser     = (string) setting('imap_user',   $_ENV['IMAP_USER']   ?? $advisorEmail, $userId);
@@ -38,16 +39,26 @@ $imapSecure   = (string) setting('imap_secure', $_ENV['IMAP_SECURE'] ?? 'ssl', $
     <p>Configurez votre compte IMAP pour recevoir et envoyer des emails depuis l'application.</p>
 </div>
 
+<?php if (!$imapExtOk): ?>
+<div class="conn-status nok" style="max-width:520px;margin-bottom:14px;border:1px solid #fecaca;background:#fef2f2;">
+    <i class="fas fa-triangle-exclamation" style="color:#dc2626;"></i>
+    <div class="conn-status-text">
+        <h4 style="color:#991b1b;">Extension PHP « imap » inactive</h4>
+        <p style="color:#7f1d1d;">Sans elle, la connexion à la boîte ne peut pas fonctionner. Activez <code>imap</code> pour la version PHP du site (hébergeur / cPanel « Extensions »).</p>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="conn-card">
 
     <!-- Statut -->
-    <div class="conn-status <?= $isConfigured ? 'ok' : 'nok' ?>">
-        <i class="fas <?= $isConfigured ? 'fa-circle-check' : 'fa-triangle-exclamation' ?>"></i>
+    <div class="conn-status <?= ($isConfigured && $imapExtOk) ? 'ok' : 'nok' ?>">
+        <i class="fas <?= ($isConfigured && $imapExtOk) ? 'fa-circle-check' : 'fa-triangle-exclamation' ?>"></i>
         <div class="conn-status-text">
-            <h4><?= $isConfigured ? 'Compte connecté' : 'Aucun compte configuré' ?></h4>
-            <p><?= $isConfigured ? htmlspecialchars($advisorEmail) : 'Renseignez vos paramètres IMAP ci-dessous.' ?></p>
+            <h4><?= ($isConfigured && $imapExtOk) ? 'Identifiants enregistrés' : ($imapExtOk ? 'Connexion incomplète ou absente' : 'Configuration impossible (serveur)') ?></h4>
+            <p><?= ($isConfigured && $imapExtOk) ? htmlspecialchars($advisorEmail ?: '—') : 'Renseignez hôte, email et mot de passe IMAP ci-dessous, puis testez.' ?></p>
         </div>
-        <?php if ($isConfigured): ?>
+        <?php if ($isConfigured && $imapExtOk): ?>
             <button class="btn-disconnect" style="margin-left:auto;" onclick="disconnectAccount()">
                 <i class="fas fa-xmark"></i> Déconnecter
             </button>
@@ -84,7 +95,7 @@ $imapSecure   = (string) setting('imap_secure', $_ENV['IMAP_SECURE'] ?? 'ssl', $
         </div>
 
         <div class="form-actions">
-            <button type="button" class="btn-test" id="testBtn" onclick="testConnection()">
+            <button type="button" class="btn-test" id="testBtn" onclick="testConnection()" <?= !$imapExtOk ? 'disabled' : '' ?>>
                 <i class="fas fa-plug"></i> Tester la connexion
             </button>
             <span id="formFeedback"></span>
@@ -99,8 +110,9 @@ $imapSecure   = (string) setting('imap_secure', $_ENV['IMAP_SECURE'] ?? 'ssl', $
         <p style="font-size:.76rem;color:#64748b;margin:0;line-height:1.6;">
             <strong>OVH / cPanel :</strong> hôte = <code>mail.votredomaine.fr</code>, port SSL = 993<br>
             <strong>Infomaniak :</strong> hôte = <code>mail.infomaniak.com</code>, port SSL = 993<br>
-            <strong>Google Workspace :</strong> hôte = <code>imap.gmail.com</code>, port SSL = 993 (IMAP activé requis)<br>
-            Le mot de passe IMAP est généralement le même que votre mot de passe email.
+            <strong>Google / Gmail :</strong> <code>imap.gmail.com</code>, port <strong>993</strong> SSL — avec 2FA, créez un <strong>mot de passe d’application</strong> (compte Google → Sécurité).<br>
+            <strong>Microsoft 365 :</strong> <code>outlook.office365.com</code>, port <strong>993</strong> SSL (IMAP activé par l’admin Microsoft si besoin).<br>
+            Sinon le mot de passe est en général celui de la boîte mail.
         </p>
     </div>
 </div>

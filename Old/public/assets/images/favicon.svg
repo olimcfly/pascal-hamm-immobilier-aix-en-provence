@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Icône du site">
+  <defs>
+    <linearGradient id="fav-bg" x1="8" y1="6" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1a3c5e"/>
+      <stop offset="1" stop-color="#2558a0"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#fav-bg)"/>
+  <!-- Corps de la maison -->
+  <path fill="#f8f7f4" d="M32 14 52 30v22a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V30l20-16Z"/>
+  <!-- Porte (or) -->
+  <rect x="26" y="38" width="12" height="18" rx="2" fill="#c9a84c"/>
+</svg>

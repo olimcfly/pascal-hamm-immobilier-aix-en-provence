@@ -42,14 +42,15 @@ $pagination = $data['pagination'] ?? ['page' => 1, 'total_pages' => 1];
 $h = static fn (?string $value): string => htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 ?>
 
-<section class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;">
-        <h2 style="margin:0;">Articles du blog</h2>
-        <a class="btn-primary" href="/admin?module=blog&amp;action=edit">Nouvel article</a>
+<section class="legacy-card legacy-card--tight">
+    <div class="legacy-card-head">
+        <h2>Articles du blog</h2>
+        <a class="legacy-btn legacy-btn--primary" href="/admin?module=blog&amp;action=edit">Nouvel article</a>
     </div>
 
-    <div class="table-wrap">
-        <table class="table">
+    <div class="legacy-card-body">
+        <div class="legacy-table-wrap">
+        <table class="legacy-table">
             <thead>
                 <tr>
                     <th>Titre</th>
@@ -61,7 +62,7 @@ $h = static fn (?string $value): string => htmlspecialchars((string)$value, ENT_
             <tbody>
                 <?php if ($articles === []): ?>
                     <tr>
-                        <td colspan="4" class="muted" style="text-align:center;">Aucun article trouvé.</td>
+                        <td colspan="4" class="legacy-empty">Aucun article trouvé.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($articles as $article): ?>
@@ -69,11 +70,20 @@ $h = static fn (?string $value): string => htmlspecialchars((string)$value, ENT_
                             <td>
                                 <strong><?= $h($article['title'] ?? '') ?></strong>
                                 <?php if (!empty($article['slug'])): ?>
-                                    <div class="muted">/blog/<?= $h($article['slug']) ?></div>
+                                    <div class="text-muted">/blog/<?= $h($article['slug']) ?></div>
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <span class="badge"><?= $h(ucfirst((string)($article['status'] ?? 'draft'))) ?></span>
+                                <?php
+                                $status = (string)($article['status'] ?? 'draft');
+                                $badgeClass = match ($status) {
+                                    'published' => 'legacy-badge--green',
+                                    'draft' => 'legacy-badge--gray',
+                                    'scheduled' => 'legacy-badge--orange',
+                                    default => 'legacy-badge--blue',
+                                };
+                                ?>
+                                <span class="legacy-badge <?= $badgeClass ?>"><?= $h(ucfirst($status)) ?></span>
                             </td>
                             <td>
                                 <?php
@@ -81,26 +91,29 @@ $h = static fn (?string $value): string => htmlspecialchars((string)$value, ENT_
                                 echo $updatedAt !== '' ? $h(date('d/m/Y H:i', strtotime($updatedAt))) : '—';
                                 ?>
                             </td>
-                            <td style="display:flex;gap:8px;flex-wrap:wrap;">
-                                <a class="btn-ghost" href="/admin?module=blog&amp;action=edit&amp;id=<?= (int)($article['id'] ?? 0) ?>">Éditer</a>
-                                <a class="btn-secondary" href="/admin?module=blog&amp;action=delete&amp;id=<?= (int)($article['id'] ?? 0) ?>" onclick="return confirm('Supprimer cet article ?');">Supprimer</a>
+                            <td>
+                                <div class="legacy-actions">
+                                <a class="legacy-btn legacy-btn--ghost" href="/admin?module=blog&amp;action=edit&amp;id=<?= (int)($article['id'] ?? 0) ?>">Éditer</a>
+                                <a class="legacy-btn legacy-btn--secondary" href="/admin?module=blog&amp;action=delete&amp;id=<?= (int)($article['id'] ?? 0) ?>" onclick="return confirm('Supprimer cet article ?');">Supprimer</a>
                                 <?php if (($article['status'] ?? '') !== 'published'): ?>
-                                    <a class="btn-primary" href="/admin?module=blog&amp;action=publish&amp;id=<?= (int)($article['id'] ?? 0) ?>">Publier</a>
+                                    <a class="legacy-btn legacy-btn--primary" href="/admin?module=blog&amp;action=publish&amp;id=<?= (int)($article['id'] ?? 0) ?>">Publier</a>
                                 <?php else: ?>
-                                    <span class="badge">Publié</span>
+                                    <span class="legacy-badge legacy-badge--green">Publié</span>
                                 <?php endif; ?>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
+        </div>
     </div>
 
     <?php if ((int)($pagination['total_pages'] ?? 1) > 1): ?>
-        <div style="display:flex;gap:8px;margin-top:16px;">
+        <div class="legacy-actions" style="margin-top:16px;">
             <?php for ($i = 1; $i <= (int)$pagination['total_pages']; $i++): ?>
-                <a class="btn-ghost" href="?module=blog&amp;action=list&amp;page=<?= $i ?><?= $filters['status'] !== '' ? '&amp;status=' . urlencode($filters['status']) : '' ?>" <?= $i === (int)$pagination['page'] ? 'aria-current="page"' : '' ?>>
+                <a class="legacy-btn legacy-btn--ghost" href="?module=blog&amp;action=list&amp;page=<?= $i ?><?= $filters['status'] !== '' ? '&amp;status=' . urlencode($filters['status']) : '' ?>" <?= $i === (int)$pagination['page'] ? 'aria-current="page"' : '' ?>>
                     <?= $i ?>
                 </a>
             <?php endfor; ?>

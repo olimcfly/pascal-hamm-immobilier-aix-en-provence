@@ -1,0 +1,335 @@
+/* Shared legacy admin harmonization
+   Reuses the reference palette from the main admin hubs. */
+
+body.legacy-standalone {
+    background: #f5f7fa;
+    color: #1e293b;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.legacy-admin-page,
+.legacy-standalone-shell {
+    display: grid;
+    gap: 1.2rem;
+}
+
+.legacy-hero {
+    background: linear-gradient(135deg, #0f2237 0%, #1a3a5c 65%, #22507d 100%);
+    border-radius: 16px;
+    padding: 1.5rem 1.15rem;
+    color: #fff;
+    box-shadow: 0 12px 28px rgba(15, 34, 55, .25);
+}
+
+.legacy-hero h1 {
+    margin: 0 0 .5rem;
+    font-size: 1.7rem;
+    line-height: 1.25;
+    color: #fff;
+}
+
+.legacy-hero p {
+    margin: 0;
+    color: rgba(255, 255, 255, .78);
+    line-height: 1.6;
+    font-size: .95rem;
+}
+
+.legacy-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.legacy-stat-card {
+    background: #fff;
+    border: 1px solid #e8eef7;
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+}
+
+.legacy-stat-value {
+    font-size: 1.85rem;
+    line-height: 1.1;
+    font-weight: 800;
+    color: #0f2237;
+}
+
+.legacy-stat-label {
+    margin-top: .35rem;
+    font-size: .85rem;
+    color: #64748b;
+}
+
+.legacy-card {
+    background: #fff;
+    border: 1px solid #e8eef7;
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+}
+
+.legacy-card--tight {
+    padding: 0;
+    overflow: hidden;
+}
+
+.legacy-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid #edf2f7;
+    background: linear-gradient(180deg, #fafcff 0%, #fff 100%);
+}
+
+.legacy-card-head h2 {
+    margin: 0;
+    font-size: 1rem;
+    color: #0f2237;
+}
+
+.legacy-card-body {
+    padding: 1rem 1.1rem;
+}
+
+.legacy-toolbar,
+.legacy-filter-bar,
+.legacy-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.legacy-filter-bar {
+    align-items: center;
+}
+
+.legacy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .58rem .92rem;
+    border-radius: 10px;
+    border: 1px solid #dce5f0;
+    background: #fff;
+    color: #0f2237;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.legacy-btn:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, .08);
+}
+
+.legacy-btn--primary {
+    background: #c9a84c;
+    border-color: #c9a84c;
+    color: #10253c;
+}
+
+.legacy-btn--primary:hover {
+    background: #b8943d;
+    border-color: #b8943d;
+    color: #10253c;
+}
+
+.legacy-btn--secondary {
+    background: #eff3f8;
+    border-color: #d9e3ef;
+    color: #1e293b;
+}
+
+.legacy-btn--ghost {
+    background: transparent;
+}
+
+.legacy-btn--danger {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.legacy-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: .22rem .56rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.legacy-badge--blue { background: #dbeafe; color: #1d4ed8; }
+.legacy-badge--green { background: #dcfce7; color: #166534; }
+.legacy-badge--orange { background: #fef3c7; color: #b45309; }
+.legacy-badge--gray { background: #f1f5f9; color: #64748b; }
+.legacy-badge--rose { background: #ffe4e6; color: #be123c; }
+
+.legacy-table-wrap {
+    overflow-x: auto;
+}
+
+.legacy-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .93rem;
+}
+
+.legacy-table th {
+    text-align: left;
+    padding: .85rem 1rem;
+    font-weight: 700;
+    color: #64748b;
+    border-bottom: 1px solid #e8eef7;
+    background: #f8fafc;
+    white-space: nowrap;
+}
+
+.legacy-table td {
+    padding: .85rem 1rem;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: top;
+}
+
+.legacy-table tr:hover {
+    background: #f8fafc;
+}
+
+.legacy-empty {
+    padding: 2rem;
+    text-align: center;
+    color: #64748b;
+}
+
+.legacy-note {
+    background: #f0f7ff;
+    border: 1px solid #cfe2ff;
+    border-left: 4px solid #2563eb;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    color: #0f2237;
+}
+
+.legacy-form-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.legacy-form-section {
+    background: #fff;
+    border: 1px solid #e8eef7;
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+}
+
+.legacy-form-section h2 {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    color: #0f2237;
+}
+
+.legacy-form-group {
+    display: grid;
+    gap: .45rem;
+    margin-bottom: 1rem;
+}
+
+.legacy-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.legacy-label {
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.legacy-input,
+.legacy-textarea,
+.legacy-select {
+    width: 100%;
+    padding: .75rem .9rem;
+    border: 1px solid #dbe3ee;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+    font: inherit;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.legacy-input:focus,
+.legacy-textarea:focus,
+.legacy-select:focus {
+    outline: none;
+    border-color: #c9a84c;
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, .12);
+}
+
+.legacy-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.legacy-help {
+    font-size: .82rem;
+    color: #64748b;
+}
+
+.legacy-alert {
+    padding: .9rem 1rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+}
+
+.legacy-alert--success {
+    background: #dcfce7;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+.legacy-alert--danger {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.legacy-alert--info {
+    background: #dbeafe;
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+}
+
+.legacy-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    padding-top: .25rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #64748b;
+}
+
+@media (min-width: 768px) {
+    .legacy-hero {
+        padding: 2rem 2.1rem;
+    }
+
+    .legacy-hero h1 {
+        font-size: 2rem;
+    }
+}

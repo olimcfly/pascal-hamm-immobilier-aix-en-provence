@@ -23,6 +23,7 @@ $GLOBALS['admin_query_base'] = $adminQueryBase;
     <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/dashboard.css')) ?>">
     <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/settings.css')) ?>">
     <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/hub-page.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/legacy-harmonize.css')) ?>">
     <link rel="stylesheet" href="<?= e(asset_url('/admin/assets/css/tooltip.css')) ?>">
 </head>
 <body data-admin-base="<?= htmlspecialchars($adminBasePath, ENT_QUOTES, 'UTF-8') ?>"
@@ -195,14 +196,14 @@ $GLOBALS['admin_query_base'] = $adminQueryBase;
 
 <?php if (!empty($_SESSION['show_welcome_popup'])): unset($_SESSION['show_welcome_popup']);
 $welcomeMessages = [
-    ['emoji'=>'🚀','title'=>'Prêt à conquérir le Bordeaux Métropole ?','text'=>'Le marché immobilier n\'a qu\'à bien se tenir. Vous êtes là, et c\'est suffisant.'],
+    ['emoji'=>'🚀','title'=>'Prêt à conquérir le Pays d\'Aix ?','text'=>'Le marché immobilier n\'a qu\'à bien se tenir. Vous êtes là, et c\'est suffisant.'],
     ['emoji'=>'☀️','title'=>'Bonjour patron !','text'=>'Les biens ne se vendent pas tout seuls. Mais avec vous derrière le clavier, c\'est presque pareil.'],
-    ['emoji'=>'🏡','title'=>'Maison. Appartement. Empire.','text'=>'La session est ouverte. Bordeaux attend vos ordres.'],
+    ['emoji'=>'🏡','title'=>'Maison. Appartement. Empire.','text'=>'La session est ouverte. Aix-en-Provence attend vos ordres.'],
     ['emoji'=>'💼','title'=>'Connexion réussie. Mission : cartonner.','text'=>'Agenda chargé ou moment calme ? Dans tous les cas, bienvenue dans le QG.'],
     ['emoji'=>'🎯','title'=>'Le chasseur est dans la place.','text'=>'Biens, leads, clients — tout ça ne sait pas encore ce qui l\'attend.'],
     ['emoji'=>'🌟','title'=>'Une nouvelle journée, de nouvelles commissions.','text'=>'On ne va pas se mentir, c\'est pour ça qu\'on est là. Bonne session !'],
-    ['emoji'=>'⚡','title'=>'Alerte : expert immobilier connecté.','text'=>'Les autres conseillers du Bordeaux Métropole peuvent commencer à s\'inquiéter.'],
-    ['emoji'=>'🦁','title'=>'Le roi est de retour dans son territoire.','text'=>'Bordeaux, Luynes, Puyricard… Le Bordeaux Métropole appartient à ceux qui le connaissent.'],
+    ['emoji'=>'⚡','title'=>'Alerte : expert immobilier connecté.','text'=>'Les autres conseillers du Pays d\'Aix peuvent commencer à s\'inquiéter.'],
+    ['emoji'=>'🦁','title'=>'Le roi est de retour dans son territoire.','text'=>'Aix-en-Provence, Luynes, Puyricard… Le Pays d\'Aix appartient à ceux qui le connaissent.'],
     ['emoji'=>'🎪','title'=>'Et le show commence !','text'=>'Rideau ouvert, clients briefés, biens prêts. Il ne manquait plus que vous.'],
     ['emoji'=>'🧠','title'=>'Connexion établie. Neurones en route.','text'=>'Statistiques, leads, contenus… votre cerveau immobilier est en ligne.'],
     ['emoji'=>'🏆','title'=>'L\'équipe gagnante est de retour.','text'=>'Spoiler : l\'équipe gagnante, c\'est vous. Et votre ordinateur.'],

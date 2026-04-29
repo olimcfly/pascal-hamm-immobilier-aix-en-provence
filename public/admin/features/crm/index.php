@@ -33,155 +33,126 @@ $pageTitle = 'CRM - Leads';
 $currentModule = 'crm';
 ?>
 
-<div class="admin-page">
-    <div class="page-header">
-        <h1>📊 CRM - Gestion des Leads</h1>
+<div class="legacy-admin-page">
+    <header class="legacy-hero">
+        <h1>CRM - Gestion des leads</h1>
         <p>Tableau de bord des leads enregistrées depuis vos formulaires.</p>
-    </div>
+    </header>
 
-    <!-- Statistiques -->
-    <div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:2rem">
-        <div class="stat-card" style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;padding:1.5rem;text-align:center">
-            <div style="font-size:2rem;font-weight:700;color:#1f3a5e"><?= $statsAll ?></div>
-            <div style="font-size:0.85rem;color:#6c757d;margin-top:0.5rem">Leads totales</div>
+    <section class="legacy-stats-grid" aria-label="Statistiques CRM">
+        <div class="legacy-stat-card">
+            <div class="legacy-stat-value"><?= $statsAll ?></div>
+            <div class="legacy-stat-label">Leads totales</div>
         </div>
-        <div class="stat-card" style="background:#e7f3ff;border:1px solid #b3e5fc;border-radius:8px;padding:1.5rem;text-align:center">
-            <div style="font-size:2rem;font-weight:700;color:#0277bd"><?= $statsEstimation ?></div>
-            <div style="font-size:0.85rem;color:#0277bd;margin-top:0.5rem">Estimations</div>
+        <div class="legacy-stat-card">
+            <div class="legacy-stat-value" style="color:#1d4ed8;"><?= $statsEstimation ?></div>
+            <div class="legacy-stat-label" style="color:#1d4ed8;">Estimations</div>
         </div>
-        <div class="stat-card" style="background:#f3e5f5;border:1px solid #ce93d8;border-radius:8px;padding:1.5rem;text-align:center">
-            <div style="font-size:2rem;font-weight:700;color:#6a1b9a"><?= $statsContact ?></div>
-            <div style="font-size:0.85rem;color:#6a1b9a;margin-top:0.5rem">Contacts</div>
+        <div class="legacy-stat-card">
+            <div class="legacy-stat-value" style="color:#7c3aed;"><?= $statsContact ?></div>
+            <div class="legacy-stat-label" style="color:#7c3aed;">Contacts</div>
         </div>
-        <div class="stat-card" style="background:#fff3e0;border:1px solid #ffe0b2;border-radius:8px;padding:1.5rem;text-align:center">
-            <div style="font-size:2rem;font-weight:700;color:#e65100"><?= $statsTelechargement ?></div>
-            <div style="font-size:0.85rem;color:#e65100;margin-top:0.5rem">Téléchargements</div>
+        <div class="legacy-stat-card">
+            <div class="legacy-stat-value" style="color:#c2410c;"><?= $statsTelechargement ?></div>
+            <div class="legacy-stat-label" style="color:#c2410c;">Téléchargements</div>
         </div>
-    </div>
+    </section>
 
-    <!-- Filtres -->
-    <div style="margin-bottom:2rem;padding:1rem;background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6">
-        <div style="display:flex;gap:1rem;flex-wrap:wrap">
-            <a href="/admin?module=crm" class="btn <?= empty($filter) ? 'btn--accent' : 'btn--outline' ?>" style="padding:0.5rem 1rem;font-size:0.9rem">
+    <section class="legacy-card">
+        <div class="legacy-filter-bar">
+            <a href="/admin?module=crm" class="legacy-btn <?= empty($filter) ? 'legacy-btn--primary' : 'legacy-btn--secondary' ?>">
                 Tous (<?= $statsAll ?>)
             </a>
-            <a href="/admin?module=crm&source=estimation" class="btn <?= $filter === 'estimation' ? 'btn--accent' : 'btn--outline' ?>" style="padding:0.5rem 1rem;font-size:0.9rem">
+            <a href="/admin?module=crm&source=estimation" class="legacy-btn <?= $filter === 'estimation' ? 'legacy-btn--primary' : 'legacy-btn--secondary' ?>">
                 Estimations (<?= $statsEstimation ?>)
             </a>
-            <a href="/admin?module=crm&source=contact" class="btn <?= $filter === 'contact' ? 'btn--accent' : 'btn--outline' ?>" style="padding:0.5rem 1rem;font-size:0.9rem">
+            <a href="/admin?module=crm&source=contact" class="legacy-btn <?= $filter === 'contact' ? 'legacy-btn--primary' : 'legacy-btn--secondary' ?>">
                 Contacts (<?= $statsContact ?>)
             </a>
-            <a href="/admin?module=crm&source=telechargement" class="btn <?= $filter === 'telechargement' ? 'btn--accent' : 'btn--outline' ?>" style="padding:0.5rem 1rem;font-size:0.9rem">
+            <a href="/admin?module=crm&source=telechargement" class="legacy-btn <?= $filter === 'telechargement' ? 'legacy-btn--primary' : 'legacy-btn--secondary' ?>">
                 Téléchargements (<?= $statsTelechargement ?>)
             </a>
         </div>
-    </div>
+    </section>
 
-    <!-- Tableau des leads -->
-    <div style="overflow-x:auto;background:white;border-radius:8px;border:1px solid #dee2e6">
-        <?php if (empty($leads)): ?>
-            <div style="padding:2rem;text-align:center;color:#6c757d">
-                <p style="font-size:1.1rem;margin-bottom:0.5rem">Aucune lead pour le moment.</p>
-                <p style="font-size:0.9rem">Les formulaires remplis s'afficheront ici.</p>
-            </div>
-        <?php else: ?>
-            <table style="width:100%;border-collapse:collapse">
-                <thead style="background:#f8f9fa;border-bottom:2px solid #dee2e6">
-                    <tr>
-                        <th style="padding:1rem;text-align:left;font-weight:600;color:#333">ID</th>
-                        <th style="padding:1rem;text-align:left;font-weight:600;color:#333">Prénom</th>
-                        <th style="padding:1rem;text-align:left;font-weight:600;color:#333">Email</th>
-                        <th style="padding:1rem;text-align:left;font-weight:600;color:#333">Téléphone</th>
-                        <th style="padding:1rem;text-align:left;font-weight:600;color:#333">Type</th>
-                        <th style="padding:1rem;text-align:left;font-weight:600;color:#333">Source</th>
-                        <th style="padding:1rem;text-align:left;font-weight:600;color:#333">Stage</th>
-                        <th style="padding:1rem;text-align:left;font-weight:600;color:#333">Date</th>
-                        <th style="padding:1rem;text-align:center;font-weight:600;color:#333">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($leads as $lead): ?>
-                    <tr style="border-bottom:1px solid #dee2e6">
-                        <td style="padding:1rem;color:#666"><?= htmlspecialchars($lead['id']) ?></td>
-                        <td style="padding:1rem;color:#333;font-weight:500">
-                            <?= htmlspecialchars($lead['first_name'] . ' ' . ($lead['last_name'] ?? '')) ?>
-                        </td>
-                        <td style="padding:1rem;color:#0277bd">
-                            <a href="mailto:<?= htmlspecialchars($lead['email']) ?>" style="text-decoration:none;color:#0277bd">
-                                <?= htmlspecialchars($lead['email']) ?>
-                            </a>
-                        </td>
-                        <td style="padding:1rem;color:#666">
-                            <?php if ($lead['phone']): ?>
-                                <a href="tel:<?= htmlspecialchars($lead['phone']) ?>" style="text-decoration:none;color:#666">
-                                    <?= htmlspecialchars($lead['phone']) ?>
+    <section class="legacy-card legacy-card--tight">
+        <div class="legacy-card-head">
+            <h2>Leads récentes</h2>
+            <span class="legacy-badge legacy-badge--gray"><?= $statsAll ?> total</span>
+        </div>
+
+        <div class="legacy-table-wrap">
+            <?php if (empty($leads)): ?>
+                <div class="legacy-empty">
+                    <p style="font-size:1.05rem;margin-bottom:.35rem;">Aucune lead pour le moment.</p>
+                    <p>Les formulaires remplis s'afficheront ici.</p>
+                </div>
+            <?php else: ?>
+                <table class="legacy-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Type</th>
+                            <th>Source</th>
+                            <th>Stage</th>
+                            <th>Date</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($leads as $lead): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($lead['id']) ?></td>
+                            <td style="font-weight:600;color:#0f172a;">
+                                <?= htmlspecialchars($lead['first_name'] . ' ' . ($lead['last_name'] ?? '')) ?>
+                            </td>
+                            <td>
+                                <a href="mailto:<?= htmlspecialchars($lead['email']) ?>">
+                                    <?= htmlspecialchars($lead['email']) ?>
                                 </a>
-                            <?php else: ?>
-                                <span style="color:#ccc">—</span>
-                            <?php endif; ?>
-                        </td>
-                        <td style="padding:1rem;color:#666">
-                            <span style="background:#f0f4f8;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.85rem">
-                                <?= htmlspecialchars($lead['property_type'] ?? '—') ?>
-                            </span>
-                        </td>
-                        <td style="padding:1rem">
-                            <span style="background:#e7f3ff;color:#0277bd;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.85rem">
-                                <?= htmlspecialchars($lead['source_type']) ?>
-                            </span>
-                        </td>
-                        <td style="padding:1rem;color:#666">
-                            <span style="background:#fce4ec;color:#c2185b;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.85rem">
-                                <?= htmlspecialchars($lead['stage'] ?? 'non défini') ?>
-                            </span>
-                        </td>
-                        <td style="padding:1rem;color:#999;font-size:0.9rem">
-                            <?= date('d/m/Y H:i', strtotime($lead['created_at'])) ?>
-                        </td>
-                        <td style="padding:1rem;text-align:center">
-                            <a href="/admin?module=crm&action=view&id=<?= $lead['id'] ?>"
-                               style="color:#0277bd;text-decoration:none;font-size:0.9rem">
-                                Détails
-                            </a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php endif; ?>
-    </div>
+                            </td>
+                            <td>
+                                <?php if ($lead['phone']): ?>
+                                    <a href="tel:<?= htmlspecialchars($lead['phone']) ?>">
+                                        <?= htmlspecialchars($lead['phone']) ?>
+                                    </a>
+                                <?php else: ?>
+                                    <span class="legacy-badge legacy-badge--gray">—</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <span class="legacy-badge legacy-badge--gray">
+                                    <?= htmlspecialchars($lead['property_type'] ?? '—') ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="legacy-badge legacy-badge--blue">
+                                    <?= htmlspecialchars($lead['source_type']) ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="legacy-badge legacy-badge--rose">
+                                    <?= htmlspecialchars($lead['stage'] ?? 'non défini') ?>
+                                </span>
+                            </td>
+                            <td><?= date('d/m/Y H:i', strtotime($lead['created_at'])) ?></td>
+                            <td class="text-center">
+                                <a href="/admin?module=crm&action=view&id=<?= $lead['id'] ?>" class="legacy-btn legacy-btn--ghost">
+                                    Détails
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+    </section>
 
-    <!-- Note -->
-    <div style="margin-top:2rem;padding:1rem;background:#e8f5e9;border-left:4px solid #4caf50;border-radius:4px">
-        <strong>ℹ️ Info:</strong> Les leads sont enregistrées automatiquement depuis les formulaires d'estimation, contact et autres conversions.
+    <div class="legacy-note">
+        <strong>Info :</strong> Les leads sont enregistrées automatiquement depuis les formulaires d'estimation, contact et autres conversions.
     </div>
 </div>
-
-<style>
-.btn {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    text-decoration: none;
-    border: 1px solid #dee2e6;
-    background: white;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-}
-.btn:hover {
-    border-color: #0277bd;
-    color: #0277bd;
-}
-.btn--accent {
-    background: #0277bd !important;
-    color: white !important;
-    border-color: #0277bd !important;
-}
-.btn--outline {
-    background: white;
-    color: #333;
-    border-color: #dee2e6;
-}
-</style>

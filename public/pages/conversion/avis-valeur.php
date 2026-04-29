@@ -119,7 +119,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 $advisorForMeta = (defined('ADVISOR_NAME') && trim((string) ADVISOR_NAME) !== '') ? ADVISOR_NAME : 'Un conseiller';
 
 $pageTitle = 'Avis de valeur — Accompagnement personnalisé | ' . APP_NAME;
-$metaDesc  = 'Obtenez un avis de valeur clair sur votre bien à Bordeaux Métropole. ' . $advisorForMeta
+$metaDesc  = "Obtenez un avis de valeur clair sur votre bien dans le Pays d'Aix. " . $advisorForMeta
     . ' étudie votre situation et revient vers vous rapidement, sans engagement.';
 $extraCss  = ['/assets/css/financement.css', '/assets/css/estimation.css'];
 $formAction = (string) (parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH) ?: '/avis-de-valeur');
@@ -224,7 +224,7 @@ if ($formAction === '' || $formAction === '/') {
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="av-address">Adresse du bien *</label>
-                        <input class="form-control" id="av-address" name="address" required placeholder="Ex. : 12 allées de Tourny, Bordeaux" autocomplete="street-address" value="<?= e($formData['address']) ?>">
+                        <input class="form-control" id="av-address" name="address" required placeholder="Ex. : 12 allées de Tourny, Aix-en-Provence" autocomplete="street-address" value="<?= e($formData['address']) ?>">
                         <div class="form-error"><?= e($errors['address'] ?? '') ?></div>
                     </div>
                     <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">

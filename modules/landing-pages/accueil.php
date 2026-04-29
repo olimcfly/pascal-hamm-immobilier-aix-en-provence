@@ -129,43 +129,69 @@ function renderContent(): void
     global $landingPages, $defaults, $errors, $isEdit;
     ?>
     <style>
-        .lp-grid{display:grid;gap:1rem;grid-template-columns:1.1fr .9fr;align-items:start}
-        .lp-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1rem;box-shadow:0 10px 26px rgba(15,23,42,.06)}
-        .lp-table{width:100%;border-collapse:collapse}.lp-table th,.lp-table td{padding:.55rem;border-bottom:1px solid #f1f5f9;text-align:left}
-        .lp-form{display:grid;gap:.55rem}.lp-form label{font-size:.92rem;color:#334155}.lp-form input,.lp-form select,.lp-form textarea{width:100%;padding:.55rem .65rem;border:1px solid #cbd5e1;border-radius:10px}
-        .lp-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}.lp-actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
-        .btn{display:inline-block;background:#0f766e;color:#fff;border:none;border-radius:10px;padding:.6rem .9rem;text-decoration:none;font-weight:600}
-        @media (max-width:1000px){.lp-grid{grid-template-columns:1fr}.lp-cols{grid-template-columns:1fr}}
+    .lp-hero{background:linear-gradient(135deg,#0f2237 0%,#1a3a5c 100%);border-radius:16px;padding:36px 40px;color:#fff;margin-bottom:32px;box-shadow:0 4px 20px rgba(15,34,55,.18)}
+    .lp-hero-badge{display:inline-block;background:rgba(201,168,76,.2);color:#c9a84c;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid rgba(201,168,76,.35)}
+    .lp-hero h1{font-size:28px;font-weight:700;color:#fff;margin:0 0 12px;line-height:1.25}
+    .lp-hero p{font-size:15px;color:rgba(255,255,255,.7);line-height:1.65;max-width:680px;margin:0}
+    .lp-grid{display:grid;gap:24px;grid-template-columns:1fr;align-items:start}
+    .lp-section-title{font-size:12px;font-weight:700;color:#8a95a3;text-transform:uppercase;letter-spacing:.07em;margin:0 0 16px}
+    .lp-card{background:#fff;border-radius:12px;padding:24px 26px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+    .lp-list{display:flex;flex-direction:column;gap:14px;margin:0}
+    .lp-empty{color:#64748b;font-size:13px;margin:0;line-height:1.5}
+    .lp-row{display:flex;align-items:flex-start;gap:18px;background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 6px rgba(0,0,0,.07);text-decoration:none;color:inherit;border-left:4px solid #e8ecf0;transition:transform .15s,box-shadow .15s,border-color .15s}
+    .lp-row:hover{transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.1);border-color:#c9a84c}
+    .lp-row-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#64748b}
+    .lp-row-body{flex:1;min-width:0}.lp-row-label{font-size:15px;font-weight:600;color:#1e293b;margin-bottom:3px}.lp-row-desc{font-size:13px;color:#64748b;line-height:1.5}.lp-row-arrow{flex-shrink:0;color:#c9a84c;font-size:16px;margin-top:8px}
+    .lp-status{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-left:8px;background:#f1f5f9;color:#64748b}.lp-status.is-active{background:rgba(16,185,129,.12);color:#047857}
+    .lp-form{display:grid;gap:14px}.lp-form label{display:grid;gap:6px;font-size:13px;font-weight:600;color:#334155}.lp-form input,.lp-form select,.lp-form textarea{width:100%;padding:11px 12px;border:1px solid #d7dee8;border-radius:8px;color:#1e293b;font:inherit;background:#fff}
+    .lp-form input:focus,.lp-form select:focus,.lp-form textarea:focus{outline:none;border-color:#c9a84c;box-shadow:0 0 0 3px rgba(201,168,76,.16)}
+    .lp-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .lp-actions{background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 6px rgba(0,0,0,.07);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:8px}
+    .lp-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:#c9a84c;color:#0f2237;border:none;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;cursor:pointer;transition:background .15s}.lp-btn:hover{background:#b8943d}
+    .lp-link{color:#1e293b;font-size:14px;font-weight:600;text-decoration:none}.lp-error{background:#fef2f2;border-left:4px solid #ef4444;border-radius:8px;color:#991b1b;font-size:13px;margin:0 0 12px;padding:10px 12px}
+    .lp-check{display:flex!important;grid-template-columns:none!important;align-items:center;gap:10px}.lp-check input{width:auto}
+    @media (max-width:700px){.lp-hero{padding:24px 20px}.lp-row{flex-wrap:wrap}.lp-cols{grid-template-columns:1fr}}
     </style>
 
-    <div class="page-header">
-        <h1><i class="fas fa-bullseye page-icon"></i> Landing Pages <span class="page-title-accent">Google Ads</span></h1>
-        <p>LP multi-sites, conformes RGPD et prêtes pour le Quality Score.</p>
+    <div class="lp-hero">
+        <div class="lp-hero-badge">Acquisition payante</div>
+        <h1>Landing Pages Google Ads</h1>
+        <p>
+            Créez des pages d'estimation ou de financement cohérentes, locales et prêtes à convertir vos campagnes.
+            Chaque fiche centralise le message, la ville, le conseiller, les avis et le tracking par défaut.
+        </p>
     </div>
 
     <div class="lp-grid">
-        <section class="lp-card">
-            <h3 style="margin-top:0">LP existantes</h3>
-            <table class="lp-table">
-                <thead><tr><th>Slug</th><th>Type</th><th>Ville</th><th>Statut</th><th>Action</th></tr></thead>
-                <tbody>
-                <?php if (!$landingPages): ?><tr><td colspan="5">Aucune landing page.</td></tr><?php endif; ?>
+        <section>
+            <div class="lp-section-title">Landing pages existantes</div>
+            <div class="lp-list">
+                <?php if (!$landingPages): ?>
+                    <div class="lp-card">
+                        <p class="lp-empty">Aucune landing page pour le moment. Créez une première fiche avec le formulaire ci-dessous.</p>
+                    </div>
+                <?php endif; ?>
                 <?php foreach ($landingPages as $lp): ?>
-                    <tr>
-                        <td>/lp/<?= e((string)$lp['slug']) ?></td>
-                        <td><?= e((string)$lp['type']) ?></td>
-                        <td><?= e((string)$lp['ville']) ?></td>
-                        <td><?= ((int)$lp['active'] === 1) ? 'Active' : 'Inactive' ?></td>
-                        <td><a href="/admin/index.php?module=landing-pages&id=<?= (int)$lp['id'] ?>">Éditer</a></td>
-                    </tr>
+                    <a class="lp-row" href="/admin/index.php?module=landing-pages&id=<?= (int)$lp['id'] ?>">
+                        <div class="lp-row-num"><i class="fas fa-bullseye"></i></div>
+                        <div class="lp-row-body">
+                            <div class="lp-row-label">
+                                /lp/<?= e((string)$lp['slug']) ?>
+                                <span class="lp-status<?= ((int)$lp['active'] === 1) ? ' is-active' : '' ?>"><?= ((int)$lp['active'] === 1) ? 'Active' : 'Inactive' ?></span>
+                            </div>
+                            <div class="lp-row-desc">
+                                <?= e((string)$lp['type']) ?><?= $lp['ville'] !== '' ? ' · ' . e((string)$lp['ville']) : '' ?> · Mise à jour <?= e((string)$lp['updated_at']) ?>
+                            </div>
+                        </div>
+                        <div class="lp-row-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </a>
                 <?php endforeach; ?>
-                </tbody>
-            </table>
+            </div>
         </section>
 
         <section class="lp-card">
-            <h3 style="margin-top:0"><?= $isEdit ? 'Modifier la LP' : 'Créer une LP' ?></h3>
-            <?php foreach ($errors as $error): ?><p style="color:#b91c1c;margin:.2rem 0"><?= e((string)$error) ?></p><?php endforeach; ?>
+            <div class="lp-section-title"><?= $isEdit ? 'Modifier la landing page' : 'Créer une landing page' ?></div>
+            <?php foreach ($errors as $error): ?><p class="lp-error"><?= e((string)$error) ?></p><?php endforeach; ?>
             <form class="lp-form" method="post">
                 <div class="lp-cols">
                     <label>Slug<input name="slug" required value="<?= e((string)$defaults['slug']) ?>"></label>
@@ -193,11 +219,11 @@ function renderContent(): void
                 <label>Avis client 2 texte<textarea rows="2" name="review_2_text"><?= e((string)$defaults['review_2_text']) ?></textarea></label>
                 <div class="lp-cols">
                     <label>UTM source par défaut<select name="utm_source_default"><option value="google" <?= $defaults['utm_source_default']==='google'?'selected':'' ?>>google</option><option value="facebook" <?= $defaults['utm_source_default']==='facebook'?'selected':'' ?>>facebook</option></select></label>
-                    <label>Active <input type="checkbox" name="active" value="1" <?= !empty($defaults['active']) ? 'checked' : '' ?>></label>
+                    <label class="lp-check">Active <input type="checkbox" name="active" value="1" <?= !empty($defaults['active']) ? 'checked' : '' ?>></label>
                 </div>
                 <div class="lp-actions">
-                    <button class="btn" type="submit">Enregistrer</button>
-                    <a href="/admin/index.php?module=landing-pages">Nouvelle fiche</a>
+                    <button class="lp-btn" type="submit"><i class="fas fa-save"></i> Enregistrer</button>
+                    <a class="lp-link" href="/admin/index.php?module=landing-pages">Nouvelle fiche</a>
                 </div>
             </form>
         </section>

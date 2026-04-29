@@ -10,6 +10,22 @@ try {
 } catch (\Throwable $e) {
     $articles = [];
 }
+
+$staticArticles = [
+    [
+        'title' => 'Comment bien négocier un prix immobilier ?',
+        'slug' => 'negociation-immobiliere',
+        'excerpt' => 'Méthode concrète pour négocier un achat ou une vente immobilière sans fragiliser le dossier : prix, arguments, timing et preuves de marché.',
+        'date' => '2026-04-29',
+    ],
+];
+
+$existingSlugs = array_filter(array_map(static fn (array $article): string => (string) ($article['slug'] ?? ''), $articles));
+foreach (array_reverse($staticArticles) as $staticArticle) {
+    if (!in_array($staticArticle['slug'], $existingSlugs, true)) {
+        array_unshift($articles, $staticArticle);
+    }
+}
 ?>
 
 <section class="hero" aria-labelledby="blog-hero-title">

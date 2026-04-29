@@ -1,7 +1,7 @@
 <?php
 /**
  * GET /api/guide-local/villes.php
- * GET /api/guide-local/villes.php?slug=bordeaux
+ * GET /api/guide-local/villes.php?slug=aix-en-provence
  * Liste des villes actives (+ quartiers si slug demandé).
  */
 declare(strict_types=1);

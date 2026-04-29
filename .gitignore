@@ -43,3 +43,4 @@ public/error_log
 error_log
 .env_local
 storage/logs/
+.aider*

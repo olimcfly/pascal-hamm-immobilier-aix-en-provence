@@ -373,7 +373,7 @@ if (rdEffectiveRequestMethod() === 'POST' && $action === 'api_create_social_sequ
             ':user_id' => $userId,
             ':nom' => 'SEO → Social · ' . mb_substr((string)($article['titre'] ?? 'Article'), 0, 120),
             ':persona' => $persona !== '' ? $persona : 'Persona libre',
-            ':zone' => (string)setting('zone_city', 'Bordeaux'),
+            ':zone' => (string)setting('zone_city', 'Aix-en-Provence'),
             ':statut' => 'active',
             ':objectif' => $objectif,
         ]);

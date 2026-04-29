@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 class CityPageService
 {
+    private static bool $schemaEnsured = false;
+
     public function __construct(private readonly PDO $pdo)
     {
+        $this->ensureSchema();
     }
 
     public function listForUser(int $userId, string $status = '', string $search = ''): array
@@ -238,5 +241,119 @@ class CityPageService
     private function isCleanSlug(string $slug): bool
     {
         return $slug !== '' && (bool)preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug);
+    }
+
+    private function ensureSchema(): void
+    {
+        if (self::$schemaEnsured) {
+            return;
+        }
+
+        self::$schemaEnsured = true;
+
+        try {
+            $this->pdo->exec(
+                "CREATE TABLE IF NOT EXISTS seo_city_pages (
+                    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    user_id BIGINT UNSIGNED NOT NULL,
+                    city_name VARCHAR(160) NOT NULL,
+                    slug VARCHAR(190) NOT NULL,
+                    status ENUM('draft', 'ready', 'published') NOT NULL DEFAULT 'draft',
+                    seo_title VARCHAR(70) DEFAULT NULL,
+                    meta_description VARCHAR(170) DEFAULT NULL,
+                    h1 VARCHAR(190) DEFAULT NULL,
+                    intro TEXT NULL,
+                    market_block MEDIUMTEXT NULL,
+                    faq_json JSON NULL,
+                    internal_links_json JSON NULL,
+                    canonical_url VARCHAR(255) DEFAULT NULL,
+                    seo_score TINYINT UNSIGNED NOT NULL DEFAULT 0,
+                    content_score TINYINT UNSIGNED NOT NULL DEFAULT 0,
+                    published_at DATETIME NULL,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    UNIQUE KEY uniq_city_slug (user_id, slug),
+                    KEY idx_city_status (user_id, status),
+                    KEY idx_city_name (user_id, city_name),
+                    KEY idx_city_score (user_id, seo_score)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+            );
+
+            $this->addColumnIfMissing('city_name', 'VARCHAR(160) NULL AFTER user_id');
+            $this->addColumnIfMissing('intro', 'TEXT NULL AFTER h1');
+            $this->addColumnIfMissing('market_block', 'MEDIUMTEXT NULL AFTER intro');
+            $this->addColumnIfMissing('faq_json', 'JSON NULL AFTER market_block');
+            $this->addColumnIfMissing('internal_links_json', 'JSON NULL AFTER faq_json');
+            $this->addColumnIfMissing('canonical_url', 'VARCHAR(255) NULL AFTER internal_links_json');
+            $this->addColumnIfMissing('seo_score', 'TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER canonical_url');
+            $this->addColumnIfMissing('content_score', 'TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER seo_score');
+
+            if ($this->columnExists('city')) {
+                $this->tryExec('UPDATE seo_city_pages SET city_name = COALESCE(NULLIF(city_name, \'\'), NULLIF(city, \'\'), \'\') WHERE city_name IS NULL OR city_name = \'\'');
+                $this->tryExec('ALTER TABLE seo_city_pages MODIFY COLUMN city VARCHAR(160) NULL');
+            }
+
+            if ($this->columnExists('postal_code')) {
+                $this->tryExec('ALTER TABLE seo_city_pages MODIFY COLUMN postal_code VARCHAR(12) NULL');
+            }
+
+            if ($this->columnExists('content')) {
+                $this->tryExec('ALTER TABLE seo_city_pages MODIFY COLUMN content MEDIUMTEXT NULL');
+            }
+
+            $this->tryExec("ALTER TABLE seo_city_pages MODIFY COLUMN city_name VARCHAR(160) NOT NULL");
+            $this->tryExec("ALTER TABLE seo_city_pages MODIFY COLUMN status ENUM('draft', 'ready', 'published') NOT NULL DEFAULT 'draft'");
+            $this->addIndexIfMissing('idx_city_name', 'ADD INDEX idx_city_name (user_id, city_name)');
+            $this->addIndexIfMissing('idx_city_score', 'ADD INDEX idx_city_score (user_id, seo_score)');
+        } catch (Throwable $e) {
+            error_log('CityPageService::ensureSchema ' . $e->getMessage());
+        }
+    }
+
+    private function addColumnIfMissing(string $column, string $definition): void
+    {
+        if (!$this->columnExists($column)) {
+            $this->tryExec("ALTER TABLE seo_city_pages ADD COLUMN {$column} {$definition}");
+        }
+    }
+
+    private function addIndexIfMissing(string $index, string $definition): void
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                'SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND INDEX_NAME = ? LIMIT 1'
+            );
+            $stmt->execute(['seo_city_pages', $index]);
+
+            if (!$stmt->fetchColumn()) {
+                $this->tryExec("ALTER TABLE seo_city_pages {$definition}");
+            }
+        } catch (Throwable $e) {
+            error_log('CityPageService::addIndexIfMissing ' . $e->getMessage());
+        }
+    }
+
+    private function columnExists(string $column): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                'SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ? LIMIT 1'
+            );
+            $stmt->execute(['seo_city_pages', $column]);
+
+            return (bool)$stmt->fetchColumn();
+        } catch (Throwable $e) {
+            error_log('CityPageService::columnExists ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function tryExec(string $sql): void
+    {
+        try {
+            $this->pdo->exec($sql);
+        } catch (Throwable $e) {
+            error_log('CityPageService::tryExec ' . $e->getMessage());
+        }
     }
 }

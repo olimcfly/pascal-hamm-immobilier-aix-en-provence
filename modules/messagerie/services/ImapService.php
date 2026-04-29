@@ -76,6 +76,67 @@ class ImapService
         return '{' . $host . ':' . $port . $flags . '}INBOX';
     }
 
+    /**
+     * Tente plusieurs variantes de chaîne IMAP et remonte la vraie erreur au lieu du warning brut.
+     *
+     * @return \IMAP\Connection
+     */
+    private function openMailbox(): \IMAP\Connection
+    {
+        $host = $this->getHost();
+        $port = $this->getPort();
+        $secure = $this->getSecure();
+
+        $variants = [];
+        if ($secure === 'ssl') {
+            $variants = [
+                '{' . $host . ':' . $port . '/imap/ssl/novalidate-cert}INBOX',
+                '{' . $host . ':' . $port . '/ssl/novalidate-cert}INBOX',
+            ];
+        } elseif ($secure === 'tls') {
+            $variants = [
+                '{' . $host . ':' . $port . '/imap/tls/novalidate-cert}INBOX',
+                '{' . $host . ':' . $port . '/tls/novalidate-cert}INBOX',
+            ];
+        } else {
+            $variants = [
+                '{' . $host . ':' . $port . '/imap/novalidate-cert}INBOX',
+            ];
+        }
+
+        $lastError = '';
+        foreach ($variants as $mailboxString) {
+            $warning = '';
+            set_error_handler(static function (int $severity, string $message) use (&$warning): bool {
+                $warning = $message;
+                return true;
+            });
+
+            try {
+                $mailbox = @imap_open(
+                    $mailboxString,
+                    $this->getUser(),
+                    $this->getPass(),
+                    0,
+                    1,
+                    ['DISABLE_AUTHENTICATOR' => 'GSSAPI']
+                );
+            } finally {
+                restore_error_handler();
+            }
+
+            if ($mailbox !== false) {
+                return $mailbox;
+            }
+
+            $imapErrorsRaw = imap_errors();
+            $imapErrors = is_array($imapErrorsRaw) ? implode(' | ', $imapErrorsRaw) : '';
+            $lastError = trim(($warning !== '' ? $warning : '') . ' ' . (string)imap_last_error() . ' ' . $imapErrors);
+        }
+
+        throw new RuntimeException('Connexion IMAP échouée : ' . ($lastError !== '' ? $lastError : 'hôte, port, sécurité, identifiant ou mot de passe invalides.'));
+    }
+
     // ── TEST ─────────────────────────────────────────────────────
 
     public function testConnection(): int
@@ -83,19 +144,12 @@ class ImapService
         if (!self::imapExtensionAvailable()) {
             throw new RuntimeException('Extension PHP « imap » absente sur le serveur. Contactez l’hébergeur pour l’activer.');
         }
-        $mailbox = imap_open(
-            $this->buildMailbox(),
-            $this->getUser(),
-            $this->getPass(),
-            0, 1,
-            ['DISABLE_AUTHENTICATOR' => 'GSSAPI']
-        );
-        if ($mailbox === false) {
-            throw new RuntimeException('Connexion IMAP échouée : ' . imap_last_error());
+        $mailbox = $this->openMailbox();
+        try {
+            return imap_num_msg($mailbox);
+        } finally {
+            imap_close($mailbox);
         }
-        $count = imap_num_msg($mailbox);
-        imap_close($mailbox);
-        return $count;
     }
 
     // ── SYNC ─────────────────────────────────────────────────────
@@ -109,18 +163,7 @@ class ImapService
         if (!self::imapExtensionAvailable()) {
             throw new RuntimeException('Extension PHP « imap » absente sur le serveur.');
         }
-        $mailbox = imap_open(
-            $this->buildMailbox(),
-            $this->getUser(),
-            $this->getPass(),
-            0,
-            1,
-            ['DISABLE_AUTHENTICATOR' => 'GSSAPI']
-        );
-
-        if ($mailbox === false) {
-            throw new RuntimeException('Connexion IMAP échouée : ' . imap_last_error());
-        }
+        $mailbox = $this->openMailbox();
 
         try {
             $msgCount = imap_num_msg($mailbox);

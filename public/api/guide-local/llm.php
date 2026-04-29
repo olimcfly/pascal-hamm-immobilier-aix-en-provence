@@ -86,7 +86,7 @@ function gl_llm_clamp(string $s, int $max): string
 try {
     if ($action === 'describe_district') {
         $district = gl_llm_clamp((string) ($input['district_name'] ?? ''), 120);
-        $city = gl_llm_clamp((string) ($input['city_name'] ?? 'Bordeaux'), 120);
+        $city = gl_llm_clamp((string) ($input['city_name'] ?? 'Aix-en-Provence'), 120);
         if ($district === '') {
             http_response_code(400);
             echo json_encode(['ok' => false, 'error' => 'district_name requis'], JSON_UNESCAPED_UNICODE);

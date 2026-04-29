@@ -384,14 +384,14 @@ if ($budget && $fourchette) {
                                 'icon'  => '🏷️',
                                 'title' => 'Guide complet vendeur',
                                 'desc'  => '28 étapes pour réussir votre vente au meilleur prix.',
-                                'link'  => '/guide-vendeur',
+                                'link'  => '/ressources/guide-vendeur',
                                 'cta'   => 'Lire le guide',
                             ],
                             [
                                 'icon'  => '🔑',
                                 'title' => 'Guide complet acheteur',
                                 'desc'  => 'De la recherche à la signature, tout ce qu\'il faut savoir.',
-                                'link'  => '/guide-acheteur',
+                                'link'  => '/acheter',
                                 'cta'   => 'Lire le guide',
                             ],
                             [

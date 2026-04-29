@@ -46,7 +46,7 @@ return [
                 "Relecture + personnalisation : 30 min pour tout valider.",
                 "Programme tout avec un outil de publication automatique.",
             ],
-            'exercise' => "Tape ce prompt dans ChatGPT : « Tu es un agent immobilier expert à Bordeaux. Rédige un post LinkedIn de 150 mots pour des propriétaires qui hésitent à vendre, en expliquant pourquoi le marché actuel est favorable. Ton style est direct, bienveillant, et orienté conseil. » Adapte et publie-le aujourd'hui.",
+            'exercise' => "Tape ce prompt dans ChatGPT : « Tu es un agent immobilier expert à Aix-en-Provence. Rédige un post LinkedIn de 150 mots pour des propriétaires qui hésitent à vendre, en expliquant pourquoi le marché actuel est favorable. Ton style est direct, bienveillant, et orienté conseil. » Adapte et publie-le aujourd'hui.",
         ],
     ],
 

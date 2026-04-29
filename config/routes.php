@@ -117,12 +117,9 @@ function siteData(): array
  */
 function normalizeVilleSlug(string $slug): string
 {
-    static $aliases = [
-        'merignace' => 'merignac',
-    ];
     $lower = strtolower($slug);
 
-    return $aliases[$lower] ?? $lower;
+    return $lower;
 }
 
 /**
@@ -138,33 +135,8 @@ function normalizeQuartierSlug(string $slug): string
 }
 
 /** Anciennes fiches (slugs 33) : 301 vers la fiche Pays d'Aix. */
-function legacyGirondeVilleSlugs(): array
-{
-    return [
-        'bordeaux', 'merignac', 'talence', 'pessac', 'floirac', 'lormont', 'eysines',
-        'saint-medard', 'villenave-dornon', 'bouliac', 'carbon-blanc', 'blanquefort',
-    ];
-}
-
-/** Anciennes fiches quartier (héritage d’URL) : 301 vers la fiche Pays d'Aix. */
-function legacyBordeauxQuartierSlugs(): array
-{
-    return [
-        'chartrons', 'cauderan', 'belcier', 'saint-augustin', 'bacalan', 'capucins',
-        'saint-michel', 'bastide', 'saint-seurin', 'nansouty', 'bordeaux-centre',
-    ];
-}
-
 function redirectLegacyZoneToAix(string $canonical, string $zoneType): void
 {
-    if ($zoneType === 'ville' && in_array($canonical, legacyGirondeVilleSlugs(), true)) {
-        header('Location: ' . url('/immobilier/aix-en-provence'), true, 301);
-        exit;
-    }
-    if ($zoneType === 'quartier' && in_array($canonical, legacyBordeauxQuartierSlugs(), true)) {
-        header('Location: ' . url('/immobilier/aix-en-provence'), true, 301);
-        exit;
-    }
 }
 
 // ── Page 404 ────────────────────────────────────────────────

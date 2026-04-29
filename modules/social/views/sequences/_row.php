@@ -4,7 +4,7 @@ $posts      = $postBySequence[$sequenceId] ?? [];
 $statut     = (string) ($sequence['statut'] ?? 'active');
 $persona    = (string) ($sequence['persona'] ?? 'Persona');
 $objectif   = (string) ($sequence['objectif'] ?? '');
-$zone       = (string) ($sequence['zone'] ?? setting('zone_city', 'Bordeaux'));
+$zone       = (string) ($sequence['zone'] ?? setting('zone_city', 'Aix-en-Provence'));
 
 /* Emoji + couleur selon persona */
 $personaMap = [

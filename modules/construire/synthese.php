@@ -39,7 +39,7 @@
                 </div>
                 <div class="noah-field full">
                     <label class="noah-label">Zone géographique</label>
-                    <input class="noah-input" type="text" name="zone" placeholder="ex : Mérignac, Pessac, Talence" required>
+                    <input class="noah-input" type="text" name="zone" placeholder="ex : Venelles, Gardanne, Éguilles" required>
                 </div>
             </div>
             <button class="noah-submit" type="submit">

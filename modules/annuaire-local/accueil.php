@@ -49,11 +49,6 @@ function annuaire_local_load_maps_guide(): ?array
 
         return is_array($g) ? $g : null;
     }
-    if (is_file(__DIR__ . '/data/guide_merignac.php')) {
-        $g = require __DIR__ . '/data/guide_merignac.php';
-
-        return is_array($g) ? $g : null;
-    }
 
     return null;
 }
@@ -176,7 +171,7 @@ function renderContent(): void
     $ctxCp           = trim((string) ($mg['postal'] ?? '')) !== '' ? trim((string) $mg['postal']) : $primaryCp;
     $mapsDataFile    = is_file(__DIR__ . '/data/guide_maps_search.php')
         ? 'modules/annuaire-local/data/guide_maps_search.php'
-        : (is_file(__DIR__ . '/data/guide_merignac.php') ? 'modules/annuaire-local/data/guide_merignac.php' : '');
+        : '';
     $filterVille   = trim((string) ($_GET['ville'] ?? ''));
     $filterVille   = preg_replace('/[^a-z0-9-]/', '', $filterVille) ?? '';
     $editVilleSlug = trim((string) ($_GET['slug'] ?? ''));

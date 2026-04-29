@@ -121,7 +121,7 @@ $extraJs  = ['/assets/js/bien-detail.js'];
     "address": {
         "@type":           "PostalAddress",
         "addressLocality": "<?= htmlspecialchars($b['secteur_name']) ?>",
-        "addressRegion":   "Gironde",
+        "addressRegion":   "Bouches-du-Rhône",
         "addressCountry":  "FR"
     }
 }

@@ -43,14 +43,14 @@ $canPublish = $cityPageService->isPublishable($values);
         <div class="score-circle"><strong>Publication</strong><div><?= $canPublish ? '✅ Prête' : '⏳ Incomplète' ?></div></div>
     </div>
 
-    <form method="post" action="/modules/seo/fiches-villes/api.php" class="city-form fv-form-grid">
+    <form method="post" action="/admin/api/seo/fiches-villes.php" class="city-form fv-form-grid">
         <?= csrfField() ?>
         <input type="hidden" name="mode" value="save">
         <input type="hidden" name="id" value="<?= $id ?>">
 
         <div class="fv-block">
             <h3>1. Infos générales</h3>
-            <input type="text" name="city_name" value="<?= e((string)$values['city_name']) ?>" placeholder="Commune (ex: Bordeaux)" required>
+            <input type="text" name="city_name" value="<?= e((string)$values['city_name']) ?>" placeholder="Commune (ex: Aix-en-Provence)" required>
             <input type="text" name="slug" value="<?= e((string)$values['slug']) ?>" placeholder="slug-ville" required>
         </div>
 

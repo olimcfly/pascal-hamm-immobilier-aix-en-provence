@@ -1,7 +1,7 @@
 <?php
 /**
  * GET /api/guide-local/pois.php
- * Paramètres : ?city_slug=bordeaux | ?district_slug=chartrons | ?category_slug=restaurants-bars
+ * Paramètres : ?city_slug=aix-en-provence | ?district_slug=mazarin | ?category_slug=restaurants-bars
  */
 declare(strict_types=1);
 

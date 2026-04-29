@@ -527,7 +527,7 @@ $pageCanonical   = '/guide-acheteur';
                                 ['PTZ',          'Prêt à Taux Zéro — primo-accédants, sous conditions de revenus. Disponible sur certaines communes de Aix et le Pays d’Aix (zone B1).'],
                                 ['Action Logement', 'Prêt à 1 % employeur si votre entreprise cotise. Cumulable avec le PTZ.'],
                                 ['Éco-PTZ',      'Jusqu\'à 50 000 € pour travaux de rénovation énergétique (toiture, isolation, pompe à chaleur). Très pertinent sur l’ancien à Aix et dans le 13.'],
-                                ['Région Nouvelle-Aquitaine', 'Aides régionales pour primo-accédants et travaux de rénovation. Se renseigner auprès du Conseil Régional.'],
+                                ['Région Provence-Alpes-Côte d'Azur', 'Aides régionales pour primo-accédants et travaux de rénovation. Se renseigner auprès du Conseil Régional.'],
                             ];
                             foreach ($aides as $a): ?>
                             <div class="aide-item">

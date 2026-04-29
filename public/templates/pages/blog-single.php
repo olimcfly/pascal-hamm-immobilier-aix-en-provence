@@ -237,7 +237,7 @@ $hasArticleContent = trim($content) !== '';
                             </p>
                             <div class="blog-single__sidebar-actions">
                                 <a class="btn btn-primary" href="/contact">Parler de mon projet</a>
-                                <a class="btn btn-secondary" href="/estimation">Demander une estimation</a>
+                                <a class="btn btn-secondary" href="/estimation-gratuite">Demander une estimation</a>
                             </div>
                         </div>
                     </aside>

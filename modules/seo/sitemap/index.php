@@ -6,9 +6,16 @@ $service->ensureSchema();
 $data = $service->getDashboard($userId);
 $sitemap = $data['sitemap'] ?? null;
 ?>
-<section class="seo-section">
+<section class="seo-section seo-sitemap-dashboard">
     <div class="seo-breadcrumb"><a href="/admin?module=seo">Accueil</a> &gt; SEO &gt; Sitemap</div>
-    <h2>Sitemap XML</h2>
+
+    <div class="seo-headline">
+        <div>
+            <span class="seo-eyebrow">Indexation Google</span>
+            <h2>Sitemap XML</h2>
+            <p>Générez, vérifiez et préparez la soumission de votre sitemap pour aider Google à découvrir les pages importantes.</p>
+        </div>
+    </div>
 
     <div class="kpi-grid">
         <div class="kpi"><span>Statut</span><strong><?= htmlspecialchars((string) ($sitemap['status'] ?? 'idle')) ?></strong></div>
@@ -17,13 +24,24 @@ $sitemap = $data['sitemap'] ?? null;
         <div class="kpi"><span>Erreurs détectées</span><strong><?= (int) ($sitemap['issues_count'] ?? count($data['issues'] ?? [])) ?></strong></div>
     </div>
 
-    <p><strong>URL sitemap :</strong> <?= htmlspecialchars((string) ($sitemap['sitemap_url'] ?? 'Non générée')) ?></p>
-
-    <div class="actions">
-        <button type="button" onclick="runSitemapAction('generate')">Générer</button>
-        <button type="button" onclick="runSitemapAction('verify')">Vérifier</button>
-        <button type="button" onclick="runSitemapAction('submit')">Soumettre à Google</button>
+    <div class="seo-info-strip">
+        <strong>URL sitemap</strong>
+        <span><?= htmlspecialchars((string) ($sitemap['sitemap_url'] ?? 'Non générée')) ?></span>
     </div>
+
+    <input type="hidden" id="seo-sitemap-csrf" value="<?= htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+    <div class="actions seo-action-row">
+        <button type="button" class="seo-primary-action" onclick="runSitemapAction('generate', this)">
+            <i class="fas fa-rotate"></i> Générer
+        </button>
+        <button type="button" class="seo-secondary-action" onclick="runSitemapAction('verify', this)">
+            <i class="fas fa-check"></i> Vérifier
+        </button>
+        <button type="button" class="seo-secondary-action" onclick="runSitemapAction('submit', this)">
+            <i class="fas fa-paper-plane"></i> Soumettre à Google
+        </button>
+    </div>
+    <div id="sitemap-action-result" class="seo-action-result" role="status" aria-live="polite" hidden></div>
 
     <?php if (!empty($data['coverage'])): ?>
         <h3>Couverture par type</h3>
@@ -41,7 +59,7 @@ $sitemap = $data['sitemap'] ?? null;
 
     <h3>Contrôles de cohérence</h3>
     <?php if (empty($data['issues'])): ?>
-        <p>Aucune anomalie détectée. Les contenus publiés indexables ont été intégrés.</p>
+        <p class="seo-empty-state">Aucune anomalie détectée. Les contenus publiés indexables ont été intégrés.</p>
     <?php else: ?>
         <ul>
             <?php foreach ($data['issues'] as $issue): ?>

@@ -42,6 +42,13 @@ function optimiserDetectPageViewsSource(PDO $pdo): array
     return [];
 }
 
+function optimiserTableExists(PDO $pdo, string $table): bool
+{
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = :table");
+    $stmt->execute([':table' => $table]);
+    return (int) $stmt->fetchColumn() > 0;
+}
+
 /** @return array<string,mixed> */
 function optimiserLoadAnalyticsData(int $days): array
 {
@@ -56,46 +63,50 @@ function optimiserLoadAnalyticsData(int $days): array
 
     $fromDate = (new DateTimeImmutable('-' . ($days - 1) . ' days'))->format('Y-m-d 00:00:00');
 
-    $leadTenant = TenantContext::crmLeadsTenantPredicate();
-    $leadStmt = $pdo->prepare(
-        'SELECT DATE(created_at) AS day, source_type, COUNT(*) AS total
-         FROM crm_leads
-         WHERE created_at >= :from_date AND (' . $leadTenant['sql'] . ')
-         GROUP BY DATE(created_at), source_type
-         ORDER BY day ASC'
-    );
-    $leadStmt->execute(array_merge([':from_date' => $fromDate], $leadTenant['params']));
+    if (optimiserTableExists($pdo, 'crm_leads')) {
+        $leadTenant = TenantContext::crmLeadsTenantPredicate();
+        $leadStmt = $pdo->prepare(
+            'SELECT DATE(created_at) AS day, source_type, COUNT(*) AS total
+             FROM crm_leads
+             WHERE created_at >= :from_date AND (' . $leadTenant['sql'] . ')
+             GROUP BY DATE(created_at), source_type
+             ORDER BY day ASC'
+        );
+        $leadStmt->execute(array_merge([':from_date' => $fromDate], $leadTenant['params']));
 
-    while ($row = $leadStmt->fetch(PDO::FETCH_ASSOC)) {
-        $day = (string) ($row['day'] ?? '');
-        $source = (string) ($row['source_type'] ?? 'autre');
-        $value = (int) ($row['total'] ?? 0);
+        while ($row = $leadStmt->fetch(PDO::FETCH_ASSOC)) {
+            $day = (string) ($row['day'] ?? '');
+            $source = (string) ($row['source_type'] ?? 'autre');
+            $value = (int) ($row['total'] ?? 0);
 
-        if ($day === '' || !array_key_exists($day, $leadTotalSeries)) {
-            continue;
+            if ($day === '' || !array_key_exists($day, $leadTotalSeries)) {
+                continue;
+            }
+
+            if (!isset($leadSourceSeries[$source])) {
+                $leadSourceSeries[$source] = optimiserDateAxis($days);
+            }
+
+            $leadSourceSeries[$source][$day] = $value;
+            $leadTotalSeries[$day] += $value;
         }
-
-        if (!isset($leadSourceSeries[$source])) {
-            $leadSourceSeries[$source] = optimiserDateAxis($days);
-        }
-
-        $leadSourceSeries[$source][$day] = $value;
-        $leadTotalSeries[$day] += $value;
     }
 
-    $estimationStmt = $pdo->prepare(
-        'SELECT DATE(created_at) AS day, COUNT(*) AS total
-         FROM estimations
-         WHERE created_at >= :from_date
-         GROUP BY DATE(created_at)
-         ORDER BY day ASC'
-    );
-    $estimationStmt->execute([':from_date' => $fromDate]);
+    if (optimiserTableExists($pdo, 'estimations')) {
+        $estimationStmt = $pdo->prepare(
+            'SELECT DATE(created_at) AS day, COUNT(*) AS total
+             FROM estimations
+             WHERE created_at >= :from_date
+             GROUP BY DATE(created_at)
+             ORDER BY day ASC'
+        );
+        $estimationStmt->execute([':from_date' => $fromDate]);
 
-    while ($row = $estimationStmt->fetch(PDO::FETCH_ASSOC)) {
-        $day = (string) ($row['day'] ?? '');
-        if ($day !== '' && array_key_exists($day, $estimationSeries)) {
-            $estimationSeries[$day] = (int) ($row['total'] ?? 0);
+        while ($row = $estimationStmt->fetch(PDO::FETCH_ASSOC)) {
+            $day = (string) ($row['day'] ?? '');
+            if ($day !== '' && array_key_exists($day, $estimationSeries)) {
+                $estimationSeries[$day] = (int) ($row['total'] ?? 0);
+            }
         }
     }
 
@@ -167,32 +178,40 @@ require __DIR__ . '/views/_subnav.php';
 ?>
 
 <style>
-    .opt-toolbar{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+    .opt-analytics-page{display:grid;gap:1.15rem}
+    .opt-hero{background:linear-gradient(135deg,#0f2237 0%,#1a3a5c 100%);border-radius:16px;padding:1.5rem;color:#fff;box-shadow:0 10px 28px rgba(15,34,55,.18)}
+    .opt-hero-badge{display:inline-flex;padding:.25rem .65rem;border-radius:999px;background:rgba(201,168,76,.17);border:1px solid rgba(201,168,76,.38);color:#c9a84c;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.7rem}
+    .opt-hero h1{margin:0 0 .45rem;color:#fff;font-size:1.65rem}
+    .opt-hero p{margin:0;color:rgba(255,255,255,.72);line-height:1.6}
+    .opt-toolbar{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
     .opt-periods{display:flex;gap:.5rem;flex-wrap:wrap}
-    .opt-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem .9rem;border-radius:999px;border:1px solid #cbd5e1;text-decoration:none;color:#334155;font-weight:600;background:#fff}
-    .opt-pill.active{background:#0f172a;color:#fff;border-color:#0f172a}
-    .opt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;margin:1rem 0 1.25rem}
-    .opt-kpi{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1rem;box-shadow:0 10px 25px rgba(15,23,42,.05)}
-    .opt-kpi strong{font-size:1.45rem;display:block}
+    .opt-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.58rem .9rem;border-radius:999px;border:1px solid #d8e0eb;text-decoration:none;color:#1a3a5c;font-weight:800;background:#fff}
+    .opt-pill.active{background:#c9a84c;color:#10253c;border-color:#c9a84c}
+    .opt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem}
+    .opt-kpi{background:#fff;border:1px solid #e8edf4;border-radius:14px;padding:1rem;box-shadow:0 4px 14px rgba(15,23,42,.05)}
+    .opt-kpi strong{font-size:1.45rem;display:block;color:#0f2237}
+    .opt-kpi span{color:#64748b;font-weight:700}
     .opt-panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1rem}
-    .opt-panel{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1rem}
-    .opt-panel h3{margin:0 0 .5rem}
+    .opt-panel{background:#fff;border:1px solid #e8edf4;border-radius:14px;padding:1rem;box-shadow:0 4px 14px rgba(15,23,42,.05)}
+    .opt-panel h3{margin:0 0 .5rem;color:#0f2237}
     .opt-hint{margin-top:.8rem;color:#64748b;font-size:.88rem}
     .opt-empty{padding:1rem;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412}
 </style>
 
-<div class="page-header">
-    <h1><i class="fas fa-chart-bar page-icon"></i> Tableau de bord <span class="page-title-accent">Analytics</span></h1>
-    <p>Agrégation des performances sur <?= (int) $period ?> jours (leads, estimations, trafic pages).</p>
-</div>
-
-<div class="opt-toolbar">
-    <a class="opt-pill" href="/admin?module=optimiser"><i class="fas fa-arrow-left"></i> Retour au module</a>
-    <div class="opt-periods">
-        <a class="opt-pill <?= $period === 30 ? 'active' : '' ?>" href="/admin?module=optimiser&view=analytics&period=30">30 jours</a>
-        <a class="opt-pill <?= $period === 90 ? 'active' : '' ?>" href="/admin?module=optimiser&view=analytics&period=90">90 jours</a>
+<div class="opt-analytics-page">
+    <div class="opt-hero">
+        <span class="opt-hero-badge">Pilotage acquisition</span>
+        <h1><i class="fas fa-chart-bar"></i> Tableau de bord Analytics</h1>
+        <p>Agrégation des performances sur <?= (int) $period ?> jours : leads, estimations et trafic pages quand la source est disponible.</p>
     </div>
-</div>
+
+    <div class="opt-toolbar">
+        <a class="opt-pill" href="/admin?module=optimiser"><i class="fas fa-arrow-left"></i> Retour au module</a>
+        <div class="opt-periods">
+            <a class="opt-pill <?= $period === 30 ? 'active' : '' ?>" href="/admin?module=optimiser&view=analytics&period=30">30 jours</a>
+            <a class="opt-pill <?= $period === 90 ? 'active' : '' ?>" href="/admin?module=optimiser&view=analytics&period=90">90 jours</a>
+        </div>
+    </div>
 
 <?php if (!empty($analytics['error'])): ?>
     <div class="opt-empty">
@@ -307,3 +326,4 @@ require __DIR__ . '/views/_subnav.php';
         })();
     </script>
 <?php endif; ?>
+</div>

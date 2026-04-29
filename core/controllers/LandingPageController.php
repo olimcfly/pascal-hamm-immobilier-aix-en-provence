@@ -18,7 +18,7 @@ class LandingPageController
         $old = [];
         $success = !empty($_GET['ok']);
 
-        $template = ROOT_PATH . '/public/templates/lp/' . $page['type'] . '.php';
+        $template = ROOT_PATH . '/public/templates/lp/campaign-capture.php';
         if (!is_file($template)) {
             $this->render404();
             return;
@@ -75,7 +75,7 @@ class LandingPageController
 
         if ($errors) {
             $success = false;
-            $template = ROOT_PATH . '/public/templates/lp/' . $page['type'] . '.php';
+            $template = ROOT_PATH . '/public/templates/lp/campaign-capture.php';
             require $template;
             return;
         }
@@ -160,6 +160,7 @@ class LandingPageController
         db()->exec('CREATE TABLE IF NOT EXISTS landing_pages (
             id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             website_id INT UNSIGNED NOT NULL DEFAULT 1,
+            campaign_name VARCHAR(180) NOT NULL DEFAULT "",
             slug VARCHAR(160) NOT NULL,
             type ENUM("estimation", "financement") NOT NULL DEFAULT "estimation",
             headline VARCHAR(255) NOT NULL,
@@ -186,6 +187,11 @@ class LandingPageController
             UNIQUE KEY uk_landing_page_slug (website_id, slug),
             KEY idx_landing_page_active (website_id, active)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+        try {
+            db()->exec('ALTER TABLE landing_pages ADD COLUMN IF NOT EXISTS campaign_name VARCHAR(180) NOT NULL DEFAULT "" AFTER website_id');
+        } catch (Throwable) {
+        }
     }
 
     private function resolveWebsiteId(): int

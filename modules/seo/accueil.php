@@ -116,28 +116,85 @@ function renderSeoHub(array $stats): void
         }
         .seo-hub-narrative-card p { margin:0; color:#4b5563; line-height:1.55; font-size:.93rem; }
 
-        .seo-hub-pillars { display:grid; grid-template-columns:1fr; gap:1rem; }
-        .seo-hub-pillar {
-            background:#fff; border:1px solid #e7edf5; border-radius:16px; padding:1rem;
-            box-shadow:0 6px 18px rgba(15,23,42,.05);
+        .seo-hub-menu-title {
+            margin:.25rem 0 -.25rem;
+            font-size:.75rem;
+            font-weight:800;
+            color:#8a95a3;
+            text-transform:uppercase;
+            letter-spacing:.08em;
         }
-        .seo-hub-pillar h2 { margin:0 0 .25rem; font-size:1.1rem; color:#0f172a; }
-        .seo-hub-pillar > p { margin:0 0 .85rem; color:#64748b; font-size:.9rem; }
 
-        .seo-hub-modules { display:grid; gap:.7rem; }
-        .seo-hub-module {
-            border:1px solid #ebf1f7; border-radius:12px; padding:.78rem .82rem;
-            display:grid; gap:.55rem; background:#fbfdff;
+        .seo-hub-steps {
+            display:flex;
+            flex-direction:column;
+            gap:.85rem;
+        }
+        .seo-hub-step {
+            display:flex;
+            align-items:flex-start;
+            gap:1rem;
+            background:#fff;
+            border:1px solid #e8edf4;
+            border-left:4px solid var(--step-accent, #c9a84c);
+            border-radius:14px;
+            padding:1rem 1.05rem;
+            color:inherit;
+            text-decoration:none;
+            box-shadow:0 4px 14px rgba(15,23,42,.06);
             transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
         }
-        .seo-hub-module:hover {
-            transform:translateY(-2px); border-color:#cfdced;
-            box-shadow:0 10px 20px rgba(30,41,59,.08);
+        .seo-hub-step:hover {
+            transform:translateX(4px);
+            box-shadow:0 10px 24px rgba(15,23,42,.1);
+            border-color:#d9e2ef;
+            border-left-color:var(--step-accent, #c9a84c);
+            color:inherit;
         }
-        .seo-hub-module-head { display:flex; justify-content:space-between; align-items:center; gap:.55rem; }
-        .seo-hub-module-head h3 { margin:0; font-size:.98rem; color:#111827; }
-        .seo-hub-module p   { margin:0; color:#6b7280; font-size:.88rem; line-height:1.45; }
-        .seo-hub-module small { color:#9ca3af; font-size:.8rem; }
+        .seo-hub-step-num {
+            flex:0 0 auto;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            width:38px;
+            height:38px;
+            border-radius:50%;
+            background:var(--step-bg, #f1f5f9);
+            color:var(--step-accent, #64748b);
+            font-size:.9rem;
+            font-weight:800;
+        }
+        .seo-hub-step-body {
+            flex:1;
+            min-width:0;
+        }
+        .seo-hub-step-head {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:.75rem;
+            margin-bottom:.28rem;
+        }
+        .seo-hub-step h3 {
+            margin:0;
+            font-size:1rem;
+            color:#1e293b;
+        }
+        .seo-hub-step p {
+            margin:0 0 .4rem;
+            color:#64748b;
+            font-size:.9rem;
+            line-height:1.5;
+        }
+        .seo-hub-step small {
+            color:#94a3b8;
+            font-size:.8rem;
+        }
+        .seo-hub-step-arrow {
+            flex:0 0 auto;
+            margin-top:.65rem;
+            color:#c9a84c;
+        }
 
         .seo-hub-state {
             display:inline-flex; align-items:center; gap:.35rem;
@@ -173,8 +230,12 @@ function renderSeoHub(array $stats): void
             .seo-hub-narrative { grid-template-columns:repeat(2, 1fr); }
         }
         @media (min-width:1100px) {
-            .seo-hub-pillars { grid-template-columns:repeat(2, minmax(0,1fr)); }
             .seo-hub-final-cta { display:flex; align-items:center; justify-content:space-between; gap:1.2rem; }
+        }
+        @media (max-width:640px) {
+            .seo-hub-step { flex-wrap:wrap; }
+            .seo-hub-step-head { align-items:flex-start; flex-direction:column; gap:.45rem; }
+            .seo-hub-step-arrow { display:none; }
         }
     </style>
 
@@ -196,66 +257,73 @@ function renderSeoHub(array $stats): void
             </div>
         </section>
 
-        <section class="seo-hub-pillars" aria-label="Leviers SEO">
+        <div class="seo-hub-menu-title">Menu SEO</div>
+        <section class="seo-hub-steps" aria-label="Leviers SEO">
 
-            <article class="seo-hub-pillar">
-                <h2><i class="fas fa-seedling" style="color:#16a34a;"></i> Créer du contenu local</h2>
-                <p>Construire une visibilité durable sur les recherches de votre zone.</p>
-                <div class="seo-hub-modules">
-                    <div class="seo-hub-module">
-                        <div class="seo-hub-module-head">
-                            <h3>Pages locales</h3>
-                            <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
-                        </div>
-                        <p>Couvrez vos villes clés avec des pages utiles et bien référencées.</p>
-                        <small><?= (int) ($stats['villes_count'] ?? 0) ?> pages créées · <?= (int) ($stats['villes_published'] ?? 0) ?> publiées</small>
-                        <a href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'villes']), ENT_QUOTES, 'UTF-8') ?>" class="seo-hub-action"><i class="fas fa-arrow-right"></i> Ouvrir</a>
+            <a class="seo-hub-step" href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'villes']), ENT_QUOTES, 'UTF-8') ?>" style="--step-accent:#16a34a;--step-bg:#dcfce7;">
+                <div class="seo-hub-step-num">1</div>
+                <div class="seo-hub-step-body">
+                    <div class="seo-hub-step-head">
+                        <h3><i class="fas fa-location-dot" style="color:#16a34a;margin-right:6px;"></i>Pages locales</h3>
+                        <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
                     </div>
-                    <div class="seo-hub-module">
-                        <div class="seo-hub-module-head">
-                            <h3>Mots-clés</h3>
-                            <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
-                        </div>
-                        <p>Suivez les expressions qui amènent des vendeurs sur votre site.</p>
-                        <small><?= (int) ($stats['keywords_count'] ?? 0) ?> expressions suivies</small>
-                        <a href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'keywords']), ENT_QUOTES, 'UTF-8') ?>" class="seo-hub-action"><i class="fas fa-arrow-right"></i> Ouvrir</a>
-                    </div>
+                    <p>Couvrez vos villes clés avec des pages utiles et bien référencées.</p>
+                    <small><?= (int) ($stats['villes_count'] ?? 0) ?> pages créées · <?= (int) ($stats['villes_published'] ?? 0) ?> publiées</small>
                 </div>
-            </article>
+                <div class="seo-hub-step-arrow"><i class="fas fa-chevron-right"></i></div>
+            </a>
 
-            <article class="seo-hub-pillar">
-                <h2><i class="fas fa-gauge-high" style="color:#3b82f6;"></i> Optimiser la technique</h2>
-                <p>Garantir que Google peut accéder et valoriser vos pages rapidement.</p>
-                <div class="seo-hub-modules">
-                    <div class="seo-hub-module">
-                        <div class="seo-hub-module-head">
-                            <h3>Présence Google</h3>
-                            <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
-                        </div>
-                        <p>Vérifiez et soumettez votre sitemap pour être mieux indexé.</p>
-                        <small><?= (int) ($stats['sitemap_issues_count'] ?? 0) ?> point(s) à corriger</small>
-                        <a href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'sitemap']), ENT_QUOTES, 'UTF-8') ?>" class="seo-hub-action"><i class="fas fa-arrow-right"></i> Ouvrir</a>
+            <a class="seo-hub-step" href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'keywords']), ENT_QUOTES, 'UTF-8') ?>" style="--step-accent:#3b82f6;--step-bg:#dbeafe;">
+                <div class="seo-hub-step-num">2</div>
+                <div class="seo-hub-step-body">
+                    <div class="seo-hub-step-head">
+                        <h3><i class="fas fa-key" style="color:#3b82f6;margin-right:6px;"></i>Mots-clés</h3>
+                        <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
                     </div>
-                    <div class="seo-hub-module">
-                        <div class="seo-hub-module-head">
-                            <h3>Vitesse du site</h3>
-                            <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
-                        </div>
-                        <p>Un site rapide améliore votre classement et l'expérience visiteur.</p>
-                        <small>Dernier score : <?= $lastAuditScore !== null ? (int) $lastAuditScore . '/100' : 'Non mesuré' ?></small>
-                        <a href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'performance']), ENT_QUOTES, 'UTF-8') ?>" class="seo-hub-action"><i class="fas fa-arrow-right"></i> Ouvrir</a>
-                    </div>
-                    <div class="seo-hub-module">
-                        <div class="seo-hub-module-head">
-                            <h3>Checklist lancement SEO</h3>
-                            <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-clipboard-check"></i> Disponible</span>
-                        </div>
-                        <p>SSL, sitemaps, Analytics, Search Console, pages légales : note auto + validations manuelles.</p>
-                        <small>Liste standard « launch » (anglais) pour homogénéiser tous les sites.</small>
-                        <a href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'launch-checklist']), ENT_QUOTES, 'UTF-8') ?>" class="seo-hub-action"><i class="fas fa-arrow-right"></i> Ouvrir la checklist</a>
-                    </div>
+                    <p>Suivez les expressions qui amènent des vendeurs sur votre site.</p>
+                    <small><?= (int) ($stats['keywords_count'] ?? 0) ?> expressions suivies · <?= (int) ($stats['top10_count'] ?? 0) ?> dans le top 10</small>
                 </div>
-            </article>
+                <div class="seo-hub-step-arrow"><i class="fas fa-chevron-right"></i></div>
+            </a>
+
+            <a class="seo-hub-step" href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'sitemap']), ENT_QUOTES, 'UTF-8') ?>" style="--step-accent:#ef4444;--step-bg:#fee2e2;">
+                <div class="seo-hub-step-num">3</div>
+                <div class="seo-hub-step-body">
+                    <div class="seo-hub-step-head">
+                        <h3><i class="fas fa-sitemap" style="color:#ef4444;margin-right:6px;"></i>Présence Google</h3>
+                        <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
+                    </div>
+                    <p>Vérifiez et soumettez votre sitemap pour être mieux indexé.</p>
+                    <small><?= (int) ($stats['sitemap_issues_count'] ?? 0) ?> point(s) à corriger</small>
+                </div>
+                <div class="seo-hub-step-arrow"><i class="fas fa-chevron-right"></i></div>
+            </a>
+
+            <a class="seo-hub-step" href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'performance']), ENT_QUOTES, 'UTF-8') ?>" style="--step-accent:#f59e0b;--step-bg:#fef3c7;">
+                <div class="seo-hub-step-num">4</div>
+                <div class="seo-hub-step-body">
+                    <div class="seo-hub-step-head">
+                        <h3><i class="fas fa-gauge-high" style="color:#f59e0b;margin-right:6px;"></i>Vitesse du site</h3>
+                        <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
+                    </div>
+                    <p>Un site rapide améliore votre classement et l'expérience visiteur.</p>
+                    <small>Dernier score : <?= $lastAuditScore !== null ? (int) $lastAuditScore . '/100' : 'Non mesuré' ?></small>
+                </div>
+                <div class="seo-hub-step-arrow"><i class="fas fa-chevron-right"></i></div>
+            </a>
+
+            <a class="seo-hub-step" href="<?= htmlspecialchars($su(['module' => 'seo', 'action' => 'launch-checklist']), ENT_QUOTES, 'UTF-8') ?>" style="--step-accent:#8b5cf6;--step-bg:#ede9fe;">
+                <div class="seo-hub-step-num">5</div>
+                <div class="seo-hub-step-body">
+                    <div class="seo-hub-step-head">
+                        <h3><i class="fas fa-clipboard-check" style="color:#8b5cf6;margin-right:6px;"></i>Checklist lancement SEO</h3>
+                        <span class="seo-hub-state seo-hub-state--available"><i class="fas fa-check-circle"></i> Disponible</span>
+                    </div>
+                    <p>SSL, sitemaps, Analytics, Search Console, pages légales : note auto + validations manuelles.</p>
+                    <small>Liste standard de lancement pour homogénéiser tous les sites.</small>
+                </div>
+                <div class="seo-hub-step-arrow"><i class="fas fa-chevron-right"></i></div>
+            </a>
 
         </section>
 

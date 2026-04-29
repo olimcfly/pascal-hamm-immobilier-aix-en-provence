@@ -41,8 +41,13 @@ $formData = [
 ?>
 <section class="seo-section seo-keyword-edit">
     <div class="seo-breadcrumb"><a href="/admin?module=seo">Accueil</a> &gt; SEO &gt; <a href="/admin?module=seo&action=keywords">Mots-clés</a> &gt; <?= $isEdit ? 'Éditer' : 'Ajouter' ?></div>
-    <h2><?= $isEdit ? 'Modifier un mot-clé' : 'Ajouter un mot-clé' ?></h2>
-    <p>Choisissez une requête locale utile à votre activité de prospection vendeur.</p>
+    <div class="seo-headline">
+        <div>
+            <span class="seo-eyebrow">Pilotage des requêtes</span>
+            <h2><?= $isEdit ? 'Modifier un mot-clé' : 'Ajouter un mot-clé' ?></h2>
+            <p>Choisissez une requête locale utile à votre activité de prospection vendeur.</p>
+        </div>
+    </div>
 
     <?php if ($errorMessage !== ''): ?>
         <div class="seo-flash seo-flash-error"><?= e($errorMessage) ?></div>
@@ -51,33 +56,43 @@ $formData = [
     <form method="post" class="city-form seo-form-stack">
         <?= csrfField() ?>
 
-        <label>Mot-clé *</label>
-        <input type="text" name="keyword" maxlength="190" required value="<?= e($formData['keyword']) ?>" placeholder="ex: estimation appartement Bordeaux">
+        <div class="fv-block">
+            <label>Mot-clé *</label>
+            <input type="text" name="keyword" maxlength="190" required value="<?= e($formData['keyword']) ?>" placeholder="ex: estimation appartement Aix-en-Provence">
+        </div>
 
-        <label>Ville / zone</label>
-        <input type="text" name="city_name" maxlength="160" value="<?= e($formData['city_name']) ?>" placeholder="ex: Bordeaux">
+        <div class="fv-block">
+            <label>Ville / zone</label>
+            <input type="text" name="city_name" maxlength="160" value="<?= e($formData['city_name']) ?>" placeholder="ex: Aix-en-Provence">
+        </div>
 
-        <label>Intention</label>
-        <select name="intent" required>
-            <?php foreach (['estimation','vente','achat','quartier','commune','blog'] as $intent): ?>
-                <option value="<?= e($intent) ?>" <?= $formData['intent'] === $intent ? 'selected' : '' ?>><?= e(ucfirst($intent)) ?></option>
-            <?php endforeach; ?>
-        </select>
+        <div class="fv-block">
+            <label>Intention</label>
+            <select name="intent" required>
+                <?php foreach (['estimation','vente','achat','quartier','commune','blog'] as $intent): ?>
+                    <option value="<?= e($intent) ?>" <?= $formData['intent'] === $intent ? 'selected' : '' ?>><?= e(ucfirst($intent)) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
-        <label>URL cible</label>
-        <input type="text" name="target_url" value="<?= e($formData['target_url']) ?>" list="target-url-options" placeholder="/ville/aix-en-provence">
-        <datalist id="target-url-options">
-            <?php foreach ($urlOptions as $option): ?>
-                <option value="<?= e((string)$option['url']) ?>"><?= e((string)$option['source'] . ' — ' . (string)$option['label']) ?></option>
-            <?php endforeach; ?>
-        </datalist>
+        <div class="fv-block">
+            <label>URL cible</label>
+            <input type="text" name="target_url" value="<?= e($formData['target_url']) ?>" list="target-url-options" placeholder="/ville/aix-en-provence">
+            <datalist id="target-url-options">
+                <?php foreach ($urlOptions as $option): ?>
+                    <option value="<?= e((string)$option['url']) ?>"><?= e((string)$option['source'] . ' — ' . (string)$option['label']) ?></option>
+                <?php endforeach; ?>
+            </datalist>
+        </div>
 
-        <label>Statut</label>
-        <select name="status" required>
-            <?php foreach (['active', 'paused', 'archived'] as $status): ?>
-                <option value="<?= e($status) ?>" <?= $formData['status'] === $status ? 'selected' : '' ?>><?= e(ucfirst($status)) ?></option>
-            <?php endforeach; ?>
-        </select>
+        <div class="fv-block">
+            <label>Statut</label>
+            <select name="status" required>
+                <?php foreach (['active', 'paused', 'archived'] as $status): ?>
+                    <option value="<?= e($status) ?>" <?= $formData['status'] === $status ? 'selected' : '' ?>><?= e(ucfirst($status)) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
         <div class="actions">
             <button type="submit"><?= $isEdit ? 'Enregistrer' : 'Créer le mot-clé' ?></button>

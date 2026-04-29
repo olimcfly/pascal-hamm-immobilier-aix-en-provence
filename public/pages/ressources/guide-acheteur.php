@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Guide de l\'acheteur immobilier — ' . ADVISOR_NAME . '';
-$metaDesc  = 'Guide complet pour acheter votre premier bien immobilier à Bordeaux : financement, recherche, offre, signature.';
+$metaDesc  = 'Guide complet pour acheter votre premier bien immobilier à Aix-en-Provence : financement, recherche, offre, signature.';
 $extraCss  = ['/assets/css/guide.css'];
 ?>
 
@@ -41,7 +41,7 @@ $extraCss  = ['/assets/css/guide.css'];
                     </div>
 
                     <div style="background:var(--clr-primary);color:white;border-radius:var(--radius-lg);padding:2rem;margin-top:2rem;text-align:center">
-                        <h3 style="color:white;margin-bottom:.75rem">Cherchez-vous un bien à Bordeaux ?</h3>
+                        <h3 style="color:white;margin-bottom:.75rem">Cherchez-vous un bien à Aix-en-Provence ?</h3>
                         <p style="opacity:.8;margin-bottom:1.5rem"><?= ADVISOR_NAME ?> vous aide à trouver le bien idéal, y compris des opportunités hors-marché.</p>
                         <a href="/contact" class="btn btn--accent">Décrire mon projet →</a>
                     </div>
@@ -57,7 +57,7 @@ $extraCss  = ['/assets/css/guide.css'];
                     <div class="sidebar-box__head">Ressources utiles</div>
                     <div class="sidebar-box__body">
                         <a href="/ressources/guide-vendeur" style="display:block;padding:.5rem 0;font-size:.875rem;border-bottom:1px solid var(--clr-border)">→ Guide vendeur</a>
-                        <a href="/guide-local" style="display:block;padding:.5rem 0;font-size:.875rem;border-bottom:1px solid var(--clr-border)">→ Guide local Bordeaux Métropole</a>
+                        <a href="/guide-local" style="display:block;padding:.5rem 0;font-size:.875rem;border-bottom:1px solid var(--clr-border)">→ Guide local Pays d'Aix</a>
                         <a href="/blog/negocier-prix-achat" style="display:block;padding:.5rem 0;font-size:.875rem">→ Négocier le prix</a>
                     </div>
                 </div>

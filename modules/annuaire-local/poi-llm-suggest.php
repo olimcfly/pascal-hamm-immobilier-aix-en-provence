@@ -49,7 +49,7 @@ $st->execute([$categoryId]);
 $catRow = $st->fetch(PDO::FETCH_ASSOC);
 $categoryName = trim((string) ($catRow['name'] ?? '')) ?: 'Commerce';
 
-$cityName = 'Bordeaux Métropole';
+$cityName = 'Pays d'Aix';
 $areaLabel = $cityName;
 
 if ($quartierId > 0) {

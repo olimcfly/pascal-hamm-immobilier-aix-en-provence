@@ -5,52 +5,21 @@ declare(strict_types=1);
 $current = 'hub';
 require __DIR__ . '/views/_subnav.php';
 ?>
-<div class="page-header">
-    <h1><i class="fas fa-chart-line page-icon"></i> HUB <span class="page-title-accent">Optimiser</span></h1>
-    <p>Analysez et améliorez en continu vos performances</p>
-    <p style="margin:.75rem 0 0;font-size:.95rem;"><a href="/admin?module=optimiser&view=parcours" style="font-weight:600;color:#6366f1;text-decoration:none;">Parcours d’optimisation en 5 étapes →</a></p>
-</div>
-
-<div class="cards-container">
-
-    <a class="card" href="/admin?module=optimiser&view=analytics" style="--card-accent:#3498db; --card-icon-bg:#e3f2fd; text-decoration:none; color:inherit; display:block;">
-        <div class="card-header">
-            <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-            <h3 class="card-title">Tableau de bord Analytics</h3>
-        </div>
-        <p class="card-description">Vue consolidée de vos KPIs : leads, estimations et trafic pages (si disponible).</p>
-        <div class="card-tags"><span class="tag">KPIs</span><span class="tag">Reporting</span><span class="tag">30 / 90 jours</span></div>
-        <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir le tableau de bord</span>
-    </a>
-
-    <a class="card" href="/admin?module=optimiser&view=ab-testing" style="--card-accent:#f39c12; --card-icon-bg:#fef9e7; text-decoration:none; color:inherit; display:block;">
-        <div class="card-header">
-            <div class="card-icon"><i class="fas fa-vials"></i></div>
-            <h3 class="card-title">A/B Testing</h3>
-        </div>
-        <p class="card-description">Testez vos pages, emails et messages pour maximiser les taux de conversion.</p>
-        <div class="card-tags"><span class="tag">Tests</span><span class="tag">Conversion</span></div>
-        <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir le cadre A/B</span>
-    </a>
-
-    <a class="card" href="/admin?module=optimiser&view=recommandations" style="--card-accent:#27ae60; --card-icon-bg:#eafaf1; text-decoration:none; color:inherit; display:block;">
-        <div class="card-header">
-            <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
-            <h3 class="card-title">Recommandations IA</h3>
-        </div>
-        <p class="card-description">Pistes d’action et liens vers les outils déjà disponibles (analytics, SEO, rapports).</p>
-        <div class="card-tags"><span class="tag">IA</span><span class="tag">Insights</span></div>
-        <span class="card-action"><i class="fas fa-arrow-right"></i> Voir les recommandations</span>
-    </a>
-
-    <a class="card" href="/admin?module=optimiser&view=rapport-mensuel" style="--card-accent:#e74c3c; --card-icon-bg:#fdedec; text-decoration:none; color:inherit; display:block;">
-        <div class="card-header">
-            <div class="card-icon"><i class="fas fa-file-chart-line"></i></div>
-            <h3 class="card-title">Rapport mensuel</h3>
-        </div>
-        <p class="card-description">Générez votre rapport de performance mensuel en un clic.</p>
-        <div class="card-tags"><span class="tag">Rapport</span><span class="tag">Export PDF</span></div>
-        <span class="card-action"><i class="fas fa-arrow-right"></i> Ouvrir le rapport</span>
-    </a>
-
+<style>
+.module-start-hero{background:linear-gradient(135deg,#0f2237 0%,#1a3a5c 100%);border-radius:16px;padding:36px 40px;color:#fff;margin-bottom:28px;box-shadow:0 4px 20px rgba(15,34,55,.18)}
+.module-start-badge{display:inline-block;background:rgba(201,168,76,.2);color:#c9a84c;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid rgba(201,168,76,.35)}
+.module-start-hero h1{font-size:28px;font-weight:700;color:#fff;margin:0 0 12px;line-height:1.25}.module-start-hero p{font-size:15px;color:rgba(255,255,255,.72);line-height:1.65;max-width:680px;margin:0}
+.module-start-title{font-size:12px;font-weight:800;color:#8a95a3;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}.module-start-steps{display:flex;flex-direction:column;gap:14px}
+.module-start-step{display:flex;align-items:flex-start;gap:18px;background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 6px rgba(0,0,0,.07);text-decoration:none;color:inherit;border-left:4px solid var(--accent,#c9a84c);transition:transform .15s,box-shadow .15s}.module-start-step:hover{transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.1);color:inherit}
+.module-start-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--icon-bg,#f1f5f9);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--accent,#64748b)}.module-start-body{flex:1}.module-start-label{font-size:15px;font-weight:700;color:#1e293b;margin-bottom:3px}.module-start-desc{font-size:13px;color:#64748b;line-height:1.5}.module-start-arrow{flex-shrink:0;color:#c9a84c;font-size:16px;margin-top:8px}
+@media(max-width:600px){.module-start-hero{padding:24px 20px}.module-start-step{flex-wrap:wrap}}
+</style>
+<div class="module-start-hero"><div class="module-start-badge">Optimisation</div><h1>Mesurer et améliorer vos performances</h1><p>Suivez vos KPIs, analysez vos leviers et priorisez les actions qui augmentent réellement vos conversions.</p></div>
+<div class="module-start-title">Menu Optimiser</div>
+<div class="module-start-steps">
+    <a class="module-start-step" href="/admin?module=optimiser&view=parcours" style="--accent:#c9a84c;--icon-bg:#fef9e7;"><div class="module-start-num">1</div><div class="module-start-body"><div class="module-start-label"><i class="fas fa-route" style="color:#c9a84c;margin-right:6px;"></i>Parcours d’optimisation</div><div class="module-start-desc">Le guide en 5 étapes pour installer, lire et améliorer votre système d’acquisition.</div></div><div class="module-start-arrow"><i class="fas fa-chevron-right"></i></div></a>
+    <a class="module-start-step" href="/admin?module=optimiser&view=analytics" style="--accent:#3498db;--icon-bg:#e3f2fd;"><div class="module-start-num">2</div><div class="module-start-body"><div class="module-start-label"><i class="fas fa-chart-bar" style="color:#3498db;margin-right:6px;"></i>Tableau de bord Analytics</div><div class="module-start-desc">Vue consolidée de vos KPIs : leads, estimations et trafic pages si disponible.</div></div><div class="module-start-arrow"><i class="fas fa-chevron-right"></i></div></a>
+    <a class="module-start-step" href="/admin?module=optimiser&view=ab-testing" style="--accent:#f39c12;--icon-bg:#fef9e7;"><div class="module-start-num">3</div><div class="module-start-body"><div class="module-start-label"><i class="fas fa-vials" style="color:#f39c12;margin-right:6px;"></i>A/B Testing</div><div class="module-start-desc">Testez vos pages, emails et messages pour maximiser les taux de conversion.</div></div><div class="module-start-arrow"><i class="fas fa-chevron-right"></i></div></a>
+    <a class="module-start-step" href="/admin?module=optimiser&view=recommandations" style="--accent:#27ae60;--icon-bg:#eafaf1;"><div class="module-start-num">4</div><div class="module-start-body"><div class="module-start-label"><i class="fas fa-lightbulb" style="color:#27ae60;margin-right:6px;"></i>Recommandations IA</div><div class="module-start-desc">Pistes d’action et liens vers les outils déjà disponibles.</div></div><div class="module-start-arrow"><i class="fas fa-chevron-right"></i></div></a>
+    <a class="module-start-step" href="/admin?module=optimiser&view=rapport-mensuel" style="--accent:#e74c3c;--icon-bg:#fdedec;"><div class="module-start-num">5</div><div class="module-start-body"><div class="module-start-label"><i class="fas fa-file-lines" style="color:#e74c3c;margin-right:6px;"></i>Rapport mensuel</div><div class="module-start-desc">Générez votre rapport de performance mensuel en un clic.</div></div><div class="module-start-arrow"><i class="fas fa-chevron-right"></i></div></a>
 </div>

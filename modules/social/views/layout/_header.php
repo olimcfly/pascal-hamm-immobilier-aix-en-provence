@@ -5,7 +5,7 @@ $isSeqListing      = $activeAction === 'sequences-list';
 $isSeqPosts        = $activeAction === 'sequences';
 $useCommencerNav = ! empty($GLOBALS['social_use_commencer_nav']);
 
-$advisorCity = setting('zone_city', 'Bordeaux');
+$advisorCity = setting('zone_city', 'Aix-en-Provence');
 
 $personaFilters = [
     ''             => 'Tous',

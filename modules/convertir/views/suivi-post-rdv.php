@@ -7,8 +7,9 @@ $current = 'suivi-post-rdv';
 require __DIR__ . '/_subnav.php';
 ?>
 <div class="conv-followup">
-    <div class="page-header" style="margin-bottom:18px;">
-        <h1><i class="fas fa-reply page-icon"></i> Convertir <span class="page-title-accent">Suivi post-RDV</span></h1>
+    <div class="conv-followup__hero">
+        <div class="conv-followup__badge">Relance commerciale</div>
+        <h1><i class="fas fa-reply"></i> Suivi post-RDV</h1>
         <p>Séquence courte de relance pour transformer un rendez-vous en décision.</p>
     </div>
 
@@ -32,13 +33,19 @@ require __DIR__ . '/_subnav.php';
     </p>
 </div>
 <style>
-.conv-followup{font-family:system-ui,-apple-system,sans-serif;color:#0f2237}
-.conv-followup__panel{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1rem 1.1rem;margin-bottom:1rem;max-width:58rem}
-.conv-followup__panel h2{margin:0 0 .6rem;font-size:1.05rem}
+.conv-followup{width:100%;font-family:system-ui,-apple-system,sans-serif;color:#0f2237;display:grid;gap:1rem;padding-bottom:1.5rem}
+.conv-followup__hero{background:linear-gradient(135deg,#0f2237 0%,#1a3a5c 100%);border-radius:18px;padding:38px 42px;color:#fff;box-shadow:0 8px 24px rgba(15,34,55,.16)}
+.conv-followup__badge{display:inline-block;background:rgba(201,168,76,.2);color:#c9a84c;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid rgba(201,168,76,.35)}
+.conv-followup__hero h1{font-size:30px;font-weight:800;color:#fff;margin:0 0 12px;line-height:1.2}
+.conv-followup__hero p{font-size:15px;color:rgba(255,255,255,.72);line-height:1.65;max-width:680px;margin:0}
+.conv-followup__panel{background:#fff;border:1px solid #e8edf4;border-radius:14px;padding:1.2rem 1.3rem;box-shadow:0 8px 22px rgba(15,34,55,.06)}
+.conv-followup__panel h2{margin:0 0 .6rem;font-size:1.05rem;color:#0f2237}
 .conv-followup__panel ol{margin:0;padding-left:1.2rem}
 .conv-followup__panel li{margin:.45rem 0}
-.conv-followup__template{padding:.75rem .85rem;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;font-size:.92rem;line-height:1.6}
-.conv-followup__links{font-size:.9rem;color:#64748b}
-.conv-followup__links a{color:#7c5d1d;font-weight:600;text-decoration:none}
+.conv-followup__panel strong{color:#1a3a5c}
+.conv-followup__template{padding:1rem 1.05rem;border-radius:12px;background:#f8fafc;border:1px solid #e8edf4;font-size:.92rem;line-height:1.65;color:#0f2237}
+.conv-followup__links{margin:0;padding:1.05rem 1.2rem;background:#fff;border:1px solid #e8edf4;border-radius:14px;box-shadow:0 8px 22px rgba(15,34,55,.06);font-size:.9rem;color:#64748b}
+.conv-followup__links a{color:#1a3a5c;font-weight:800;text-decoration:none}
 .conv-followup__links a:hover{text-decoration:underline}
+@media(max-width:700px){.conv-followup__hero{padding:26px 22px}.conv-followup__hero h1{font-size:24px}}
 </style>

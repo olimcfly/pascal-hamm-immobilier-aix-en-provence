@@ -1,0 +1,197 @@
+/* Blog article public */
+.page-blog-single {
+    background: linear-gradient(180deg, #f5f1e8 0%, #ffffff 22rem);
+}
+
+.blog-single__hero {
+    padding: 3rem 0 2.25rem;
+    background:
+        linear-gradient(135deg, rgba(13, 31, 51, 0.96), rgba(26, 60, 94, 0.92)),
+        linear-gradient(90deg, rgba(201, 168, 76, 0.28), transparent 54%);
+    color: #fff;
+}
+
+.blog-single__hero .breadcrumb {
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.blog-single__hero .breadcrumb a {
+    color: var(--clr-accent-lt, #e8c76a);
+}
+
+.breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb__item:not(:last-child)::after {
+    content: "/";
+    margin-left: .45rem;
+    color: rgba(255, 255, 255, 0.42);
+}
+
+.blog-single__category {
+    display: inline-flex;
+    margin: 0 0 .9rem;
+    padding: .35rem .7rem;
+    border: 1px solid rgba(232, 199, 106, 0.4);
+    border-radius: 999px;
+    color: #f6df94;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.blog-single__title {
+    max-width: 900px;
+    margin: 0;
+    color: #fff;
+    font-size: clamp(2rem, 4.8vw, 3.7rem);
+}
+
+.blog-single__excerpt {
+    max-width: 760px;
+    margin: 1rem 0 0;
+    color: rgba(255,255,255,.86);
+    font-size: clamp(1rem, .95rem + .3vw, 1.16rem);
+}
+
+.blog-single__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem 1rem;
+    margin-top: 1.35rem;
+    color: rgba(255,255,255,.72);
+    font-size: .9rem;
+}
+
+.blog-single__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 2rem;
+    align-items: start;
+    padding: 2.5rem 0 3.5rem;
+}
+
+.blog-single__main,
+.blog-single__sidebar-card,
+.blog-single__empty {
+    border: 1px solid rgba(26, 60, 94, 0.12);
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.blog-single__main {
+    padding: clamp(1.35rem, 3vw, 2.35rem);
+    background: #fff;
+}
+
+.blog-single__content {
+    color: #243244;
+    font-size: 1rem;
+    line-height: 1.78;
+}
+
+.blog-single__content h2 {
+    margin: 2rem 0 .75rem;
+    font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+}
+
+.blog-single__content p,
+.blog-single__content li {
+    font-size: 1rem;
+}
+
+.blog-single__content ul {
+    display: grid;
+    gap: .55rem;
+    margin: 1rem 0 1.25rem;
+    padding-left: 1.25rem;
+}
+
+.blog-single__content strong {
+    color: var(--clr-primary, #1a3c5e);
+}
+
+.blog-single__footer {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--clr-border, #e5e0d8);
+}
+
+.blog-single__footer-title {
+    margin: 0 0 .75rem;
+    font-size: 1rem;
+}
+
+.blog-single__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.blog-tag {
+    padding: .35rem .7rem;
+    border-radius: 999px;
+    background: rgba(201, 168, 76, 0.14);
+    color: var(--clr-primary, #1a3c5e);
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.blog-single__sidebar {
+    position: sticky;
+    top: calc(var(--header-h, 72px) + 1rem);
+}
+
+.blog-single__sidebar-card {
+    padding: 1.35rem;
+    background: linear-gradient(145deg, #ffffff 0%, #fffaf0 100%);
+}
+
+.blog-single__sidebar-card h2 {
+    margin: 0 0 .75rem;
+    font-size: 1.18rem;
+}
+
+.blog-single__sidebar-card p {
+    color: #4b5a6b;
+    font-size: .92rem;
+}
+
+.blog-single__sidebar-actions {
+    display: grid;
+    gap: .65rem;
+}
+
+.blog-single .btn-primary {
+    background: var(--clr-accent, #c9a84c);
+    color: var(--clr-primary, #1a3c5e);
+}
+
+.blog-single .btn-secondary {
+    border-color: var(--clr-primary, #1a3c5e);
+    color: var(--clr-primary, #1a3c5e);
+    background: transparent;
+}
+
+.blog-single .btn-secondary:hover {
+    background: var(--clr-primary, #1a3c5e);
+    color: #fff;
+}
+
+@media (max-width: 900px) {
+    .blog-single__layout {
+        grid-template-columns: 1fr;
+    }
+
+    .blog-single__sidebar {
+        position: static;
+    }
+}

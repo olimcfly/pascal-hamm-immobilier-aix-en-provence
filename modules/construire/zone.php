@@ -23,7 +23,7 @@
             <div class="noah-form-grid">
                 <div class="noah-field">
                     <label class="noah-label">Ville principale</label>
-                    <input class="noah-input" type="text" name="ville" placeholder="ex : Mérignac" required>
+                    <input class="noah-input" type="text" name="ville" placeholder="ex : Venelles" required>
                 </div>
                 <div class="noah-field">
                     <label class="noah-label">Type de biens</label>

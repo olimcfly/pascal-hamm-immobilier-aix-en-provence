@@ -265,7 +265,7 @@ function renderContent(): void
         <div class="scrap-search-bar">
             <div class="scrap-field">
                 <label for="scrap-ville"><i class="fas fa-map-marker-alt"></i> Ville</label>
-                <input type="text" id="scrap-ville" placeholder="Ex : Bordeaux, Marseille…">
+                <input type="text" id="scrap-ville" placeholder="Ex : Aix-en-Provence, Marseille…">
             </div>
             <div class="scrap-field">
                 <label for="scrap-agent"><i class="fas fa-user-tie"></i> Agent</label>

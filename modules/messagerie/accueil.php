@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/repositories/MessageRepository.php';
 require_once __DIR__ . '/repositories/TemplateRepository.php';
 require_once __DIR__ . '/services/ImapService.php';
+require_once __DIR__ . '/../../core/services/MailService.php';
 
 $pdo    = db();
 $user   = Auth::user();
@@ -88,23 +89,82 @@ if (isset($_GET['action'])) {
         exit;
     }
 
+    // ── Test envoi SMTP ─────────────────────────────────────────
+    if ($action === 'test_smtp') {
+        $to = filter_var((string)($_POST['to'] ?? $imap->getAdvisorEmail()), FILTER_VALIDATE_EMAIL);
+        if (!$to) {
+            echo json_encode(['ok' => false, 'error' => 'Adresse de test invalide.']);
+            exit;
+        }
+        try {
+            $sent = MailService::send(
+                $to,
+                'Test SMTP - Pascal Hamm Immobilier',
+                "Bonjour,\n\nCet email confirme que l'envoi SMTP fonctionne depuis l'admin.\n\nPascal Hamm Immobilier",
+                '<p>Bonjour,</p><p>Cet email confirme que l&apos;envoi SMTP fonctionne depuis l&apos;admin.</p><p>Pascal Hamm Immobilier</p>'
+            );
+
+            echo json_encode($sent
+                ? ['ok' => true, 'message' => 'Email de test envoyé. Vérifiez la boîte de réception.']
+                : ['ok' => false, 'error' => 'Envoi SMTP échoué. Vérifiez hôte, port, sécurité, identifiant et mot de passe.']);
+        } catch (Throwable $e) {
+            error_log('messagerie test_smtp error: ' . $e->getMessage());
+            echo json_encode(['ok' => false, 'error' => 'Erreur SMTP serveur : ' . $e->getMessage()]);
+        }
+        exit;
+    }
+
     // ── Sauvegarder config IMAP ──────────────────────────────────
     if ($action === 'save_imap') {
+        $defaultMailHost = 'mail.pascal-hamm-immobilier-aix-en-provence.fr';
+        $defaultMailUser = 'superuser@pascal-hamm-immobilier-aix-en-provence.fr';
+
         $host   = trim((string)($_POST['host'] ?? ''));
         $port   = (int)($_POST['port'] ?? 993);
         $user_  = trim((string)($_POST['user'] ?? ''));
         $pass   = (string)($_POST['pass'] ?? '');
         $secure = in_array($_POST['secure'] ?? '', ['ssl','tls','none']) ? $_POST['secure'] : 'ssl';
+        $smtpHost   = trim((string)($_POST['smtp_host'] ?? $host));
+        $smtpPort   = (int)($_POST['smtp_port'] ?? 465);
+        $smtpSecure = in_array($_POST['smtp_secure'] ?? '', ['ssl','tls','none'], true) ? (string)$_POST['smtp_secure'] : 'ssl';
+        $smtpPass   = (string)($_POST['smtp_pass'] ?? '');
+        $fromName   = trim((string)($_POST['from_name'] ?? setting('smtp_from_name', 'Pascal Hamm Immobilier', $userId)));
 
-        if ($host === '' || $user_ === '') {
-            echo json_encode(['ok' => false, 'error' => 'Hôte et utilisateur obligatoires.']);
+        $host = $host !== '' ? $host : (string) setting('imap_host', $defaultMailHost, $userId);
+        $user_ = $user_ !== '' ? $user_ : (string) setting('imap_user', $defaultMailUser, $userId);
+        $smtpHost = $smtpHost !== '' ? $smtpHost : (string) setting('smtp_host', $host ?: $defaultMailHost, $userId);
+
+        if ($host === '') $host = $defaultMailHost;
+        if ($user_ === '') $user_ = $defaultMailUser;
+        if ($smtpHost === '') $smtpHost = $host;
+
+        $writes = [
+            setting_set('imap_host',   $host,   $userId),
+            setting_set('imap_port',   (string)$port, $userId),
+            setting_set('imap_user',   $user_,  $userId),
+            setting_set('imap_secure', $secure, $userId),
+        ];
+        if ($pass !== '') {
+            $writes[] = setting_set('imap_pass', $pass, $userId);
+        }
+
+        if ($smtpHost !== '') {
+            $writes[] = setting_set('smtp_host', $smtpHost, $userId);
+            $writes[] = setting_set('smtp_port', (string)($smtpPort > 0 ? $smtpPort : 465), $userId);
+            $writes[] = setting_set('smtp_user', $user_, $userId);
+            $writes[] = setting_set('smtp_secure', $smtpSecure, $userId);
+            $writes[] = setting_set('smtp_from', $user_, $userId);
+            $writes[] = setting_set('smtp_from_name', $fromName !== '' ? $fromName : 'Pascal Hamm Immobilier', $userId);
+            if ($smtpPass !== '' || $pass !== '') {
+                $writes[] = setting_set('smtp_pass', $smtpPass !== '' ? $smtpPass : $pass, $userId);
+            }
+        }
+
+        if (in_array(false, $writes, true)) {
+            echo json_encode(['ok' => false, 'error' => 'Impossible d’enregistrer la configuration email. Vérifiez les droits base de données.']);
             exit;
         }
-        setting_set('imap_host',   $host,   $userId);
-        setting_set('imap_port',   (string)$port, $userId);
-        setting_set('imap_user',   $user_,  $userId);
-        setting_set('imap_secure', $secure, $userId);
-        if ($pass !== '') setting_set('imap_pass', $pass, $userId);
+
         echo json_encode(['ok' => true]);
         exit;
     }

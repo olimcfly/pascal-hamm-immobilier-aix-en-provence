@@ -120,12 +120,18 @@ $current = 'rdv';
 require __DIR__ . '/views/_subnav.php';
 ?>
 <style>
-    .rdv-toolbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
-    .rdv-back{display:inline-flex;align-items:center;gap:.45rem;text-decoration:none;color:#334155;font-weight:700}
-    .rdv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
-    .rdv-day{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:1rem;box-shadow:0 10px 30px rgba(15,23,42,.04)}
-    .rdv-day h3{margin:0 0 .7rem;font-size:1rem}
-    .rdv-card{border:1px solid #e2e8f0;border-radius:12px;padding:.75rem;background:#f8fafc;margin-bottom:.7rem}
+    .rdv-page-hero{background:linear-gradient(135deg,#0f2237 0%,#1a3a5c 100%);border-radius:18px;padding:38px 42px;color:#fff;margin-bottom:1rem;box-shadow:0 8px 24px rgba(15,34,55,.16)}
+    .rdv-page-hero h1{font-size:30px;font-weight:800;color:#fff;margin:0 0 12px;line-height:1.2}
+    .rdv-page-hero p{font-size:15px;color:rgba(255,255,255,.72);line-height:1.65;max-width:760px;margin:0}
+    .rdv-page-badge{display:inline-block;background:rgba(201,168,76,.2);color:#c9a84c;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;border:1px solid rgba(201,168,76,.35)}
+    .rdv-toolbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;background:#fff;border:1px solid #e8edf4;border-radius:14px;padding:1rem 1.15rem;box-shadow:0 8px 22px rgba(15,34,55,.06)}
+    .rdv-back{display:inline-flex;align-items:center;gap:.45rem;text-decoration:none;color:#1a3a5c;font-weight:800}
+    .rdv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1rem}
+    .rdv-day{background:#fff;border:1px solid #e8edf4;border-radius:14px;padding:1rem;box-shadow:0 8px 22px rgba(15,34,55,.06)}
+    .rdv-day h3{margin:0 0 .8rem;font-size:1rem;color:#0f2237}
+    .rdv-card{border:1px solid #e8edf4;border-radius:12px;padding:.9rem;background:#fbfdff;margin-bottom:.75rem}
+    .rdv-card__head{display:flex;justify-content:space-between;gap:.7rem;align-items:flex-start}
+    .rdv-card__name{font-size:.98rem;color:#0f2237}
     .rdv-meta{font-size:.82rem;color:#64748b}
     .rdv-badge{display:inline-block;padding:.2rem .55rem;border-radius:999px;font-weight:700;background:#e2e8f0;color:#1f2937;font-size:.72rem}
     .rdv-badge.status-demande{background:#dbeafe;color:#1d4ed8}
@@ -134,23 +140,27 @@ require __DIR__ . '/views/_subnav.php';
     .rdv-badge.status-cancel{background:#fee2e2;color:#991b1b}
     .rdv-actions{display:grid;gap:.4rem;margin-top:.6rem}
     .rdv-actions form{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
-    .rdv-actions input,.rdv-actions select,.rdv-actions textarea,.rdv-actions button{border:1px solid #cbd5e1;border-radius:8px;padding:.45rem .55rem;font-size:.86rem}
+    .rdv-actions input,.rdv-actions select,.rdv-actions textarea,.rdv-actions button{border:1px solid #d8e0eb;border-radius:9px;padding:.55rem .65rem;font-size:.86rem}
+    .rdv-actions input:focus,.rdv-actions select:focus,.rdv-actions textarea:focus{outline:none;border-color:#c9a84c;box-shadow:0 0 0 3px rgba(201,168,76,.16)}
     .rdv-actions textarea{grid-column:1/-1;min-height:54px;resize:vertical}
-    .rdv-actions button{cursor:pointer;font-weight:700;background:#0f172a;color:#fff;border-color:#0f172a}
+    .rdv-actions button{cursor:pointer;font-weight:800;background:#c9a84c;color:#10253c;border-color:#c9a84c;transition:transform .15s ease,box-shadow .15s ease}
+    .rdv-actions button:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(201,168,76,.24)}
     .rdv-notice{padding:.75rem .9rem;border-radius:10px;margin-bottom:1rem}
     .rdv-notice.success{background:#ecfdf5;border:1px solid #86efac;color:#166534}
     .rdv-notice.error{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b}
     .rdv-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem;margin-bottom:1rem}
-    .rdv-kpi{border:1px solid #e2e8f0;background:#fff;border-radius:12px;padding:.7rem .8rem}
-    .rdv-kpi strong{display:block;font-size:1.2rem;color:#0f172a}
-    .rdv-kpi span{font-size:.8rem;color:#64748b}
+    .rdv-kpi{border:1px solid #e8edf4;background:#fff;border-radius:14px;padding:.9rem 1rem;box-shadow:0 8px 22px rgba(15,34,55,.06)}
+    .rdv-kpi strong{display:block;font-size:1.3rem;color:#0f2237}
+    .rdv-kpi span{font-size:.8rem;color:#64748b;font-weight:700}
     .rdv-filters{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
-    .rdv-filter{display:inline-flex;padding:.38rem .65rem;border-radius:999px;border:1px solid #cbd5e1;text-decoration:none;color:#334155;font-weight:600;font-size:.82rem;background:#fff}
-    .rdv-filter.active{background:#0f172a;border-color:#0f172a;color:#fff}
+    .rdv-filter{display:inline-flex;padding:.45rem .75rem;border-radius:999px;border:1px solid #d8e0eb;text-decoration:none;color:#1a3a5c;font-weight:800;font-size:.82rem;background:#fff;box-shadow:0 4px 12px rgba(15,34,55,.04)}
+    .rdv-filter.active{background:#c9a84c;border-color:#c9a84c;color:#10253c}
+    @media(max-width:700px){.rdv-page-hero{padding:26px 22px}.rdv-page-hero h1{font-size:24px}.rdv-actions form{grid-template-columns:1fr}.rdv-card__head{display:grid}}
 </style>
 
-<div class="page-header">
-    <h1><i class="fas fa-calendar-days page-icon"></i> Convertir <span class="page-title-accent">Prise de RDV</span></h1>
+<div class="rdv-page-hero">
+    <div class="rdv-page-badge">Agenda commercial</div>
+    <h1><i class="fas fa-calendar-days"></i> Prise de RDV</h1>
     <p>Visualisez les demandes de RDV issues des leads et traitez-les depuis un agenda opérationnel.</p>
 </div>
 
@@ -196,8 +206,8 @@ require __DIR__ . '/views/_subnav.php';
                     $statusClass = $appointmentStatusClasses[$status] ?? 'status-demande';
                     ?>
                     <div class="rdv-card">
-                        <div style="display:flex;justify-content:space-between;gap:.6rem;align-items:flex-start;">
-                            <strong><?= e(trim(($lead['first_name'] ?? '') . ' ' . ($lead['last_name'] ?? ''))) ?: 'Lead sans nom' ?></strong>
+                        <div class="rdv-card__head">
+                            <strong class="rdv-card__name"><?= e(trim(($lead['first_name'] ?? '') . ' ' . ($lead['last_name'] ?? ''))) ?: 'Lead sans nom' ?></strong>
                             <span class="rdv-badge <?= e($statusClass) ?>"><?= e($statusLabel) ?></span>
                         </div>
                         <div class="rdv-meta"><?= e((string)($lead['email'] ?? '')) ?> · <?= e((string)($lead['phone'] ?? '')) ?></div>

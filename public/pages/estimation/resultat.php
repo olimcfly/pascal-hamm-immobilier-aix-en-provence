@@ -28,6 +28,30 @@ $insufficientData = $fourchette === null;
 $cityForCopy = (defined('APP_CITY') && (string) APP_CITY !== '') ? (string) APP_CITY : 'Aix-en-Provence';
 $advisorShort = defined('ADVISOR_NAME') ? (string) ADVISOR_NAME : 'Pascal Hamm';
 
+function estimation_result_localite_parts(string $localite): array
+{
+    $localite = trim(preg_replace('/\s+/u', ' ', $localite) ?: '');
+    $postalCode = '';
+    if (preg_match('/\b(\d{5})\b/', $localite, $match)) {
+        $postalCode = $match[1];
+    }
+
+    $city = trim((string) preg_replace('/\b\d{5}\b/u', '', $localite));
+    $city = trim($city, " \t\n\r\0\x0B,;-");
+
+    $label = trim($city . ($postalCode !== '' ? ' ' . $postalCode : ''));
+    if ($label === '') {
+        $label = $localite;
+    }
+
+    return [
+        'city' => $city,
+        'postal_code' => $postalCode,
+        'label' => $label,
+    ];
+}
+$estimationCopy = DvfEstimatorService::sourceConfiguration();
+
 // ── Labels ────────────────────────────────────────────────────────────────────
 $typeLabels = [
     'appartement' => 'Appartement',
@@ -57,24 +81,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'phone'       => $telephone,
             'intent'      => 'Estimation + RDV',
             'consent'     => !empty($_POST['rgpd']),
-            'metadata'    => [
-                'zone_id'           => $est['zone_id'] ?? null,
-                'type_bien'         => $typeBien,
-                'surface'           => $surface,
-                'localite'          => $localite,
-                'budget_client'     => $budget,
-                'projet'            => $projet,
-                'estimation_min'    => $fourchette['min'] ?? null,
-                'estimation_max'    => $fourchette['max'] ?? null,
-                // Qualification
-                'seul_decideur'     => trim($_POST['seul_decideur']   ?? ''),
-                'urgence'           => trim($_POST['urgence']         ?? ''),
-                'delai'             => trim($_POST['delai']           ?? ''),
-                'raison'            => trim($_POST['raison']          ?? ''),
-                'situation'         => trim($_POST['situation']       ?? ''),
-                'creneau_prefere'   => trim($_POST['creneau_prefere'] ?? ''),
-            ],
-        ]);
+                'metadata'    => [
+                    'zone_id'           => $est['zone_id'] ?? null,
+                    'type_bien'         => $typeBien,
+                    'surface'           => $surface,
+                    'localite'          => $localite,
+                    'budget_client'     => $budget,
+                    'projet'            => $projet,
+                    'estimation_min'    => $fourchette['min'] ?? null,
+                    'estimation_max'    => $fourchette['max'] ?? null,
+                    'surface_confirm'   => trim($_POST['surface_confirm'] ?? ''),
+                    // Qualification
+                    'seul_decideur'     => trim($_POST['seul_decideur']   ?? ''),
+                    'urgence'           => trim($_POST['urgence']         ?? ''),
+                    'delai'             => trim($_POST['delai']           ?? ''),
+                    'raison'            => trim($_POST['raison']          ?? ''),
+                    'situation'         => trim($_POST['situation']       ?? ''),
+                    'contact_mode'      => trim($_POST['contact_mode']    ?? ''),
+                    'creneau_prefere'   => trim($_POST['creneau_prefere'] ?? ''),
+                    'message'           => trim($_POST['message']         ?? ''),
+                ],
+            ]);
 
         // ── Nettoyage session ──────────────────────────────────────
         unset($_SESSION['estimation']);
@@ -105,6 +132,30 @@ if ($budget && $fourchette) {
         $diffPct = round((($budgetVal - $moyVal) / $moyVal) * 100);
     }
 }
+
+$localiteParts = estimation_result_localite_parts((string) $localite);
+$typeBienLabel = $typeLabels[$typeBien] ?? ($typeBien !== '' ? $typeBien : '');
+$summaryLocation = $localiteParts['label'] !== '' ? $localiteParts['label'] : ($localite !== '' ? $localite : '—');
+$summaryValue = null;
+if (is_array($fourchette) && !empty($fourchette['moy'])) {
+    $summaryValue = 'Valeur indicative : ' . trim((string) $fourchette['moy']) . ' €';
+} elseif (is_array($fourchette) && !empty($fourchette['min']) && !empty($fourchette['max'])) {
+    $summaryValue = 'Fourchette indicative : ' . trim((string) $fourchette['min']) . ' € - ' . trim((string) $fourchette['max']) . ' €';
+}
+
+$postedPrenom = trim((string) ($_POST['prenom'] ?? ''));
+$postedNom = trim((string) ($_POST['nom'] ?? ''));
+$postedEmail = trim((string) ($_POST['email'] ?? ''));
+$postedTelephone = trim((string) ($_POST['telephone'] ?? ''));
+$postedSurfaceConfirm = trim((string) ($_POST['surface_confirm'] ?? $surface));
+$postedSeulDecideur = trim((string) ($_POST['seul_decideur'] ?? ''));
+$postedUrgence = trim((string) ($_POST['urgence'] ?? ''));
+$postedDelai = trim((string) ($_POST['delai'] ?? ''));
+$postedRaison = trim((string) ($_POST['raison'] ?? ''));
+$postedSituation = trim((string) ($_POST['situation'] ?? ''));
+$postedCreneau = trim((string) ($_POST['creneau_prefere'] ?? ''));
+$postedContactMode = trim((string) ($_POST['contact_mode'] ?? ''));
+$postedMessage = trim((string) ($_POST['message'] ?? ''));
 ?>
 
 <!-- ══ PAGE HEADER ══════════════════════════════════════════════════════════ -->
@@ -115,7 +166,7 @@ if ($budget && $fourchette) {
             <a href="/estimation-gratuite">Estimation</a>
             <span>Résultat</span>
         </nav>
-        <h1>Votre estimation<br>
+        <h1><?= e($estimationCopy['result_title'] ?: 'Votre estimation indicative') ?><br>
             <span>
                 <?= e($typeLabels[$typeBien] ?? $typeBien) ?> ·
                 <?= e($surface) ?> m² ·
@@ -131,12 +182,15 @@ if ($budget && $fourchette) {
         <div class="disclaimer-inner">
             <span class="disclaimer-badge" aria-hidden="true">⚠️</span>
             <div>
-                <strong>Cette estimation est indicative et non contractuelle.</strong>
-                Elle est calculée à partir des statistiques de ventes enregistrées
-                sur les moteurs de recherche et la base DVF (Demandes de Valeurs Foncières).
-                <strong>La seule vraie estimation est celle négociée entre un acheteur et un vendeur.</strong>
-                Seul un expert immobilier agréé peut établir une estimation certifiée
-                (divorce, succession, prêt bancaire, fiscalité).
+                <strong><?= e($estimationCopy['result_intro'] ?: 'Cette estimation est indicative et non contractuelle.') ?></strong>
+                <p style="margin:.35rem 0 0;">
+                    <?= e($estimationCopy['result_disclaimer'] ?: 'Elle est calculée à partir des ventes DVF les plus proches disponibles et doit être confirmée par une analyse locale.') ?>
+                </p>
+                <p style="margin:.35rem 0 0;">
+                    La seule vraie estimation est celle négociée entre un acheteur et un vendeur.
+                    Seul un expert immobilier agréé peut établir une estimation certifiée
+                    (divorce, succession, prêt bancaire, fiscalité).
+                </p>
             </div>
         </div>
     </div>
@@ -358,7 +412,7 @@ if ($budget && $fourchette) {
                         <!-- CTA RDV (principal) -->
                         <div class="cta-card cta-card--primary">
                             <span class="cta-card__icon" aria-hidden="true">📅</span>
-                            <h4>Obtenir une estimation précise</h4>
+                            <h4><?= e($estimationCopy['result_heading'] ?? 'Obtenir une estimation précise') ?></h4>
                             <p>
                                 Prenez rendez-vous avec Pascal Hamm.
                                 Visite, analyse et rapport personnalisé gratuit.
@@ -366,7 +420,7 @@ if ($budget && $fourchette) {
                             <button type="button"
                                     class="btn btn--accent btn--lg btn--full"
                                     id="openQualifForm">
-                                Prendre rendez-vous gratuitement
+                                <?= e($estimationCopy['result_primary_cta_label'] ?: 'Prendre rendez-vous avec Pascal Hamm') ?>
                             </button>
                             <small>Sans engagement · Réponse sous 24h</small>
                         </div>
@@ -453,6 +507,11 @@ if ($budget && $fourchette) {
                     <a href="/estimation-gratuite" class="btn btn--ghost btn--sm btn--full">
                         ← Recommencer
                     </a>
+                    <?php if (!empty($estimationCopy['result_secondary_cta_url']) && !empty($estimationCopy['result_secondary_cta_label'])): ?>
+                    <a href="<?= e((string) $estimationCopy['result_secondary_cta_url']) ?>" class="btn btn--outline btn--sm btn--full" style="margin-top:.5rem;">
+                        <?= e((string) $estimationCopy['result_secondary_cta_label']) ?>
+                    </a>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Conseiller -->
@@ -490,23 +549,47 @@ if ($budget && $fourchette) {
 
 <!-- ══ MODAL QUALIFICATION ══════════════════════════════════════════════════ -->
 <div id="qualifModal"
-     class="modal"
+     class="modal modal--rdv"
      role="dialog"
      aria-modal="true"
      aria-labelledby="qualifModalTitle"
+     aria-describedby="qualifModalIntro"
      hidden>
-    <div class="modal__backdrop" id="qualifModalBackdrop"></div>
-    <div class="modal__dialog modal__dialog--lg">
+    <div class="modal__backdrop" id="qualifModalBackdrop" aria-hidden="true"></div>
+    <div class="modal__dialog modal__dialog--lg modal__dialog--rdv">
         <div class="modal__header">
-            <h2 id="qualifModalTitle">📅 Prendre rendez-vous</h2>
-            <button type="button" class="modal__close" aria-label="Fermer">×</button>
+            <div class="modal__heading">
+                <span class="modal__header-icon" aria-hidden="true">📅</span>
+                <div class="modal__heading-copy">
+                    <h2 id="qualifModalTitle">Planifier votre rendez-vous d’avis de valeur</h2>
+                    <p class="modal__subtitle">
+                        Quelques questions rapides pour préparer un échange utile sur votre bien à
+                        <?= e($localiteParts['city'] !== '' ? $localiteParts['city'] : $cityForCopy) ?>.
+                    </p>
+                </div>
+            </div>
+            <button type="button" class="modal__close" aria-label="Fermer la fenêtre">×</button>
         </div>
         <div class="modal__body">
+            <section class="rdv-summary-card" aria-label="Votre résultat actuel">
+                <div class="rdv-summary-card__kicker">Votre résultat actuel</div>
+                <div class="rdv-summary-card__title">
+                    <?= e($typeBienLabel !== '' ? $typeBienLabel : 'Bien immobilier') ?>
+                    <?php if ($surface !== ''): ?> · <?= e($surface) ?> m²<?php endif; ?>
+                    <?php if ($summaryLocation !== '—'): ?> · <?= e($summaryLocation) ?><?php endif; ?>
+                </div>
+                <div class="rdv-summary-card__meta">
+                    <?php if ($projet !== ''): ?>
+                        <span>Projet : <?= e(ucfirst($projet)) ?></span>
+                    <?php endif; ?>
+                    <?php if ($summaryValue !== null): ?>
+                        <span><?= e($summaryValue) ?></span>
+                    <?php endif; ?>
+                </div>
+            </section>
 
-            <p class="modal__intro">
-                Pour préparer au mieux notre rendez-vous sur votre bien à
-                <strong><?= e($localite) ?></strong>,
-                quelques questions rapides sur votre projet.
+            <p id="qualifModalIntro" class="modal__intro">
+                Vous pouvez garder les champs simples : on affine surtout ce qui compte vraiment pour un avis de valeur utile.
             </p>
 
             <form id="form-qualification"
@@ -515,102 +598,157 @@ if ($budget && $fourchette) {
                   novalidate>
                 <?= csrfField() ?>
 
-                <!-- Confirmation surface -->
-                <fieldset class="fieldset">
-                    <legend>Confirmation du bien</legend>
-                    <div class="form-row">
+                <section class="rdv-section">
+                    <div class="rdv-section__head">
+                        <h3>Confirmation du bien</h3>
+                        <p>Les informations déjà connues permettent de préparer un échange plus précis.</p>
+                    </div>
+                    <div class="form-row form-row--rdv">
                         <div class="form-group">
                             <label class="form-label" for="q-surface-conf">Surface (m²)</label>
                             <input type="number"
                                    id="q-surface-conf"
                                    name="surface_confirm"
-                                   class="form-control"
-                                   value="<?= e($surface) ?>">
+                                   class="form-control form-control--rdv"
+                                   value="<?= e($postedSurfaceConfirm) ?>"
+                                   min="1"
+                                   step="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="q-type-confirm">Type de bien</label>
+                            <input type="text"
+                                   id="q-type-confirm"
+                                   class="form-control form-control--rdv"
+                                   value="<?= e($typeBienLabel !== '' ? $typeBienLabel : '—') ?>"
+                                   readonly>
                         </div>
                     </div>
-                </fieldset>
+                    <div class="rdv-mini-summary">
+                        <?php if ($localite !== ''): ?>
+                        <div class="rdv-mini-summary__item rdv-mini-summary__item--wide">
+                            <span class="rdv-mini-summary__label">Adresse ou secteur</span>
+                            <span class="rdv-mini-summary__value"><?= e($summaryLocation) ?></span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </section>
 
-                <!-- Qualification projet -->
-                <fieldset class="fieldset">
-                    <legend>Votre projet</legend>
-
-                    <div class="form-group">
-                        <label class="form-label" for="q-decideur">
-                            Êtes-vous le seul décisionnaire ?
-                        </label>
-                        <select id="q-decideur" name="seul_decideur" class="form-control">
-                            <option value="">— Sélectionner —</option>
-                            <option value="oui">Oui</option>
-                            <option value="non">Non (en couple / indivision…)</option>
-                        </select>
+                <section class="rdv-section">
+                    <div class="rdv-section__head">
+                        <h3>Votre projet</h3>
+                        <p>Quelques éléments de contexte pour préparer un rendez-vous vraiment utile.</p>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="q-urgence">Niveau d'urgence</label>
-                        <select id="q-urgence" name="urgence" class="form-control">
-                            <option value="">— Sélectionner —</option>
-                            <option value="urgent">Urgent (- de 3 mois)</option>
-                            <option value="normal">Normal (3 à 6 mois)</option>
-                            <option value="flexible">Flexible (+ de 6 mois)</option>
-                        </select>
+                    <div class="form-row form-row--rdv">
+                        <div class="form-group">
+                            <label class="form-label" for="q-decideur">
+                                Êtes-vous le seul décisionnaire ?
+                            </label>
+                            <select id="q-decideur" name="seul_decideur" class="form-control form-control--rdv">
+                                <option value="">— Sélectionner —</option>
+                                <option value="oui" <?= $postedSeulDecideur === 'oui' ? 'selected' : '' ?>>Oui</option>
+                                <option value="non" <?= $postedSeulDecideur === 'non' ? 'selected' : '' ?>>Non (en couple / indivision…)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="q-urgence">Niveau d'urgence</label>
+                            <select id="q-urgence" name="urgence" class="form-control form-control--rdv">
+                                <option value="">— Sélectionner —</option>
+                                <option value="urgent" <?= $postedUrgence === 'urgent' ? 'selected' : '' ?>>Urgent (- de 3 mois)</option>
+                                <option value="normal" <?= $postedUrgence === 'normal' ? 'selected' : '' ?>>Normal (3 à 6 mois)</option>
+                                <option value="flexible" <?= $postedUrgence === 'flexible' ? 'selected' : '' ?>>Flexible (+ de 6 mois)</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="q-delai">Délai souhaité</label>
-                        <select id="q-delai" name="delai" class="form-control">
-                            <option value="">— Sélectionner —</option>
-                            <option value="moins_3_mois">Moins de 3 mois</option>
-                            <option value="3_6_mois">3 à 6 mois</option>
-                            <option value="plus_6_mois">Plus de 6 mois</option>
-                            <option value="indéfini">Pas encore défini</option>
-                        </select>
-                    </div>
+                    <div class="form-row form-row--rdv">
+                        <div class="form-group">
+                            <label class="form-label" for="q-delai">Délai souhaité</label>
+                            <select id="q-delai" name="delai" class="form-control form-control--rdv">
+                                <option value="">— Sélectionner —</option>
+                                <option value="moins_3_mois" <?= $postedDelai === 'moins_3_mois' ? 'selected' : '' ?>>Moins de 3 mois</option>
+                                <option value="3_6_mois" <?= $postedDelai === '3_6_mois' ? 'selected' : '' ?>>3 à 6 mois</option>
+                                <option value="plus_6_mois" <?= $postedDelai === 'plus_6_mois' ? 'selected' : '' ?>>Plus de 6 mois</option>
+                                <option value="indéfini" <?= $postedDelai === 'indéfini' ? 'selected' : '' ?>>Pas encore défini</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="q-raison">
-                            Raison principale de ce projet
-                        </label>
-                        <select id="q-raison" name="raison" class="form-control">
-                            <option value="">— Sélectionner —</option>
-                            <option value="investissement">Investissement</option>
-                            <option value="résidence_principale">Résidence principale</option>
-                            <option value="succession">Succession / héritage</option>
-                            <option value="divorce">Divorce / séparation</option>
-                            <option value="déménagement">Déménagement</option>
-                            <option value="autre">Autre</option>
-                        </select>
+                        <div class="form-group">
+                            <label class="form-label" for="q-raison">
+                                Raison principale de ce projet
+                            </label>
+                            <select id="q-raison" name="raison" class="form-control form-control--rdv">
+                                <option value="">— Sélectionner —</option>
+                                <option value="investissement" <?= $postedRaison === 'investissement' ? 'selected' : '' ?>>Investissement</option>
+                                <option value="résidence_principale" <?= $postedRaison === 'résidence_principale' ? 'selected' : '' ?>>Résidence principale</option>
+                                <option value="succession" <?= $postedRaison === 'succession' ? 'selected' : '' ?>>Succession / héritage</option>
+                                <option value="divorce" <?= $postedRaison === 'divorce' ? 'selected' : '' ?>>Divorce / séparation</option>
+                                <option value="déménagement" <?= $postedRaison === 'déménagement' ? 'selected' : '' ?>>Déménagement</option>
+                                <option value="autre" <?= $postedRaison === 'autre' ? 'selected' : '' ?>>Autre</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="q-situation">Votre situation actuelle</label>
-                        <select id="q-situation" name="situation" class="form-control">
+                        <select id="q-situation" name="situation" class="form-control form-control--rdv">
                             <option value="">— Sélectionner —</option>
-                            <option value="proprietaire">Propriétaire</option>
-                            <option value="locataire">Locataire</option>
-                            <option value="hebergé">Hébergé</option>
-                            <option value="deja_vendu">J'ai déjà vendu</option>
-                            <option value="en_cours">Vente en cours</option>
+                            <option value="proprietaire" <?= $postedSituation === 'proprietaire' ? 'selected' : '' ?>>Propriétaire</option>
+                            <option value="locataire" <?= $postedSituation === 'locataire' ? 'selected' : '' ?>>Locataire</option>
+                            <option value="hebergé" <?= $postedSituation === 'hebergé' ? 'selected' : '' ?>>Hébergé</option>
+                            <option value="deja_vendu" <?= $postedSituation === 'deja_vendu' ? 'selected' : '' ?>>J'ai déjà vendu</option>
+                            <option value="en_cours" <?= $postedSituation === 'en_cours' ? 'selected' : '' ?>>Vente en cours</option>
                         </select>
+                    </div>
+                </section>
+
+                <section class="rdv-section">
+                    <div class="rdv-section__head">
+                        <h3>Disponibilité</h3>
+                        <p>Choisissez ce qui facilite votre échange. Le reste est optionnel.</p>
+                    </div>
+
+                    <div class="form-row form-row--rdv">
+                        <div class="form-group">
+                            <label class="form-label" for="q-contact-mode">Mode de contact préféré</label>
+                            <select id="q-contact-mode" name="contact_mode" class="form-control form-control--rdv">
+                                <option value="">— Sélectionner —</option>
+                                <option value="telephone" <?= $postedContactMode === 'telephone' ? 'selected' : '' ?>>Téléphone</option>
+                                <option value="email" <?= $postedContactMode === 'email' ? 'selected' : '' ?>>Email</option>
+                                <option value="sms" <?= $postedContactMode === 'sms' ? 'selected' : '' ?>>SMS</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="q-creneau">Créneau préféré</label>
+                            <select id="q-creneau" name="creneau_prefere" class="form-control form-control--rdv">
+                                <option value="">— Sélectionner —</option>
+                                <option value="matin" <?= $postedCreneau === 'matin' ? 'selected' : '' ?>>Matin (9h – 12h)</option>
+                                <option value="midi" <?= $postedCreneau === 'midi' ? 'selected' : '' ?>>Midi (12h – 14h)</option>
+                                <option value="apres-midi" <?= $postedCreneau === 'apres-midi' ? 'selected' : '' ?>>Après-midi (14h – 18h)</option>
+                                <option value="soir" <?= $postedCreneau === 'soir' ? 'selected' : '' ?>>Soir (18h – 20h)</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="q-creneau">Créneau préféré</label>
-                        <select id="q-creneau" name="creneau_prefere" class="form-control">
-                            <option value="">— Sélectionner —</option>
-                            <option value="matin">Matin (9h – 12h)</option>
-                            <option value="midi">Midi (12h – 14h)</option>
-                            <option value="apres-midi">Après-midi (14h – 18h)</option>
-                            <option value="soir">Soir (18h – 20h)</option>
-                        </select>
+                        <label class="form-label" for="q-message">Message libre</label>
+                        <textarea id="q-message"
+                                  name="message"
+                                  class="form-control form-control--rdv form-control--textarea"
+                                  rows="4"
+                                  placeholder="Ex. : je souhaite vendre dans les 6 prochains mois, ou j’ai une contrainte de délai particulière."><?= e($postedMessage) ?></textarea>
+                    </div>
+                </section>
+
+                <section class="rdv-section">
+                    <div class="rdv-section__head">
+                        <h3>Vos coordonnées</h3>
+                        <p>Si vous avez déjà renseigné ces informations, elles sont gardées pour aller plus vite.</p>
                     </div>
 
-                </fieldset>
-
-                <!-- Contact -->
-                <fieldset class="fieldset">
-                    <legend>Vos coordonnées</legend>
-
-                    <div class="form-row">
+                    <div class="form-row form-row--rdv">
                         <div class="form-group">
                             <label class="form-label" for="q-prenom">
                                 Prénom <span class="required-star">*</span>
@@ -618,7 +756,8 @@ if ($budget && $fourchette) {
                             <input type="text"
                                    id="q-prenom"
                                    name="prenom"
-                                   class="form-control"
+                                   class="form-control form-control--rdv"
+                                   value="<?= e($postedPrenom) ?>"
                                    required>
                         </div>
                         <div class="form-group">
@@ -626,39 +765,43 @@ if ($budget && $fourchette) {
                             <input type="text"
                                    id="q-nom"
                                    name="nom"
-                                   class="form-control">
+                                   class="form-control form-control--rdv"
+                                   value="<?= e($postedNom) ?>">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="q-email">
-                            Email <span class="required-star">*</span>
-                        </label>
-                        <input type="email"
-                               id="q-email"
-                               name="email"
-                               class="form-control"
-                               required>
-                    </div>
+                    <div class="form-row form-row--rdv">
+                        <div class="form-group">
+                            <label class="form-label" for="q-email">
+                                Email <span class="required-star">*</span>
+                            </label>
+                            <input type="email"
+                                   id="q-email"
+                                   name="email"
+                                   class="form-control form-control--rdv"
+                                   value="<?= e($postedEmail) ?>"
+                                   required>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="q-telephone">Téléphone</label>
-                        <input type="tel"
-                               id="q-telephone"
-                               name="telephone"
-                               class="form-control"
-                               placeholder="06 …">
+                        <div class="form-group">
+                            <label class="form-label" for="q-telephone">Téléphone</label>
+                            <input type="tel"
+                                   id="q-telephone"
+                                   name="telephone"
+                                   class="form-control form-control--rdv"
+                                   value="<?= e($postedTelephone) ?>"
+                                   placeholder="06 …">
+                        </div>
                     </div>
-
-                </fieldset>
+                </section>
 
                 <!-- RGPD -->
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="rgpd" required>
+                <div class="form-group form-group--consent">
+                    <label class="checkbox-label checkbox-label--rdv">
+                        <input type="checkbox" name="rgpd" required <?= !empty($_POST['rgpd']) ? 'checked' : '' ?>>
                         <span>
                             J'accepte la
-                            <a href="/politique-confidentialite" target="_blank">
+                            <a href="/politique-confidentialite" target="_blank" rel="noopener noreferrer">
                                 politique de confidentialité
                             </a>.
                             <span class="required-star" aria-hidden="true">*</span>
@@ -666,10 +809,16 @@ if ($budget && $fourchette) {
                     </label>
                 </div>
 
-                <div class="form-submit-wrap">
-                    <button type="submit" class="btn btn--accent btn--lg btn--full">
-                        Confirmer mon rendez-vous →
-                    </button>
+                <div class="modal__footer">
+                    <div class="modal__actions">
+                        <button type="submit" class="btn btn--accent btn--lg btn--full modal__submit">
+                            Confirmer ma demande de rendez-vous
+                        </button>
+                        <button type="button" class="btn btn--outline btn--lg btn--full modal__later" data-modal-close>
+                            Être rappelé plus tard
+                        </button>
+                    </div>
+                    <p class="modal__microcopy">Sans engagement · Réponse rapide · Données confidentielles</p>
                 </div>
 
             </form>

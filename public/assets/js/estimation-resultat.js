@@ -7,10 +7,15 @@
     const backdrop    = document.getElementById('qualifModalBackdrop');
     const closeBtn    = modal?.querySelector('.modal__close');
     const openers     = document.querySelectorAll('#openQualifForm, #openQualifFormSidebar, #openQualifFormSecond');
+    const closeHooks  = modal?.querySelectorAll('[data-modal-close]');
+    let lastTrigger   = null;
+    let previousOverflow = '';
 
     if (!modal) return;
 
-    function openModal() {
+    function openModal(trigger) {
+        lastTrigger = trigger instanceof HTMLElement ? trigger : null;
+        previousOverflow = document.body.style.overflow;
         modal.hidden = false;
         document.body.style.overflow = 'hidden';
         // Focus sur le premier champ
@@ -19,11 +24,15 @@
 
     function closeModal() {
         modal.hidden = true;
-        document.body.style.overflow = '';
+        document.body.style.overflow = previousOverflow;
+        if (lastTrigger && typeof lastTrigger.focus === 'function') {
+            lastTrigger.focus({ preventScroll: true });
+        }
     }
 
-    openers.forEach(btn => btn?.addEventListener('click', openModal));
+    openers.forEach(btn => btn?.addEventListener('click', () => openModal(btn)));
     closeBtn?.addEventListener('click', closeModal);
+    closeHooks?.forEach(btn => btn?.addEventListener('click', closeModal));
     backdrop?.addEventListener('click', closeModal);
 
     // Fermer avec Escape

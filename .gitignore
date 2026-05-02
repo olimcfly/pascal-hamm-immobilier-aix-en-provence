@@ -42,5 +42,7 @@ storage/logs/
 public/error_log
 error_log
 .env_local
-storage/logs/
+storage/cache/
+storage/dvf/
+
 .aider*

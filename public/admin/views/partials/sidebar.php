@@ -70,6 +70,7 @@ $menuGroups = [
     ],
     'Boîte à outils' => [
         ['module' => 'outils-hub', 'label' => 'Outils & exports', 'title' => 'Boîte à outils : téléchargements, scripts, ressources', 'icon' => 'fas fa-toolbox'],
+        ['module' => 'estimation_dvf', 'label' => 'Estimation DVF', 'title' => 'Paramétrage et suivi du moteur d’estimation DVF', 'icon' => 'fas fa-calculator'],
         ['module' => 'checklist', 'label' => 'Checklist client', 'title' => 'Checklist de verification partageable avec le client', 'icon' => 'fas fa-list-check'],
     ],
     'Votre compte' => [

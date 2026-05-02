@@ -1,2 +1,0 @@
-# robots.txt est servi dynamiquement depuis robots.php (APP_URL)
-# via la règle RewriteRule ^robots\.txt$ robots.php.

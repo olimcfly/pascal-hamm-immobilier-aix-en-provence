@@ -1,19 +1,29 @@
 <?php
 require_once __DIR__ . '/../../../core/bootstrap.php';
 
+$db = function_exists('db') ? db() : null;
+$lpMode = true;
+
 $pageTitle = 'Merci — Votre demande a bien été reçue';
 $metaDesc  = 'Votre demande d\'estimation a été transmise. Pascal Hamm vous recontactera sous 24h.';
 $extraCss  = ['/assets/css/merci.css'];
 
 // Articles blog récents pour ressources
-$articlesStmt = $db->query("
-    SELECT titre, slug, image, categorie, extrait
-    FROM   articles
-    WHERE  active = 1
-    ORDER  BY created_at DESC
-    LIMIT  4
-");
-$articles = $articlesStmt->fetchAll(PDO::FETCH_ASSOC);
+$articles = [];
+if ($db instanceof PDO) {
+    try {
+        $articlesStmt = $db->query("
+            SELECT titre, slug, image, categorie, extrait
+            FROM   articles
+            WHERE  active = 1
+            ORDER  BY created_at DESC
+            LIMIT  4
+        ");
+        $articles = $articlesStmt ? $articlesStmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    } catch (Throwable $e) {
+        error_log('merc-estimation articles query failed: ' . $e->getMessage());
+    }
+}
 ?>
 
 <div class="merci-page">
@@ -49,6 +59,10 @@ $articles = $articlesStmt->fetchAll(PDO::FETCH_ASSOC);
                         <span class="merci-step__num">3</span>
                         <span>Rapport d'estimation personnalisé</span>
                     </div>
+                </div>
+
+                <div class="merci-hero__actions">
+                    <a href="/" class="btn btn-primary merci-home-btn">Retour à l’accueil</a>
                 </div>
             </div>
         </div>

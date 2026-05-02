@@ -160,8 +160,64 @@ document.querySelectorAll('.type-card').forEach(card => {
     const btnLdr = btn?.querySelector('.btn-loader');
     const btnIco = btn?.querySelector('.btn-icon');
     const errType = document.getElementById('err-type');
+    const transition = document.getElementById('estimation-transition');
+    const transitionStatus = document.getElementById('transition-status');
+    const transitionQuote = document.getElementById('transition-quote-text');
+    const transitionProgressBar = document.getElementById('transition-progress-bar');
+    const transitionProgressText = document.getElementById('transition-progress-text');
+
+    const transitionQuotes = [
+        'Une bonne estimation commence par de bons comparables.',
+        'Le marché parle toujours plus juste qu’une intuition.',
+        'Une fourchette honnête vaut mieux qu’un prix flatteur.',
+        'La précision vient d’abord du tri des ventes récentes.',
+    ];
+    const transitionSteps = [
+        { pct: 18, status: 'Analyse des ventes récentes…', step: 1 },
+        { pct: 58, status: 'Calcul de votre fourchette…', step: 2 },
+        { pct: 88, status: 'Préparation du résultat…', step: 3 },
+    ];
+    let transitionTimer = null;
+    let transitionQuoteTimer = null;
 
     if (!form || !btn) return;
+
+    function setTransitionState(index) {
+        const current = transitionSteps[Math.min(index, transitionSteps.length - 1)];
+        if (transitionStatus) transitionStatus.textContent = current.status;
+        if (transitionProgressBar) transitionProgressBar.style.width = current.pct + '%';
+        if (transitionProgressText) transitionProgressText.textContent = current.pct + '%';
+        if (transitionQuote) {
+            transitionQuote.textContent = transitionQuotes[index % transitionQuotes.length];
+        }
+
+        document.querySelectorAll('.estimation-transition__steps li').forEach(li => {
+            const step = Number(li.dataset.step || 0);
+            li.classList.toggle('is-active', step <= current.step);
+            li.classList.toggle('is-done', step < current.step);
+        });
+    }
+
+    function showTransition() {
+        if (!transition) return;
+        transition.hidden = false;
+        document.body.classList.add('is-estimation-loading');
+        setTransitionState(0);
+
+        let idx = 0;
+        clearInterval(transitionTimer);
+        clearInterval(transitionQuoteTimer);
+
+        transitionTimer = setInterval(() => {
+            idx = Math.min(idx + 1, transitionSteps.length - 1);
+            setTransitionState(idx);
+        }, 900);
+
+        transitionQuoteTimer = setInterval(() => {
+            const next = Math.floor(Math.random() * transitionQuotes.length);
+            if (transitionQuote) transitionQuote.textContent = transitionQuotes[next];
+        }, 1700);
+    }
 
     form.addEventListener('submit', e => {
         const typeChecked = form.querySelector('input[name="type_bien"]:checked');
@@ -178,5 +234,14 @@ document.querySelectorAll('.type-card').forEach(card => {
         if (btnIco) btnIco.hidden = true;
         btn.disabled = true;
         btn.classList.add('is-loading');
+
+        if (transition) {
+            e.preventDefault();
+            showTransition();
+
+            window.setTimeout(() => {
+                form.submit();
+            }, 140);
+        }
     });
 }());

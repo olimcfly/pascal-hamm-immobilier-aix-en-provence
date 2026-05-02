@@ -12,53 +12,22 @@ $db = Database::getInstance();
 DvfEstimatorService::ensureTables();
 
 /**
- * Extrait le préfixe département (ex. 13%) pour filtrer la base DVF à partir
- * du libellé commune + code postal (autocomplete adresse.data.gouv).
+ * Décompose la localité saisie en ville et code postal quand c'est possible.
  */
-function estimationPostalPrefixForDvf(string $localite): string
+function estimationNormalizeLocalite(string $localite): array
 {
-    if (preg_match('/\b((?:13|84|83|04|05|06)[0-9]{3})\b/', $localite, $m)) {
-        return substr($m[1], 0, 2) . '%';
+    $localite = trim(preg_replace('/\s+/u', ' ', $localite) ?: '');
+    $postal = '';
+    if (preg_match('/\b(\d{5})\b/', $localite, $m)) {
+        $postal = $m[1];
     }
 
-    return '13%';
-}
-
-/**
- * Filtre SQL sur property_type DVF (type_local en base, souvent en minuscules).
- * Villa / immeuble : regroupement sur « maison ». Local : préfixe DGFIP long.
- */
-function estimationDvfPropertyTypeFilter(string $typeBien): array
-{
-    $typeBien = strtolower(trim($typeBien));
-    if ($typeBien === 'villa' || $typeBien === 'immeuble') {
-        return [
-            'clause' => 'property_type = :dvf_pt',
-            'params' => [':dvf_pt' => 'maison'],
-        ];
-    }
-    if ($typeBien === 'local') {
-        return [
-            'clause' => '(property_type LIKE :dvf_pt_like OR property_type = :dvf_pt_eq)',
-            'params' => [
-                ':dvf_pt_like' => 'local%',
-                ':dvf_pt_eq'   => 'local',
-            ],
-        ];
-    }
-    if ($typeBien === 'terrain') {
-        return [
-            'clause' => '(property_type LIKE :dvf_pt_like OR property_type = :dvf_pt_eq)',
-            'params' => [
-                ':dvf_pt_like' => 'terrain%',
-                ':dvf_pt_eq'   => 'terrain',
-            ],
-        ];
-    }
+    $city = trim((string) preg_replace('/\b\d{5}\b/u', '', $localite));
+    $city = trim($city, " \t\n\r\0\x0B,;-");
 
     return [
-        'clause' => 'property_type = :dvf_pt',
-        'params' => [':dvf_pt' => $typeBien],
+        'city' => $city,
+        'postal_code' => $postal,
     ];
 }
 
@@ -74,6 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lng       = trim($_POST['lng']        ?? '');
 
     if ($typeBien && $surface && $localite && $projet) {
+        $location = estimationNormalizeLocalite($localite);
+        $estimate = DvfEstimatorService::estimate([
+            'property_type' => $typeBien,
+            'surface' => (float) $surface,
+            'city' => $location['city'],
+            'postal_code' => $location['postal_code'],
+        ]);
 
         // ── Capture anonyme pour géolocalisation (aucun email/tel) ──
         $db->prepare("
@@ -94,57 +70,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $zoneId = $db->lastInsertId();
 
-        $cpPrefix = estimationPostalPrefixForDvf($localite);
-        $typeFilter = estimationDvfPropertyTypeFilter($typeBien);
-
-        // ── Calcul fourchette DVF ──────────────────────────────────
-        $dvf = $db->prepare("
-            SELECT
-                ROUND(AVG(price_m2))   AS prix_moyen,
-                ROUND(MIN(price_m2))   AS prix_min,
-                ROUND(MAX(price_m2))   AS prix_max,
-                COUNT(*)              AS nb_transactions
-            FROM dvf_transactions
-            WHERE " . $typeFilter['clause'] . "
-            AND   postal_code LIKE :cp
-            AND   mutation_date >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-            AND   surface BETWEEN :surf_min AND :surf_max
-        ");
-        $dvf->execute(array_merge($typeFilter['params'], [
-            ':cp'       => $cpPrefix,
-            ':surf_min' => max(0, (int) $surface - 20),
-            ':surf_max' => (int) $surface + 20,
-        ]));
-        $dvfData = $dvf->fetch(PDO::FETCH_ASSOC);
-
-        // ── Calcul fourchette ──────────────────────────────────────
         $fourchette = null;
-        if ($dvfData && $dvfData['prix_moyen']) {
-            $surf = (int) $surface;
-            $fourchette = [
-                'min'  => number_format((int) $dvfData['prix_min'] * $surf, 0, ',', ' '),
-                'moy'  => number_format((int) $dvfData['prix_moyen'] * $surf, 0, ',', ' '),
-                'max'  => number_format((int) $dvfData['prix_max'] * $surf, 0, ',', ' '),
-                'pm2'  => number_format((int) $dvfData['prix_moyen'], 0, ',', ' '),
-                'nb'   => $dvfData['nb_transactions'],
-            ];
-        }
+        $comps = [];
+        if (!empty($estimate['ok'])) {
+            $low = (int) ($estimate['estimate_low'] ?? 0);
+            $mid = (int) ($estimate['estimate_median'] ?? 0);
+            $high = (int) ($estimate['estimate_high'] ?? 0);
+            $pm2 = (float) ($estimate['price_m2_median'] ?? 0);
+            $count = (int) ($estimate['comparables_count'] ?? 0);
 
-        // ── Comparables récents ────────────────────────────────────
-        $comparables = $db->prepare("
-            SELECT address_label, surface, value_amount, price_m2, mutation_date
-            FROM   dvf_transactions
-            WHERE  " . $typeFilter['clause'] . "
-            AND    postal_code LIKE :cp
-            AND    mutation_date >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-            ORDER  BY ABS(surface - :surface) ASC
-            LIMIT  5
-        ");
-        $comparables->execute(array_merge($typeFilter['params'], [
-            ':cp'      => $cpPrefix,
-            ':surface' => (int) $surface,
-        ]));
-        $comps = $comparables->fetchAll(PDO::FETCH_ASSOC);
+            if ($low > 0 && $mid > 0 && $high > 0) {
+                $fourchette = [
+                    'min' => number_format($low, 0, ',', ' '),
+                    'moy' => number_format($mid, 0, ',', ' '),
+                    'max' => number_format($high, 0, ',', ' '),
+                    'pm2' => number_format((int) round($pm2), 0, ',', ' '),
+                    'nb' => $count,
+                ];
+            }
+
+            $comps = $estimate['comparables'] ?? [];
+        }
 
         // ── Stockage session pour page résultat ───────────────────
         $_SESSION['estimation'] = [
@@ -156,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'projet'      => $projet,
             'fourchette'  => $fourchette,
             'comparables' => $comps,
+            'source'      => $estimate['source'] ?? 'csv',
         ];
 
         redirect('/estimation-gratuite/resultat');
@@ -166,6 +113,7 @@ $pageTitle = 'Estimation gratuite — Pascal Hamm | Conseiller immobilier Aix-en
 $metaDesc  = 'Obtenez une fourchette d\'estimation basée sur les ventes réelles DVF (Bouches-du-Rhône, Pays d\'Aix). Gratuit, instantané, sans inscription.';
 $extraCss  = ['/assets/css/estimation.css'];
 $extraJs   = ['/assets/js/estimation.js'];
+$estimationCopy = DvfEstimatorService::sourceConfiguration();
 
 $advisorPhoto = trim((string) setting('advisor_photo', ''));
 if ($advisorPhoto === '') {
@@ -180,8 +128,8 @@ if ($advisorPhoto === '') {
             <a href="/">Accueil</a>
             <span>Estimation gratuite</span>
         </nav>
-        <h1>Estimation gratuite<br><span>de votre bien immobilier</span></h1>
-        <p>Basée sur les ventes réelles DVF (13) et le Pays d’Aix · Instantané · Sans inscription</p>
+        <h1><?= e($estimationCopy['home_title'] ?: 'Estimation gratuite de votre bien immobilier') ?></h1>
+        <p><?= e($estimationCopy['home_subtitle'] ?: 'Basée sur les ventes réelles DVF (13) et le Pays d’Aix · Instantané · Sans inscription') ?></p>
     </div>
 </div>
 
@@ -199,9 +147,8 @@ if ($advisorPhoto === '') {
                     <div>
                         <strong>Information importante</strong>
                         <p>
-                            Cette estimation est basée sur des statistiques de marché issues des données
-                            DVF (Demandes de Valeurs Foncières). Elle donne une <strong>fourchette indicative</strong>
-                            et ne constitue pas une expertise officielle.
+                            <?= e($estimationCopy['home_disclaimer'] ?: 'Cette estimation est basée sur des statistiques de marché issues des données DVF (Demandes de Valeurs Foncières). Elle donne une fourchette indicative et ne constitue pas une expertise officielle.') ?>
+                            <br>
                             Seul un professionnel agréé peut établir une estimation certifiée
                             (divorce, succession, etc.).
                         </p>
@@ -352,16 +299,52 @@ if ($advisorPhoto === '') {
                         <button type="submit"
                                 id="btn-submit-estimation"
                                 class="btn btn--accent btn--lg btn--full btn--submit-estimation">
-                            <span class="btn-text">Obtenir mon estimation gratuite</span>
+                            <span class="btn-text"><?= e($estimationCopy['home_cta_label'] ?: 'Obtenir mon estimation gratuite') ?></span>
                             <span class="btn-loader" hidden aria-hidden="true">Calcul en cours…</span>
                             <span class="btn-icon" aria-hidden="true">→</span>
                         </button>
                         <p class="form-submit-hint">
-                            🔒 Aucun email ni téléphone requis · Résultat instantané
+                            🔒 <?= e($estimationCopy['home_hints'] ?: 'Aucun email ni téléphone requis · Résultat instantané') ?>
                         </p>
                     </div>
 
                 </form>
+
+                <div id="estimation-transition"
+                     class="estimation-transition"
+                     aria-live="polite"
+                     aria-busy="true"
+                     hidden>
+                    <div class="estimation-transition__card">
+                        <div class="estimation-transition__eyebrow">Analyse en cours</div>
+                        <h2>Nous préparons votre estimation indicative</h2>
+                        <p class="estimation-transition__status" id="transition-status">
+                            Analyse des ventes récentes…
+                        </p>
+
+                        <div class="estimation-transition__progress" aria-hidden="true">
+                            <div class="estimation-transition__bar" id="transition-progress-bar"></div>
+                        </div>
+
+                        <div class="estimation-transition__meta">
+                            <span id="transition-progress-text">0%</span>
+                            <span>Veuillez patienter quelques instants</span>
+                        </div>
+
+                        <div class="estimation-transition__quote">
+                            <span class="estimation-transition__quote-label">Citation du moment</span>
+                            <p id="transition-quote-text">
+                                Une bonne estimation commence par de bons comparables.
+                            </p>
+                        </div>
+
+                        <ul class="estimation-transition__steps" aria-label="Étapes de calcul">
+                            <li class="is-active" data-step="1">Analyse des ventes récentes</li>
+                            <li data-step="2">Calcul de la fourchette</li>
+                            <li data-step="3">Préparation du résultat</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <!-- ── Sidebar ─────────────────────────────────────────────────── -->
